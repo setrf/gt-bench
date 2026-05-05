@@ -60,10 +60,15 @@ def parse_profiles(text: str) -> set[Profile]:
 
 def parse_prediction(text: str) -> set[Profile] | None:
     for span in candidate_answer_spans(text):
+        none_match = NONE_PATTERN.search(span)
+        profile_match = PROFILE_PATTERN.search(span)
+        if none_match and (profile_match is None or none_match.start() < profile_match.start()):
+            return set()
+
         profiles = parse_profiles(span)
         if profiles:
             return profiles
-        if NONE_PATTERN.search(span):
+        if none_match:
             return set()
 
     return None

@@ -69,3 +69,13 @@ def test_parser_prefers_conclusion_over_reasoning_mentions() -> None:
     )
 
     assert parse_prediction(prediction) == {("U", "R"), ("D", "L")}
+
+
+def test_parser_honors_no_equilibrium_conclusion_before_explanation_profiles() -> None:
+    prediction = (
+        "Conclusion\n"
+        "There are no pure-strategy Nash equilibria in this game.\n\n"
+        "Explanation: (U, L) fails, (U, R) fails, (D, L) fails, and (D, R) fails."
+    )
+
+    assert parse_prediction(prediction) == set()

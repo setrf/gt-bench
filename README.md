@@ -203,16 +203,18 @@ The expected demonstration is an increase in exact-match accuracy on held-out 2x
 
 ## Current Qwen3.6-27B result
 
-On the canonical 500-example held-out test split, `Qwen/Qwen3.6-27B` improved from 86.40% exact-match accuracy at baseline to 99.60% after LoRA SFT on 5000 synthetic examples.
+On the canonical 500-example held-out test split, `Qwen/Qwen3.6-27B` improved from 87.60% exact-match accuracy at baseline to 99.60% after LoRA SFT on 5000 synthetic examples.
 
 | Run | Accuracy | Correct | Incorrect | Delta vs baseline |
 | --- | ---: | ---: | ---: | ---: |
-| baseline | 86.40% | 432 | 68 | 0.00 pp |
-| 250-example SFT | 53.40% | 267 | 233 | -33.00 pp |
-| 1000-example SFT | 91.60% | 458 | 42 | +5.20 pp |
-| 5000-example SFT | 99.60% | 498 | 2 | +13.20 pp |
+| baseline | 87.60% | 438 | 62 | 0.00 pp |
+| 250-example SFT | 53.40% | 267 | 233 | -34.20 pp |
+| 1000-example SFT | 91.60% | 458 | 42 | +4.00 pp |
+| 5000-example SFT | 99.60% | 498 | 2 | +12.00 pp |
 
-The full report is in `reports/gt_bench_results.md`.
+On an independent 1000-example confirmation set generated with seed `20260505`, the same 5000-example fine-tuned checkpoint improved from 89.20% baseline accuracy to 99.70%.
+
+The full report is in `reports/gt_bench_results.md`. For the research narrative and reproducibility details, see `RESULTS.md`, `REPRODUCIBILITY.md`, and `FAILURE_ANALYSIS.md`.
 
 ## Limitations
 

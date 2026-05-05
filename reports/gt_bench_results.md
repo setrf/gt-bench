@@ -8,10 +8,10 @@ Test SHA-256: `a9af74346a7b67cc13952fc858570dee6d03e4248b04e830c42f8c1bb935d219`
 
 | Run | Accuracy | Correct | Incorrect | Delta vs baseline |
 | --- | ---: | ---: | ---: | ---: |
-| baseline | 86.40% | 432 | 68 | 0.00 pp |
-| qwen36_27b_sft_0250 | 53.40% | 267 | 233 | -33.00 pp |
-| qwen36_27b_sft_1000 | 91.60% | 458 | 42 | +5.20 pp |
-| qwen36_27b_sft_5000 | 99.60% | 498 | 2 | +13.20 pp |
+| baseline | 87.60% | 438 | 62 | 0.00 pp |
+| qwen36_27b_sft_0250 | 53.40% | 267 | 233 | -34.20 pp |
+| qwen36_27b_sft_1000 | 91.60% | 458 | 42 | +4.00 pp |
+| qwen36_27b_sft_5000 | 99.60% | 498 | 2 | +12.00 pp |
 
 ## Accuracy By Number Of Equilibria
 
@@ -19,7 +19,7 @@ Test SHA-256: `a9af74346a7b67cc13952fc858570dee6d03e4248b04e830c42f8c1bb935d219`
 
 | Equilibria | Total | Correct | Accuracy |
 | ---: | ---: | ---: | ---: |
-| 0 | 45 | 3 | 6.67% |
+| 0 | 45 | 9 | 20.00% |
 | 1 | 308 | 287 | 93.18% |
 | 2 | 141 | 137 | 97.16% |
 | 3 | 6 | 5 | 83.33% |
@@ -50,6 +50,16 @@ Test SHA-256: `a9af74346a7b67cc13952fc858570dee6d03e4248b04e830c42f8c1bb935d219`
 | 1 | 308 | 308 | 100.00% |
 | 2 | 141 | 139 | 98.58% |
 | 3 | 6 | 6 | 100.00% |
+
+## Independent Confirmation
+
+Confirmation set: `data/confirm/confirm_seed20260505.jsonl`
+Confirmation SHA-256: `d9874764ce086f23065568ba5066745e0a879955a924e8a257d2f3b1f82a0cd8`
+
+| Run | Accuracy | Correct | Incorrect | Delta vs baseline |
+| --- | ---: | ---: | ---: | ---: |
+| baseline | 89.20% | 892 | 108 | 0.00 pp |
+| qwen36_27b_sft_5000 | 99.70% | 997 | 3 | +10.50 pp |
 
 ## Takeaway
 

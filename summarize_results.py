@@ -66,6 +66,69 @@ def build_summary(config: dict[str, Any], baseline_path: Path, runs: list[tuple[
     }
 
 
+def add_confirmation_summary(
+    summary: dict[str, Any],
+    baseline_path: Path | None,
+    runs: list[tuple[str, Path]],
+    gold_path: Path | None,
+) -> None:
+    if baseline_path is None:
+        return
+
+    baseline = read_report(baseline_path)
+    base_acc = float(baseline["exact_match_accuracy"])
+    run_summaries = []
+    for name, path in runs:
+        report = read_report(path)
+        acc = float(report["exact_match_accuracy"])
+        run_summaries.append(
+            {
+                "name": name,
+                "report_path": str(path),
+                "exact_match_accuracy": acc,
+                "delta_vs_baseline": acc - base_acc,
+                "num_correct": report["num_correct"],
+                "num_incorrect": report["num_incorrect"],
+                "accuracy_by_number_of_equilibria": report["accuracy_by_number_of_equilibria"],
+                "failed_examples_preview": report.get("failed_examples", [])[:10],
+            }
+        )
+
+    summary["confirmation"] = {
+        "gold_path": str(gold_path) if gold_path else None,
+        "gold_sha256": sha256_file(gold_path) if gold_path and gold_path.exists() else None,
+        "baseline_report": str(baseline_path),
+        "baseline": {
+            "exact_match_accuracy": base_acc,
+            "num_correct": baseline["num_correct"],
+            "num_incorrect": baseline["num_incorrect"],
+            "accuracy_by_number_of_equilibria": baseline["accuracy_by_number_of_equilibria"],
+            "failed_examples_preview": baseline.get("failed_examples", [])[:10],
+        },
+        "runs": run_summaries,
+        "best_run": max(run_summaries, key=lambda row: row["exact_match_accuracy"], default=None),
+    }
+
+
+def append_accuracy_table(lines: list[str], baseline: dict[str, Any], runs: list[dict[str, Any]]) -> None:
+    lines.extend(
+        [
+            "| Run | Accuracy | Correct | Incorrect | Delta vs baseline |",
+            "| --- | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    lines.append(
+        f"| baseline | {pct(float(baseline['exact_match_accuracy']))} | "
+        f"{baseline['num_correct']} | {baseline['num_incorrect']} | 0.00 pp |"
+    )
+    for run in runs:
+        delta_pp = float(run["delta_vs_baseline"]) * 100
+        lines.append(
+            f"| {run['name']} | {pct(float(run['exact_match_accuracy']))} | "
+            f"{run['num_correct']} | {run['num_incorrect']} | {delta_pp:+.2f} pp |"
+        )
+
+
 def write_markdown(path: Path, summary: dict[str, Any]) -> None:
     lines = [
         "# GT-Bench Qwen3.6-27B Results",
@@ -80,22 +143,11 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
             "",
             "## Exact-Match Accuracy",
             "",
-            "| Run | Accuracy | Correct | Incorrect | Delta vs baseline |",
-            "| --- | ---: | ---: | ---: | ---: |",
         ]
     )
 
     baseline = summary["baseline"]
-    lines.append(
-        f"| baseline | {pct(float(baseline['exact_match_accuracy']))} | "
-        f"{baseline['num_correct']} | {baseline['num_incorrect']} | 0.00 pp |"
-    )
-    for run in summary["runs"]:
-        delta_pp = float(run["delta_vs_baseline"]) * 100
-        lines.append(
-            f"| {run['name']} | {pct(float(run['exact_match_accuracy']))} | "
-            f"{run['num_correct']} | {run['num_incorrect']} | {delta_pp:+.2f} pp |"
-        )
+    append_accuracy_table(lines, baseline, summary["runs"])
 
     lines.extend(["", "## Accuracy By Number Of Equilibria", ""])
     for label, report in [("baseline", baseline), *[(run["name"], run) for run in summary["runs"]]]:
@@ -110,6 +162,17 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
                 f"| {count} | {bucket['total']} | {bucket['correct']} | "
                 f"{pct(float(bucket['accuracy']))} |"
             )
+        lines.append("")
+
+    confirmation = summary.get("confirmation")
+    if confirmation:
+        lines.extend(["## Independent Confirmation", ""])
+        if confirmation.get("gold_path"):
+            lines.append(f"Confirmation set: `{confirmation['gold_path']}`")
+        if confirmation.get("gold_sha256"):
+            lines.append(f"Confirmation SHA-256: `{confirmation['gold_sha256']}`")
+        lines.append("")
+        append_accuracy_table(lines, confirmation["baseline"], confirmation["runs"])
         lines.append("")
 
     best = summary.get("best_run")
@@ -154,6 +217,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--config", type=Path, default=CONFIG_PATH)
     parser.add_argument("--baseline", type=Path, required=True)
     parser.add_argument("--run", action="append", type=parse_named_report, default=[])
+    parser.add_argument("--confirmation-gold", type=Path, default=None)
+    parser.add_argument("--confirmation-baseline", type=Path, default=None)
+    parser.add_argument("--confirmation-run", action="append", type=parse_named_report, default=[])
     parser.add_argument("--out-json", type=Path, default=Path("reports/gt_bench_results.json"))
     parser.add_argument("--out-md", type=Path, default=Path("reports/gt_bench_results.md"))
     return parser.parse_args(argv)
@@ -162,6 +228,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     summary = build_summary(load_config(args.config), args.baseline, args.run)
+    add_confirmation_summary(
+        summary,
+        args.confirmation_baseline,
+        args.confirmation_run,
+        args.confirmation_gold,
+    )
     args.out_json.parent.mkdir(parents=True, exist_ok=True)
     args.out_json.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     write_markdown(args.out_md, summary)

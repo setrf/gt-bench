@@ -7,6 +7,7 @@ __pycache__/
 .env
 
 data/*.jsonl
+data/**/*.jsonl
 data/sweeps/*.jsonl
 reports/*.json
 !reports/gt_bench_results.json
