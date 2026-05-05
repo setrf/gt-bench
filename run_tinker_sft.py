@@ -28,7 +28,7 @@ def build_dataset(config: dict[str, Any], train_chat: Path, renderer_name: str):
         renderer_name=renderer_name,
         max_length=int(lora["max_length"]),
         batch_size=int(lora["effective_batch_size"]),
-        train_on_what=TrainOnWhat.ALL_ASSISTANT_MESSAGES,
+        train_on_what=TrainOnWhat.LAST_ASSISTANT_MESSAGE,
     )
     return FromConversationFileBuilder(
         common_config=common_config,
