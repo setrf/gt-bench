@@ -1,8 +1,8 @@
 __pycache__/
 .pytest_cache/
+.venv/
 *.py[cod]
 
 data/*.jsonl
 reports/*.json
 predictions*.jsonl
-
