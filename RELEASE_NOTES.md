@@ -1,6 +1,6 @@
 # Release Notes
 
-## Unreleased
+## v0.1.1-stress-eval
 
 - Adds a balanced stress-set generator for equilibrium-count buckets.
 - Evaluates the baseline and best 5000-example SFT checkpoint on a 250-example stress set.
