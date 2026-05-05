@@ -104,6 +104,8 @@ Run the baseline on `Qwen/Qwen3.6-27B`:
   --out predictions/baseline_qwen36_27b.jsonl
 ```
 
+`bench_config.json` uses deterministic decoding with `max_tokens` set high enough to let the base model finish its reasoning and final answer. You can override this with `--max-tokens` for smoke tests.
+
 Run the three LoRA SFT jobs:
 
 ```bash

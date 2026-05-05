@@ -34,6 +34,8 @@ def run_predictions(
     out_path: Path,
     model: str | None,
     model_path: str | None,
+    max_tokens: int | None,
+    temperature: float | None,
     limit: int | None,
 ) -> int:
     require_api_key()
@@ -58,8 +60,8 @@ def run_predictions(
     renderer = get_renderer(renderer_name, tokenizer, image_processor=None, model_name=model_id)
     decoding = config["decoding"]
     params = types.SamplingParams(
-        max_tokens=int(decoding["max_tokens"]),
-        temperature=float(decoding["temperature"]),
+        max_tokens=max_tokens or int(decoding["max_tokens"]),
+        temperature=float(decoding["temperature"]) if temperature is None else temperature,
         seed=int(config["seed"]),
     )
 
@@ -88,6 +90,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--model", default=None, help="Base model ID. Defaults to bench_config.json.")
     parser.add_argument("--model-path", default=None, help="Tinker sampler checkpoint path.")
+    parser.add_argument("--max-tokens", type=int, default=None)
+    parser.add_argument("--temperature", type=float, default=None)
     parser.add_argument("--limit", type=int, default=None)
     return parser.parse_args(argv)
 
@@ -101,6 +105,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.out,
             args.model,
             args.model_path,
+            args.max_tokens,
+            args.temperature,
             args.limit,
         )
     except (TinkerSetupError, ImportError) as exc:

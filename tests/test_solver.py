@@ -58,3 +58,14 @@ def test_parser_common_prediction_formats() -> None:
     assert parse_prediction("There is no pure Nash equilibrium.") == set()
     assert parse_prediction("") is None
 
+
+def test_parser_prefers_conclusion_over_reasoning_mentions() -> None:
+    prediction = (
+        "1. Check (U, L): not an equilibrium.\n"
+        "2. Check (U, R): this is a Nash equilibrium.\n"
+        "3. Check (D, L): this is a Nash equilibrium.\n"
+        "4. Check (D, R): not an equilibrium.\n\n"
+        "Conclusion\nThe pure-strategy Nash equilibria are (U, R) and (D, L)."
+    )
+
+    assert parse_prediction(prediction) == {("U", "R"), ("D", "L")}

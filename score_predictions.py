@@ -14,6 +14,15 @@ NONE_PATTERN = re.compile(
     r"\b(?:none|no\s+pure(?:-strategy)?\s+nash\s+equilibri(?:um|a))\b",
     re.IGNORECASE,
 )
+ANSWER_MARKER_PATTERN = re.compile(
+    r"(?:final answer\s*:|conclusion\s*:?)",
+    re.IGNORECASE,
+)
+ANSWER_SENTENCE_PATTERN = re.compile(
+    r"[^.\n]*(?:pure(?:-strategy)?\s+nash\s+equilibri(?:um|a)|"
+    r"nash\s+equilibri(?:um|a))[^.\n]*(?:\.|$)",
+    re.IGNORECASE,
+)
 
 
 def read_jsonl(path: Path) -> list[dict[str, object]]:
@@ -30,15 +39,33 @@ def read_jsonl(path: Path) -> list[dict[str, object]]:
     return rows
 
 
-def parse_prediction(text: str) -> set[Profile] | None:
-    profiles = {
+def candidate_answer_spans(text: str) -> list[str]:
+    spans: list[str] = []
+    markers = list(ANSWER_MARKER_PATTERN.finditer(text))
+    if markers:
+        spans.append(text[markers[-1].end() :])
+
+    sentences = ANSWER_SENTENCE_PATTERN.findall(text)
+    spans.extend(reversed(sentences))
+    spans.append(text)
+    return spans
+
+
+def parse_profiles(text: str) -> set[Profile]:
+    return {
         (row.upper(), col.upper())
         for row, col in PROFILE_PATTERN.findall(text)
     }
-    if profiles:
-        return profiles
-    if NONE_PATTERN.search(text):
-        return set()
+
+
+def parse_prediction(text: str) -> set[Profile] | None:
+    for span in candidate_answer_spans(text):
+        profiles = parse_profiles(span)
+        if profiles:
+            return profiles
+        if NONE_PATTERN.search(span):
+            return set()
+
     return None
 
 
@@ -121,4 +148,3 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
