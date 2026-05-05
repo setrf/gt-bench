@@ -842,5 +842,178 @@
         }
       ]
     }
+  },
+  "stress": {
+    "gold_path": "data/stress/tie_stress_seed314159.jsonl",
+    "gold_sha256": "9c298c756940bb57189f114da491f8b56b57dd9bedddefe82e61c82669f94340",
+    "baseline_report": "reports/stress_baseline_qwen36_27b_seed314159_report.json",
+    "baseline": {
+      "exact_match_accuracy": 0.816,
+      "num_correct": 204,
+      "num_incorrect": 46,
+      "accuracy_by_number_of_equilibria": {
+        "0": {
+          "total": 50,
+          "correct": 16,
+          "accuracy": 0.32
+        },
+        "1": {
+          "total": 50,
+          "correct": 49,
+          "accuracy": 0.98
+        },
+        "2": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        },
+        "3": {
+          "total": 50,
+          "correct": 40,
+          "accuracy": 0.8
+        },
+        "4": {
+          "total": 50,
+          "correct": 49,
+          "accuracy": 0.98
+        }
+      },
+      "failed_examples_preview": [
+        {
+          "id": "stress_eq0_0001",
+          "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (1,6)   (6,4)\nD    (6,0)   (1,7)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+          "gold": [],
+          "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 1) vs. $D$ (payoff 6). Since $6 > 1$, Player 1 chooses **D**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 6) vs. $D$ (payoff 1). Since $6 > 1$, Player 1 chooses **U**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 6) vs. $R$ (payoff 4). Since $6 > 4$, Player 2 chooses **L**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 0) vs. $R$ (payoff 7). Since $7 > 0$, Player 2 chooses **R**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   At **(U, L)**: Player 1 wants to switch to D. (Not an equilibrium)\n*   At **(U, R)**: Player 2 wants to switch to L. (Not an equilibrium)\n*   At **(D, L)**: Player 2 wants to switch to R. (Not an equilibrium)\n*   At **(D, R)**: Player 1 is playing their best response to R, and Player 2 is playing their best response to D. Neither player has an incentive to deviate.\n\n**Conclusion**\nThe only pure-strategy Nash equilibrium is **(D, R)**."
+        },
+        {
+          "id": "stress_eq0_0002",
+          "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (8,4)   (0,8)\nD    (5,5)   (5,2)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+          "gold": [],
+          "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice. A Nash equilibrium occurs where both players are playing their best response simultaneously.\n\n### Step-by-Step Deduction\n\n**1. Analyze Player 1's Best Responses:**\n*   **If Player 2 chooses L:** Player 1 compares choosing U (payoff 8) vs. D (payoff 5). Since $8 > 5$, Player 1 chooses **U**.\n*   **If Player 2 chooses R:** Player 1 compares choosing U (payoff 0) vs. D (payoff 5). Since $5 > 0$, Player 1 chooses **D**.\n\n**2. Analyze Player 2's Best Responses:**\n*   **If Player 1 chooses U:** Player 2 compares choosing L (payoff 4) vs. R (payoff 8). Since $8 > 4$, Player 2 chooses **R**.\n*   **If Player 1 chooses D:** Player 2 compares choosing L (payoff 5) vs. R (payoff 2). Since $5 > 2$, Player 2 chooses **L**.\n\n**3. Identify Mutual Best Responses:**\nWe look for the cell where both players are playing their best response to the other:\n*   **(U, L):** Player 1 wants to switch to U (already there), but Player 2 wants to switch to R. (Not an equilibrium)\n*   **(U, R):** Player 1 wants to switch to D, but Player 2 is playing their best response. (Not an equilibrium)\n*   **(D, L):** Player 1 wants to switch to U, but Player 2 is playing their best response. (Not an equilibrium)\n*   **(D, R):** Player 1 wants to switch to D (already there), but Player 2 wants to switch to L. (Not an equilibrium)\n\nWait, let me re-evaluate the intersection of best responses carefully.\n\n*   **Cell (U, L):**\n    *   P1 best response to L is U. (Match)\n    *   P2 best response to U is R. (Mismatch)\n*   **Cell (U, R):**\n    *   P1 best response to R is D. (Mismatch)\n    *   P2 best response to U is R. (Match)\n*   **Cell (D, L):**\n    *   P1 best response to L is U. (Mismatch)\n    *   P2 best response to D is L. (Match)\n*   **Cell (D, R):**\n    *   P1 best response to R is D. (Match)\n    *   P2 best response to D is L. (Mismatch)\n\nLet's re-read the matrix and best responses.\n\n*   **P1 Best Responses:**\n    *   If P2 plays L: P1 chooses **U** (8 > 5).\n    *   If P2 plays R: P1 chooses **D** (5 > 0).\n*   **P2 Best Responses:**\n    *   If P1 plays U: P2 chooses **R** (8 > 4).\n    *   If P1 plays D: P2 chooses **L** (5 > 2).\n\nLet's check the cells again:\n1.  **(U, L)**: P1 is best responding (U is best to L). P2 is NOT best responding (R is best to U).\n2.  **(U,"
+        },
+        {
+          "id": "stress_eq0_0005",
+          "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (9,0)   (8,8)\nD    (7,4)   (9,1)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+          "gold": [],
+          "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 9) vs. $D$ (payoff 7). Since $9 > 7$, Player 1 chooses **U**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 8) vs. $D$ (payoff 9). Since $9 > 8$, Player 1 chooses **D**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 0) vs. $R$ (payoff 8). Since $8 > 0$, Player 2 chooses **R**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 4) vs. $R$ (payoff 1). Since $4 > 1$, Player 2 chooses **L**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   At **(U, L)**: Player 2 wants to switch to R. (Not an equilibrium)\n*   At **(U, R)**: Player 1 wants to switch to D. (Not an equilibrium)\n*   At **(D, R)**: Player 2 wants to switch to L. (Not an equilibrium)\n*   At **(D, L)**: Player 1 is playing their best response to L, and Player 2 is playing their best response to D. Neither player has an incentive to deviate.\n\n**Conclusion**\nThe only pure-strategy Nash equilibrium is **(D, L)**."
+        },
+        {
+          "id": "stress_eq0_0006",
+          "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (6,1)   (2,9)\nD    (4,4)   (3,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+          "gold": [],
+          "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n### Step-by-Step Deduction\n\n**1. Analyze Player 1's Best Responses:**\nPlayer 1 chooses between **U** and **D** to maximize their first payoff number.\n*   **If Player 2 chooses L:** Player 1 compares $U$ (payoff 6) vs. $D$ (payoff 4). Since $6 > 4$, Player 1 chooses **U**.\n*   **If Player 2 chooses R:** Player 1 compares $U$ (payoff 2) vs. $D$ (payoff 3). Since $3 > 2$, Player 1 chooses **D**.\n\n**2. Analyze Player 2's Best Responses:**\nPlayer 2 chooses between **L** and **R** to maximize their second payoff number.\n*   **If Player 1 chooses U:** Player 2 compares $L$ (payoff 1) vs. $R$ (payoff 9). Since $9 > 1$, Player 2 chooses **R**.\n*   **If Player 1 chooses D:** Player 2 compares $L$ (payoff 4) vs. $R$ (payoff 3). Since $4 > 3$, Player 2 chooses **L**.\n\n**3. Identify Mutual Best Responses (Nash Equilibria):**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   **Strategy Profile (U, L):** Player 1 wants to switch to D. (Not an equilibrium)\n*   **Strategy Profile (U, R):** Player 1 wants to switch to D. (Not an equilibrium)\n*   **Strategy Profile (D, R):** Player 2 wants to switch to L. (Not an equilibrium)\n*   **Strategy Profile (D, L):**\n    *   Player 1 is playing D (Best response to L).\n    *   Player 2 is playing L (Best response to D).\n    *   Neither player has an incentive to deviate.\n\n### Conclusion\n\nThe only pure-strategy Nash equilibrium is **(D, L)** with payoffs **(4, 4)**."
+        },
+        {
+          "id": "stress_eq0_0007",
+          "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (7,3)   (5,4)\nD    (5,7)   (8,5)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+          "gold": [],
+          "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares 7 (from U) and 5 (from D). Since $7 > 5$, Player 1 chooses **U**.\n*   If Player 2 chooses **R**: Player 1 compares 5 (from U) and 8 (from D). Since $8 > 5$, Player 1 chooses **D**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares 3 (from L) and 4 (from R). Since $4 > 3$, Player 2 chooses **R**.\n*   If Player 1 chooses **D**: Player 2 compares 7 (from L) and 5 (from R). Since $7 > 5$, Player 2 chooses **L**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   At **(U, L)**: Player 1 wants to stay, but Player 2 wants to switch to R. (Not an equilibrium)\n*   At **(U, R)**: Player 1 wants to switch to D, but Player 2 wants to stay. (Not an equilibrium)\n*   At **(D, L)**: Player 1 wants to switch to U, but Player 2 wants to stay. (Not an equilibrium)\n*   At **(D, R)**: Player 1 chooses D (best response to R), and Player 2 chooses R (best response to D). Neither player has an incentive to deviate.\n\n**Conclusion**\nThere is one pure-strategy Nash equilibrium: **(D, R)** with payoffs **(8, 5)**."
+        },
+        {
+          "id": "stress_eq0_0008",
+          "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (7,8)   (9,1)\nD    (8,1)   (5,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+          "gold": [],
+          "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares 7 (from U) and 8 (from D). Since $8 > 7$, Player 1 chooses **D**.\n*   If Player 2 chooses **R**: Player 1 compares 9 (from U) and 5 (from D). Since $9 > 5$, Player 1 chooses **U**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares 8 (from L) and 1 (from R). Since $8 > 1$, Player 2 chooses **L**.\n*   If Player 1 chooses **D**: Player 2 compares 1 (from L) and 3 (from R). Since $3 > 1$, Player 2 chooses **R**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   At **(U, L)**: Player 1 wants to switch to D. (Not an equilibrium)\n*   At **(U, R)**: Player 2 wants to switch to L. (Not an equilibrium)\n*   At **(D, L)**: Player 2 wants to switch to R. (Not an equilibrium)\n*   At **(D, R)**: Player 1 is playing their best response to R, and Player 2 is playing their best response to D. Neither player has an incentive to deviate.\n\n**Conclusion**\nThe only pure-strategy Nash equilibrium is **(D, R)**."
+        },
+        {
+          "id": "stress_eq0_0009",
+          "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (2,6)   (5,0)\nD    (7,2)   (0,7)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+          "gold": [],
+          "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice. A Nash equilibrium occurs where both players are playing their best response simultaneously (i.e., neither player has an incentive to deviate).\n\n### Step-by-Step Deduction\n\n**1. Analyze Player 1's Best Responses:**\n*   **If Player 2 chooses L:** Player 1 compares choosing U (payoff 2) vs. D (payoff 7). Since $7 > 2$, Player 1 chooses **D**.\n*   **If Player 2 chooses R:** Player 1 compares choosing U (payoff 5) vs. D (payoff 0). Since $5 > 0$, Player 1 chooses **U**.\n\n**2. Analyze Player 2's Best Responses:**\n*   **If Player 1 chooses U:** Player 2 compares choosing L (payoff 6) vs. R (payoff 0). Since $6 > 0$, Player 2 chooses **L**.\n*   **If Player 1 chooses D:** Player 2 compares choosing L (payoff 2) vs. R (payoff 7). Since $7 > 2$, Player 2 chooses **R**.\n\n**3. Identify Mutual Best Responses:**\nWe look for the cells where both players are playing their best response:\n*   **(U, L):** Player 1 wants to switch to D ($7 > 2$). Not an equilibrium.\n*   **(U, R):** Player 2 wants to switch to L ($6 > 0$). Not an equilibrium.\n*   **(D, L):** Player 2 wants to switch to R ($7 > 2$). Not an equilibrium.\n*   **(D, R):** Player 1 is playing U's best response to R, and Player 2 is playing R's best response to D. Neither wants to switch.\n\n### Conclusion\n\nThere is one pure-strategy Nash equilibrium:\n\n**{D, R}** with payoffs **(0, 7)**."
+        },
+        {
+          "id": "stress_eq0_0010",
+          "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (1,6)   (2,3)\nD    (4,1)   (1,5)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+          "gold": [],
+          "prediction": "To find the pure-strategy Nash equilibria, we analyze the best responses for each player given the other player's choice.\n\n**1. Analyze Player 1's Best Responses:**\n*   **If Player 2 chooses L:** Player 1 compares choosing U (payoff 1) vs. D (payoff 4). Since $4 > 1$, Player 1 chooses **D**.\n*   **If Player 2 chooses R:** Player 1 compares choosing U (payoff 2) vs. D (payoff 1). Since $2 > 1$, Player 1 chooses **U**.\n\n**2. Analyze Player 2's Best Responses:**\n*   **If Player 1 chooses U:** Player 2 compares choosing L (payoff 6) vs. R (payoff 3). Since $6 > 3$, Player 2 chooses **L**.\n*   **If Player 1 chooses D:** Player 2 compares choosing L (payoff 1) vs. R (payoff 5). Since $5 > 1$, Player 2 chooses **R**.\n\n**3. Identify Mutual Best Responses:**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   At **(U, L)**: Player 1 wants to switch to D. (Not an equilibrium)\n*   At **(D, R)**: Player 1 is playing U (best response to R) and Player 2 is playing R (best response to D). Neither player has an incentive to deviate.\n\n**Conclusion:**\nThe only pure-strategy Nash equilibrium is **(D, R)**."
+        },
+        {
+          "id": "stress_eq0_0011",
+          "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (1,2)   (8,0)\nD    (4,5)   (0,9)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+          "gold": [],
+          "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice. A Nash equilibrium occurs where both players are playing their best response simultaneously.\n\n### Step-by-Step Deduction\n\n**1. Analyze Player 1's Best Responses:**\nPlayer 1 chooses between **U** and **D** to maximize their first payoff number.\n*   **If Player 2 chooses L:** Player 1 compares $U$ (payoff 1) vs. $D$ (payoff 4). Since $4 > 1$, Player 1 chooses **D**.\n*   **If Player 2 chooses R:** Player 1 compares $U$ (payoff 8) vs. $D$ (payoff 0). Since $8 > 0$, Player 1 chooses **U**.\n\n**2. Analyze Player 2's Best Responses:**\nPlayer 2 chooses between **L** and **R** to maximize their second payoff number.\n*   **If Player 1 chooses U:** Player 2 compares $L$ (payoff 2) vs. $R$ (payoff 0). Since $2 > 0$, Player 2 chooses **L**.\n*   **If Player 1 chooses D:** Player 2 compares $L$ (payoff 5) vs. $R$ (payoff 9). Since $9 > 5$, Player 2 chooses **R**.\n\n**3. Identify Mutual Best Responses:**\nWe look for the cell where both players are playing their best response to the other.\n*   **Cell (U, L):** Player 1 wants to switch to D. (Not an equilibrium)\n*   **Cell (U, R):** Player 2 wants to switch to L. (Not an equilibrium)\n*   **Cell (D, L):** Player 2 wants to switch to R. (Not an equilibrium)\n*   **Cell (D, R):** Player 1 is playing their best response to R (U vs D $\\to$ D is not best, wait: $8>0$, so best is U). Let's re-verify.\n    *   At **(D, R)**: Player 1 gets 0. If they switch to U, they get 8. So Player 1 wants to switch.\n    *   Let's re-evaluate the intersection of best responses derived in steps 1 and 2.\n        *   If P2 plays L, P1 plays D. (Outcome: D, L). But at (D, L), P2 prefers R.\n        *   If P2 plays R, P1 plays U. (Outcome: U, R). But at (U, R), P2 prefers L.\n        *   If P1 plays U, P2 plays L. (Outcome: U, L). But at (U, L), P1 prefers D.\n        *   If P1 plays D, P2 plays R. (Outcome: D, R). But at (D, R), P1 prefers U.\n\n**Correction/Re-evaluation:**\nLet's look at the cycle again carefully.\n*   **Best Response to L:** P1 chooses D.\n*   **Best Response to R:** P1 chooses U.\n*   **Best Response to U:** P2 chooses L.\n*   **Best Response to D:** P2 chooses R.\n\nLet's check the four outcomes for stability:\n1.  **(U, L)**: P1 gets 1. Switching to D gives 4. P1 deviates."
+        },
+        {
+          "id": "stress_eq0_0012",
+          "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (3,0)   (1,2)\nD    (1,2)   (6,1)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+          "gold": [],
+          "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice. A Nash equilibrium occurs where both players are playing their best response simultaneously.\n\n### Step-by-Step Deduction\n\n**1. Analyze Player 1's Best Responses:**\nPlayer 1 chooses between **U** and **D** to maximize their first payoff number.\n*   **If Player 2 chooses L:** Player 1 compares $U$ (payoff 3) vs. $D$ (payoff 1). Since $3 > 1$, Player 1 chooses **U**.\n*   **If Player 2 chooses R:** Player 1 compares $U$ (payoff 1) vs. $D$ (payoff 6). Since $6 > 1$, Player 1 chooses **D**.\n\n**2. Analyze Player 2's Best Responses:**\nPlayer 2 chooses between **L** and **R** to maximize their second payoff number.\n*   **If Player 1 chooses U:** Player 2 compares $L$ (payoff 0) vs. $R$ (payoff 2). Since $2 > 0$, Player 2 chooses **R**.\n*   **If Player 1 chooses D:** Player 2 compares $L$ (payoff 2) vs. $R$ (payoff 1). Since $2 > 1$, Player 2 chooses **L**.\n\n**3. Identify Mutual Best Responses:**\nWe look for the cell where both players are playing their best response to the other.\n*   **(U, L):** Player 1 is happy, but Player 2 wants to switch to R. (Not an equilibrium)\n*   **(U, R):** Player 1 wants to switch to D, but Player 2 is happy. (Not an equilibrium)\n*   **(D, L):** Player 1 wants to switch to U, but Player 2 is happy. (Not an equilibrium)\n*   **(D, R):** Player 1 is happy (6 is best response to R), and Player 2 is happy (1 is best response to D).\n\n### Conclusion\n\nThe only pure-strategy Nash equilibrium is:\n\n**(D, R)** with payoffs **(6, 1)**."
+        }
+      ]
+    },
+    "runs": [
+      {
+        "name": "qwen36_27b_sft_5000",
+        "report_path": "reports/stress_qwen36_27b_sft_5000_seed314159_report.json",
+        "exact_match_accuracy": 1.0,
+        "delta_vs_baseline": 0.18400000000000005,
+        "num_correct": 250,
+        "num_incorrect": 0,
+        "accuracy_by_number_of_equilibria": {
+          "0": {
+            "total": 50,
+            "correct": 50,
+            "accuracy": 1.0
+          },
+          "1": {
+            "total": 50,
+            "correct": 50,
+            "accuracy": 1.0
+          },
+          "2": {
+            "total": 50,
+            "correct": 50,
+            "accuracy": 1.0
+          },
+          "3": {
+            "total": 50,
+            "correct": 50,
+            "accuracy": 1.0
+          },
+          "4": {
+            "total": 50,
+            "correct": 50,
+            "accuracy": 1.0
+          }
+        },
+        "failed_examples_preview": []
+      }
+    ],
+    "best_run": {
+      "name": "qwen36_27b_sft_5000",
+      "report_path": "reports/stress_qwen36_27b_sft_5000_seed314159_report.json",
+      "exact_match_accuracy": 1.0,
+      "delta_vs_baseline": 0.18400000000000005,
+      "num_correct": 250,
+      "num_incorrect": 0,
+      "accuracy_by_number_of_equilibria": {
+        "0": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        },
+        "1": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        },
+        "2": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        },
+        "3": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        },
+        "4": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        }
+      },
+      "failed_examples_preview": []
+    }
   }
 }

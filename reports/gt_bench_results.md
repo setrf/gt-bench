@@ -61,6 +61,40 @@ Confirmation SHA-256: `d9874764ce086f23065568ba5066745e0a879955a924e8a257d2f3b1f
 | baseline | 89.20% | 892 | 108 | 0.00 pp |
 | qwen36_27b_sft_5000 | 99.70% | 997 | 3 | +10.50 pp |
 
+## Balanced Stress Evaluation
+
+Stress set: `data/stress/tie_stress_seed314159.jsonl`
+Stress SHA-256: `9c298c756940bb57189f114da491f8b56b57dd9bedddefe82e61c82669f94340`
+
+The stress set contains equal numbers of examples with 0, 1, 2, 3, and 4 pure-strategy equilibria.
+
+| Run | Accuracy | Correct | Incorrect | Delta vs baseline |
+| --- | ---: | ---: | ---: | ---: |
+| baseline | 81.60% | 204 | 46 | 0.00 pp |
+| qwen36_27b_sft_5000 | 100.00% | 250 | 0 | +18.40 pp |
+
+## Stress Accuracy By Number Of Equilibria
+
+### baseline
+
+| Equilibria | Total | Correct | Accuracy |
+| ---: | ---: | ---: | ---: |
+| 0 | 50 | 16 | 32.00% |
+| 1 | 50 | 49 | 98.00% |
+| 2 | 50 | 50 | 100.00% |
+| 3 | 50 | 40 | 80.00% |
+| 4 | 50 | 49 | 98.00% |
+
+### qwen36_27b_sft_5000
+
+| Equilibria | Total | Correct | Accuracy |
+| ---: | ---: | ---: | ---: |
+| 0 | 50 | 50 | 100.00% |
+| 1 | 50 | 50 | 100.00% |
+| 2 | 50 | 50 | 100.00% |
+| 3 | 50 | 50 | 100.00% |
+| 4 | 50 | 50 | 100.00% |
+
 ## Takeaway
 
 Best fine-tuned run: `qwen36_27b_sft_5000` at 99.60%.

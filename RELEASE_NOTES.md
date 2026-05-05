@@ -1,5 +1,11 @@
 # Release Notes
 
+## Unreleased
+
+- Adds a balanced stress-set generator for equilibrium-count buckets.
+- Evaluates the baseline and best 5000-example SFT checkpoint on a 250-example stress set.
+- Improves stress-set exact-match accuracy from 81.60% baseline to 100.00% after fine-tuning.
+
 ## v0.1-tinker-demo
 
 GT-Bench v0.1 is a minimal, reproducible Tinker fine-tuning demo for one task: solve 2x2 pure-strategy Nash equilibria.

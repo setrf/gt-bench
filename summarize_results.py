@@ -72,6 +72,16 @@ def add_confirmation_summary(
     runs: list[tuple[str, Path]],
     gold_path: Path | None,
 ) -> None:
+    add_extra_summary(summary, "confirmation", baseline_path, runs, gold_path)
+
+
+def add_extra_summary(
+    summary: dict[str, Any],
+    key: str,
+    baseline_path: Path | None,
+    runs: list[tuple[str, Path]],
+    gold_path: Path | None,
+) -> None:
     if baseline_path is None:
         return
 
@@ -94,7 +104,7 @@ def add_confirmation_summary(
             }
         )
 
-    summary["confirmation"] = {
+    summary[key] = {
         "gold_path": str(gold_path) if gold_path else None,
         "gold_sha256": sha256_file(gold_path) if gold_path and gold_path.exists() else None,
         "baseline_report": str(baseline_path),
@@ -129,6 +139,28 @@ def append_accuracy_table(lines: list[str], baseline: dict[str, Any], runs: list
         )
 
 
+def append_bucket_tables(
+    lines: list[str],
+    heading: str,
+    baseline: dict[str, Any],
+    runs: list[dict[str, Any]],
+) -> None:
+    lines.extend(["", f"## {heading}", ""])
+    for label, report in [("baseline", baseline), *[(run["name"], run) for run in runs]]:
+        lines.append(f"### {label}")
+        lines.append("")
+        lines.append("| Equilibria | Total | Correct | Accuracy |")
+        lines.append("| ---: | ---: | ---: | ---: |")
+        buckets = report["accuracy_by_number_of_equilibria"]
+        for count in sorted(buckets, key=lambda key: int(key)):
+            bucket = buckets[count]
+            lines.append(
+                f"| {count} | {bucket['total']} | {bucket['correct']} | "
+                f"{pct(float(bucket['accuracy']))} |"
+            )
+        lines.append("")
+
+
 def write_markdown(path: Path, summary: dict[str, Any]) -> None:
     lines = [
         "# GT-Bench Qwen3.6-27B Results",
@@ -148,21 +180,7 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
 
     baseline = summary["baseline"]
     append_accuracy_table(lines, baseline, summary["runs"])
-
-    lines.extend(["", "## Accuracy By Number Of Equilibria", ""])
-    for label, report in [("baseline", baseline), *[(run["name"], run) for run in summary["runs"]]]:
-        lines.append(f"### {label}")
-        lines.append("")
-        lines.append("| Equilibria | Total | Correct | Accuracy |")
-        lines.append("| ---: | ---: | ---: | ---: |")
-        buckets = report["accuracy_by_number_of_equilibria"]
-        for count in sorted(buckets, key=lambda key: int(key)):
-            bucket = buckets[count]
-            lines.append(
-                f"| {count} | {bucket['total']} | {bucket['correct']} | "
-                f"{pct(float(bucket['accuracy']))} |"
-            )
-        lines.append("")
+    append_bucket_tables(lines, "Accuracy By Number Of Equilibria", baseline, summary["runs"])
 
     confirmation = summary.get("confirmation")
     if confirmation:
@@ -174,6 +192,27 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
         lines.append("")
         append_accuracy_table(lines, confirmation["baseline"], confirmation["runs"])
         lines.append("")
+
+    stress = summary.get("stress")
+    if stress:
+        lines.extend(["## Balanced Stress Evaluation", ""])
+        if stress.get("gold_path"):
+            lines.append(f"Stress set: `{stress['gold_path']}`")
+        if stress.get("gold_sha256"):
+            lines.append(f"Stress SHA-256: `{stress['gold_sha256']}`")
+        lines.append("")
+        lines.append(
+            "The stress set contains equal numbers of examples with 0, 1, 2, 3, and 4 "
+            "pure-strategy equilibria."
+        )
+        lines.append("")
+        append_accuracy_table(lines, stress["baseline"], stress["runs"])
+        append_bucket_tables(
+            lines,
+            "Stress Accuracy By Number Of Equilibria",
+            stress["baseline"],
+            stress["runs"],
+        )
 
     best = summary.get("best_run")
     if best:
@@ -220,6 +259,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--confirmation-gold", type=Path, default=None)
     parser.add_argument("--confirmation-baseline", type=Path, default=None)
     parser.add_argument("--confirmation-run", action="append", type=parse_named_report, default=[])
+    parser.add_argument("--stress-gold", type=Path, default=None)
+    parser.add_argument("--stress-baseline", type=Path, default=None)
+    parser.add_argument("--stress-run", action="append", type=parse_named_report, default=[])
     parser.add_argument("--out-json", type=Path, default=Path("reports/gt_bench_results.json"))
     parser.add_argument("--out-md", type=Path, default=Path("reports/gt_bench_results.md"))
     return parser.parse_args(argv)
@@ -234,6 +276,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         args.confirmation_run,
         args.confirmation_gold,
     )
+    add_extra_summary(summary, "stress", args.stress_baseline, args.stress_run, args.stress_gold)
     args.out_json.parent.mkdir(parents=True, exist_ok=True)
     args.out_json.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     write_markdown(args.out_md, summary)

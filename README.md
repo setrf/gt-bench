@@ -56,6 +56,16 @@ This writes:
 
 Small sample files are included in `examples/`.
 
+Generate a balanced stress set with equal numbers of 0-, 1-, 2-, 3-, and 4-equilibrium games:
+
+```bash
+.venv/bin/python generate_stress_set.py \
+  --per-count 50 \
+  --seed 314159 \
+  --out data/stress/tie_stress_seed314159.jsonl \
+  --chat-out data/stress/tie_stress_seed314159_chat.jsonl
+```
+
 ## How to fine-tune
 
 Use `data/train_chat.jsonl` as the fine-tuning file on Tinker. Each row contains a user message with the matrix prompt and an assistant message with:
@@ -193,6 +203,12 @@ Then summarize the reports:
   --run qwen36_27b_sft_0250=reports/qwen36_27b_sft_0250_report.json \
   --run qwen36_27b_sft_1000=reports/qwen36_27b_sft_1000_report.json \
   --run qwen36_27b_sft_5000=reports/qwen36_27b_sft_5000_report.json \
+  --confirmation-gold data/confirm/confirm_seed20260505.jsonl \
+  --confirmation-baseline reports/confirm_baseline_qwen36_27b_seed20260505_report.json \
+  --confirmation-run qwen36_27b_sft_5000=reports/confirm_qwen36_27b_sft_5000_seed20260505_report.json \
+  --stress-gold data/stress/tie_stress_seed314159.jsonl \
+  --stress-baseline reports/stress_baseline_qwen36_27b_seed314159_report.json \
+  --stress-run qwen36_27b_sft_5000=reports/stress_qwen36_27b_sft_5000_seed314159_report.json \
   --out-json reports/gt_bench_results.json \
   --out-md reports/gt_bench_results.md
 ```
@@ -213,6 +229,8 @@ On the canonical 500-example held-out test split, `Qwen/Qwen3.6-27B` improved fr
 | 5000-example SFT | 99.60% | 498 | 2 | +12.00 pp |
 
 On an independent 1000-example confirmation set generated with seed `20260505`, the same 5000-example fine-tuned checkpoint improved from 89.20% baseline accuracy to 99.70%.
+
+On a balanced 250-example stress set with 50 examples in each equilibrium-count bucket from 0 through 4, the same checkpoint improved from 81.60% baseline accuracy to 100.00%.
 
 The full report is in `reports/gt_bench_results.md`. For the research narrative and reproducibility details, see `RESULTS.md`, `REPRODUCIBILITY.md`, and `FAILURE_ANALYSIS.md`.
 

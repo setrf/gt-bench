@@ -21,6 +21,14 @@ In these cases, the model often identifies a true equilibrium but adds one extra
 
 The confirmation run had the same qualitative failure mode: over-predicting extra equilibria in tie-heavy cases.
 
+## Balanced Stress Set
+
+I added a balanced 250-example stress set with 50 games each containing 0, 1, 2, 3, and 4 pure-strategy equilibria.
+
+On this set, the baseline solved 204 of 250 examples. Its weakest bucket was zero-equilibrium games: 16 of 50 correct. The 5000-example fine-tuned checkpoint solved all 250 examples, including all 50 zero-equilibrium games and all 50 four-equilibrium tie cases.
+
+This makes the failure story sharper: the base model often wants every 2x2 game to have at least one pure equilibrium, while the fine-tuned model has learned the exact mutual-best-response rule much more reliably.
+
 ## Implication
 
-For this benchmark, the next targeted improvement would be more tie-heavy training examples or a balanced evaluation slice by number of equilibria. I would not expand the game-theory scope until this residual edge case is handled.
+For this benchmark, the next targeted improvement would be to add a small adversarial tie-heavy slice to training and keep the balanced stress set as a regression test. I would not expand the game-theory scope until this residual edge case is handled.

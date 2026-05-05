@@ -1,6 +1,7 @@
 import json
 
 from make_sweep_splits import write_sweep_splits
+from generate_stress_set import generate_balanced_examples
 
 
 def test_write_sweep_splits_uses_first_n_rows(tmp_path, monkeypatch) -> None:
@@ -30,3 +31,20 @@ def test_write_sweep_splits_uses_first_n_rows(tmp_path, monkeypatch) -> None:
     )
     assert first_sweep.count("\n") == 2
     assert json.loads(first_sweep.splitlines()[0]) == rows[0]
+
+
+def test_generate_balanced_examples_hits_requested_counts() -> None:
+    examples = generate_balanced_examples(
+        per_count=2,
+        seed=123,
+        counts=[0, 1, 2],
+        max_attempts=10_000,
+    )
+
+    counts = [
+        len(example["metadata"]["pure_nash_equilibria"])  # type: ignore[index]
+        for example in examples
+    ]
+    assert counts.count(0) == 2
+    assert counts.count(1) == 2
+    assert counts.count(2) == 2

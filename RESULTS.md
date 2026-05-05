@@ -28,11 +28,22 @@ To check that the result was not a one-split fluke, I generated a fresh 1000-exa
 
 The confirmation result supports the main claim: targeted fine-tuning produced a large, measurable improvement on held-out 2x2 pure-strategy Nash equilibrium problems.
 
+## Balanced Stress Result
+
+To probe the hardest cases more directly, I generated a 250-example stress set with exactly 50 games each containing 0, 1, 2, 3, and 4 pure-strategy equilibria.
+
+| Run | Accuracy | Correct | Incorrect | Delta vs baseline |
+| --- | ---: | ---: | ---: | ---: |
+| baseline | 81.60% | 204 | 46 | 0.00 pp |
+| 5000-example SFT | 100.00% | 250 | 0 | +18.40 pp |
+
+The baseline remained strong on ordinary one- and two-equilibrium games but solved only 16 of 50 zero-equilibrium games. The 5000-example fine-tuned checkpoint solved every bucket: 0, 1, 2, 3, and 4 equilibria.
+
 ## Interpretation
 
 The strongest improvement is on zero-equilibrium cases. On the canonical split, the baseline solved only 9 of 45 zero-equilibrium games after parser correction, while the 1000-example and 5000-example fine-tunes solved all 45.
 
-The remaining failures in the best run are tie-heavy cases where the model over-predicts an extra equilibrium.
+The canonical and confirmation failures in the best run are tie-heavy cases where the model over-predicts an extra equilibrium. The balanced stress result suggests that this residual weakness is rare, but still worth tracking because it is exactly the kind of edge case a narrow formal benchmark can expose.
 
 ## What This Does And Does Not Show
 

@@ -56,6 +56,27 @@ Confirmation hash:
 d9874764ce086f23065568ba5066745e0a879955a924e8a257d2f3b1f82a0cd8  data/confirm/confirm_seed20260505.jsonl
 ```
 
+## Balanced Stress Data
+
+Generate the balanced stress set:
+
+```bash
+.venv/bin/python generate_stress_set.py \
+  --per-count 50 \
+  --seed 314159 \
+  --out data/stress/tie_stress_seed314159.jsonl \
+  --chat-out data/stress/tie_stress_seed314159_chat.jsonl
+```
+
+This creates 250 examples: 50 each with 0, 1, 2, 3, and 4 pure-strategy equilibria.
+
+Stress set hashes:
+
+```text
+9c298c756940bb57189f114da491f8b56b57dd9bedddefe82e61c82669f94340  data/stress/tie_stress_seed314159.jsonl
+d5b397b1078794609016f1f6fd741f0ba3e1df9ca95eb0c356303a88f596e953  data/stress/tie_stress_seed314159_chat.jsonl
+```
+
 ## Training
 
 The main sweep used:
@@ -93,6 +114,31 @@ Score predictions with:
 .venv/bin/python score_predictions.py --gold data/test.jsonl --pred predictions/qwen36_27b_sft_5000.jsonl --out reports/qwen36_27b_sft_5000_report.json
 ```
 
+Run and score the stress evaluations with:
+
+```bash
+.venv/bin/python run_tinker_predict.py \
+  --config bench_config.json \
+  --gold data/stress/tie_stress_seed314159.jsonl \
+  --out predictions/stress_baseline_qwen36_27b_seed314159.jsonl
+
+.venv/bin/python score_predictions.py \
+  --gold data/stress/tie_stress_seed314159.jsonl \
+  --pred predictions/stress_baseline_qwen36_27b_seed314159.jsonl \
+  --out reports/stress_baseline_qwen36_27b_seed314159_report.json
+
+.venv/bin/python run_tinker_predict.py \
+  --config bench_config.json \
+  --gold data/stress/tie_stress_seed314159.jsonl \
+  --model-path "tinker://..." \
+  --out predictions/stress_qwen36_27b_sft_5000_seed314159.jsonl
+
+.venv/bin/python score_predictions.py \
+  --gold data/stress/tie_stress_seed314159.jsonl \
+  --pred predictions/stress_qwen36_27b_sft_5000_seed314159.jsonl \
+  --out reports/stress_qwen36_27b_sft_5000_seed314159_report.json
+```
+
 Generate the public summary:
 
 ```bash
@@ -105,6 +151,9 @@ Generate the public summary:
   --confirmation-gold data/confirm/confirm_seed20260505.jsonl \
   --confirmation-baseline reports/confirm_baseline_qwen36_27b_seed20260505_report.json \
   --confirmation-run qwen36_27b_sft_5000=reports/confirm_qwen36_27b_sft_5000_seed20260505_report.json \
+  --stress-gold data/stress/tie_stress_seed314159.jsonl \
+  --stress-baseline reports/stress_baseline_qwen36_27b_seed314159_report.json \
+  --stress-run qwen36_27b_sft_5000=reports/stress_qwen36_27b_sft_5000_seed314159_report.json \
   --out-json reports/gt_bench_results.json \
   --out-md reports/gt_bench_results.md
 ```
