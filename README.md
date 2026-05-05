@@ -201,6 +201,19 @@ Then summarize the reports:
 
 The expected demonstration is an increase in exact-match accuracy on held-out 2x2 Nash equilibrium problems after fine-tuning.
 
+## Current Qwen3.6-27B result
+
+On the canonical 500-example held-out test split, `Qwen/Qwen3.6-27B` improved from 86.40% exact-match accuracy at baseline to 99.60% after LoRA SFT on 5000 synthetic examples.
+
+| Run | Accuracy | Correct | Incorrect | Delta vs baseline |
+| --- | ---: | ---: | ---: | ---: |
+| baseline | 86.40% | 432 | 68 | 0.00 pp |
+| 250-example SFT | 53.40% | 267 | 233 | -33.00 pp |
+| 1000-example SFT | 91.60% | 458 | 42 | +5.20 pp |
+| 5000-example SFT | 99.60% | 498 | 2 | +13.20 pp |
+
+The full report is in `reports/gt_bench_results.md`.
+
 ## Limitations
 
 GT-Bench is deliberately narrow. It uses synthetic data, covers pure equilibria only, and does not prove broad game-theory reasoning improvement.

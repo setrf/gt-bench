@@ -43,6 +43,7 @@ def build_summary(config: dict[str, Any], baseline_path: Path, runs: list[tuple[
                 "num_correct": report["num_correct"],
                 "num_incorrect": report["num_incorrect"],
                 "accuracy_by_number_of_equilibria": report["accuracy_by_number_of_equilibria"],
+                "failed_examples_preview": report.get("failed_examples", [])[:10],
             }
         )
 
@@ -58,6 +59,7 @@ def build_summary(config: dict[str, Any], baseline_path: Path, runs: list[tuple[
             "num_correct": baseline["num_correct"],
             "num_incorrect": baseline["num_incorrect"],
             "accuracy_by_number_of_equilibria": baseline["accuracy_by_number_of_equilibria"],
+            "failed_examples_preview": baseline.get("failed_examples", [])[:10],
         },
         "runs": run_summaries,
         "best_run": best,
@@ -120,6 +122,19 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
                 "",
             ]
         )
+        failures = best.get("failed_examples_preview", [])
+        if failures:
+            lines.extend(["## Best Run Failure Preview", ""])
+            for failure in failures:
+                prediction = str(failure.get("prediction", "")).splitlines()[0]
+                lines.extend(
+                    [
+                        f"- `{failure.get('id')}`",
+                        f"  - Gold: `{failure.get('gold')}`",
+                        f"  - Prediction: {prediction}",
+                    ]
+                )
+            lines.append("")
     lines.extend(
         [
             "## Limitations",
