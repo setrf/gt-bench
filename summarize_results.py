@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -26,26 +27,106 @@ def pct(value: float) -> str:
     return f"{value * 100:.2f}%"
 
 
+def ci_text(row: dict[str, Any]) -> str:
+    ci = row["accuracy_ci_95"]
+    return f"{pct(float(ci['lower']))}-{pct(float(ci['upper']))}"
+
+
+def binomial_cdf(k: int, n: int, p: float) -> float:
+    return sum(math.comb(n, i) * p**i * (1 - p) ** (n - i) for i in range(k + 1))
+
+
+def binomial_sf(k: int, n: int, p: float) -> float:
+    return sum(math.comb(n, i) * p**i * (1 - p) ** (n - i) for i in range(k, n + 1))
+
+
+def exact_binomial_ci(k: int, n: int, alpha: float = 0.05) -> dict[str, float | str]:
+    if n <= 0:
+        raise ValueError("n must be positive")
+
+    target = alpha / 2
+    lower = 0.0
+    upper = 1.0
+
+    if k > 0:
+        lo, hi = 0.0, 1.0
+        for _ in range(80):
+            mid = (lo + hi) / 2
+            if binomial_sf(k, n, mid) < target:
+                lo = mid
+            else:
+                hi = mid
+        lower = hi
+
+    if k < n:
+        lo, hi = 0.0, 1.0
+        for _ in range(80):
+            mid = (lo + hi) / 2
+            if binomial_cdf(k, n, mid) > target:
+                lo = mid
+            else:
+                hi = mid
+        upper = hi
+
+    return {
+        "method": "clopper_pearson",
+        "confidence": 1 - alpha,
+        "lower": lower,
+        "upper": upper,
+    }
+
+
+def bucket_deltas(
+    buckets: dict[str, dict[str, float | int]],
+    baseline_buckets: dict[str, dict[str, float | int]],
+) -> dict[str, float]:
+    deltas: dict[str, float] = {}
+    for count in sorted(set(buckets) | set(baseline_buckets), key=int):
+        if count not in buckets or count not in baseline_buckets:
+            continue
+        deltas[count] = float(buckets[count]["accuracy"]) - float(baseline_buckets[count]["accuracy"])
+    return deltas
+
+
+def summarize_report(
+    report: dict[str, Any],
+    base_acc: float | None = None,
+    base_buckets: dict[str, dict[str, float | int]] | None = None,
+) -> dict[str, Any]:
+    total = int(report["num_correct"]) + int(report["num_incorrect"])
+    acc = float(report["exact_match_accuracy"])
+    summary = {
+        "exact_match_accuracy": acc,
+        "accuracy_ci_95": exact_binomial_ci(int(report["num_correct"]), total),
+        "num_correct": report["num_correct"],
+        "num_incorrect": report["num_incorrect"],
+        "total_examples": total,
+        "accuracy_by_number_of_equilibria": report["accuracy_by_number_of_equilibria"],
+        "failed_examples_preview": report.get("failed_examples", [])[:10],
+    }
+    if base_acc is not None:
+        summary["delta_vs_baseline"] = acc - base_acc
+        summary["delta_pp_vs_baseline"] = (acc - base_acc) * 100
+    if base_buckets is not None:
+        summary["equilibrium_count_delta_vs_baseline"] = bucket_deltas(
+            report["accuracy_by_number_of_equilibria"],
+            base_buckets,
+        )
+    return summary
+
+
 def build_summary(config: dict[str, Any], baseline_path: Path, runs: list[tuple[str, Path]]) -> dict[str, Any]:
     baseline = read_report(baseline_path)
     run_summaries = []
     base_acc = float(baseline["exact_match_accuracy"])
+    base_buckets = baseline["accuracy_by_number_of_equilibria"]
 
     for name, path in runs:
         report = read_report(path)
-        acc = float(report["exact_match_accuracy"])
-        run_summaries.append(
-            {
-                "name": name,
-                "report_path": str(path),
-                "exact_match_accuracy": acc,
-                "delta_vs_baseline": acc - base_acc,
-                "num_correct": report["num_correct"],
-                "num_incorrect": report["num_incorrect"],
-                "accuracy_by_number_of_equilibria": report["accuracy_by_number_of_equilibria"],
-                "failed_examples_preview": report.get("failed_examples", [])[:10],
-            }
-        )
+        run_summary = summarize_report(report, base_acc, base_buckets)
+        run_summary["name"] = name
+        run_summary["report_path"] = str(path)
+        run_summaries.append(run_summary)
 
     best = max(run_summaries, key=lambda row: row["exact_match_accuracy"], default=None)
     test_path = Path(config["data"]["test"])
@@ -54,13 +135,7 @@ def build_summary(config: dict[str, Any], baseline_path: Path, runs: list[tuple[
         "baseline_report": str(baseline_path),
         "test_path": str(test_path),
         "test_sha256": sha256_file(test_path) if test_path.exists() else None,
-        "baseline": {
-            "exact_match_accuracy": base_acc,
-            "num_correct": baseline["num_correct"],
-            "num_incorrect": baseline["num_incorrect"],
-            "accuracy_by_number_of_equilibria": baseline["accuracy_by_number_of_equilibria"],
-            "failed_examples_preview": baseline.get("failed_examples", [])[:10],
-        },
+        "baseline": summarize_report(baseline, base_acc, base_buckets),
         "runs": run_summaries,
         "best_run": best,
     }
@@ -87,34 +162,20 @@ def add_extra_summary(
 
     baseline = read_report(baseline_path)
     base_acc = float(baseline["exact_match_accuracy"])
+    base_buckets = baseline["accuracy_by_number_of_equilibria"]
     run_summaries = []
     for name, path in runs:
         report = read_report(path)
-        acc = float(report["exact_match_accuracy"])
-        run_summaries.append(
-            {
-                "name": name,
-                "report_path": str(path),
-                "exact_match_accuracy": acc,
-                "delta_vs_baseline": acc - base_acc,
-                "num_correct": report["num_correct"],
-                "num_incorrect": report["num_incorrect"],
-                "accuracy_by_number_of_equilibria": report["accuracy_by_number_of_equilibria"],
-                "failed_examples_preview": report.get("failed_examples", [])[:10],
-            }
-        )
+        run_summary = summarize_report(report, base_acc, base_buckets)
+        run_summary["name"] = name
+        run_summary["report_path"] = str(path)
+        run_summaries.append(run_summary)
 
     summary[key] = {
         "gold_path": str(gold_path) if gold_path else None,
         "gold_sha256": sha256_file(gold_path) if gold_path and gold_path.exists() else None,
         "baseline_report": str(baseline_path),
-        "baseline": {
-            "exact_match_accuracy": base_acc,
-            "num_correct": baseline["num_correct"],
-            "num_incorrect": baseline["num_incorrect"],
-            "accuracy_by_number_of_equilibria": baseline["accuracy_by_number_of_equilibria"],
-            "failed_examples_preview": baseline.get("failed_examples", [])[:10],
-        },
+        "baseline": summarize_report(baseline, base_acc, base_buckets),
         "runs": run_summaries,
         "best_run": max(run_summaries, key=lambda row: row["exact_match_accuracy"], default=None),
     }
@@ -123,19 +184,19 @@ def add_extra_summary(
 def append_accuracy_table(lines: list[str], baseline: dict[str, Any], runs: list[dict[str, Any]]) -> None:
     lines.extend(
         [
-            "| Run | Accuracy | Correct | Incorrect | Delta vs baseline |",
-            "| --- | ---: | ---: | ---: | ---: |",
+            "| Run | Accuracy | 95% exact binomial CI | Correct | Incorrect | Delta vs baseline |",
+            "| --- | ---: | ---: | ---: | ---: | ---: |",
         ]
     )
     lines.append(
         f"| baseline | {pct(float(baseline['exact_match_accuracy']))} | "
-        f"{baseline['num_correct']} | {baseline['num_incorrect']} | 0.00 pp |"
+        f"{ci_text(baseline)} | {baseline['num_correct']} | {baseline['num_incorrect']} | 0.00 pp |"
     )
     for run in runs:
         delta_pp = float(run["delta_vs_baseline"]) * 100
         lines.append(
             f"| {run['name']} | {pct(float(run['exact_match_accuracy']))} | "
-            f"{run['num_correct']} | {run['num_incorrect']} | {delta_pp:+.2f} pp |"
+            f"{ci_text(run)} | {run['num_correct']} | {run['num_incorrect']} | {delta_pp:+.2f} pp |"
         )
 
 

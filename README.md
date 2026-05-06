@@ -6,6 +6,8 @@ GT-Bench is a minimal Tinker fine-tuning benchmark for strategic reasoning. It g
 
 The repository is intentionally compact: one task, one exact solver, one dataset generator, one scorer, and focused tests.
 
+For the consolidated research narrative, see `TECHNICAL_REPORT.md`.
+
 ## My context
 
 This project is by Mert Gulsun, a UC Berkeley master's student and Thinking Machines Lab Tinker research grant recipient.
@@ -213,6 +215,12 @@ Then summarize the reports:
   --out-md reports/gt_bench_results.md
 ```
 
+Generate static SVG figures from the public summary:
+
+```bash
+.venv/bin/python plot_results.py --summary reports/gt_bench_results.json --out-dir reports/figures
+```
+
 ## Expected result
 
 The expected demonstration is an increase in exact-match accuracy on held-out 2x2 Nash equilibrium problems after fine-tuning.
@@ -233,6 +241,14 @@ On an independent 1000-example confirmation set generated with seed `20260505`, 
 On a balanced 250-example stress set with 50 examples in each equilibrium-count bucket from 0 through 4, the same checkpoint improved from 81.60% baseline accuracy to 100.00%.
 
 The full report is in `reports/gt_bench_results.md`. For the research narrative and reproducibility details, see `RESULTS.md`, `REPRODUCIBILITY.md`, and `FAILURE_ANALYSIS.md`.
+
+## Result figures
+
+![Canonical test accuracy](reports/figures/accuracy_main.svg)
+
+![Confirmation and stress accuracy](reports/figures/accuracy_confirm_stress.svg)
+
+![Stress accuracy by number of equilibria](reports/figures/accuracy_by_equilibria.svg)
 
 ## Limitations
 

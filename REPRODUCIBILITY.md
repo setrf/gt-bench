@@ -157,3 +157,11 @@ Generate the public summary:
   --out-json reports/gt_bench_results.json \
   --out-md reports/gt_bench_results.md
 ```
+
+The summary includes exact-match accuracy, percentage-point deltas, per-equilibrium-count deltas in JSON, and 95% exact binomial confidence intervals.
+
+Generate the public figures:
+
+```bash
+.venv/bin/python plot_results.py --summary reports/gt_bench_results.json --out-dir reports/figures
+```

@@ -1,5 +1,11 @@
 # Release Notes
 
+## v0.1.2-artifact-polish
+
+- Adds static SVG result figures generated from `reports/gt_bench_results.json`.
+- Adds exact binomial confidence intervals and per-bucket deltas to the public summary.
+- Adds a technical report and artifact checklist for easier public review and reproduction.
+
 ## v0.1.1-stress-eval
 
 - Adds a balanced stress-set generator for equilibrium-count buckets.

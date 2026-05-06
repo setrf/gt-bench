@@ -5,8 +5,15 @@
   "test_sha256": "a9af74346a7b67cc13952fc858570dee6d03e4248b04e830c42f8c1bb935d219",
   "baseline": {
     "exact_match_accuracy": 0.876,
+    "accuracy_ci_95": {
+      "method": "clopper_pearson",
+      "confidence": 0.95,
+      "lower": 0.8438707543486276,
+      "upper": 0.9035937168491702
+    },
     "num_correct": 438,
     "num_incorrect": 62,
+    "total_examples": 500,
     "accuracy_by_number_of_equilibria": {
       "2": {
         "total": 141,
@@ -123,16 +130,28 @@
         "gold": [],
         "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 7) vs. $D$ (payoff 9). Since $9 > 7$, Player 1 chooses **D**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 4) vs. $D$ (payoff 3). Since $4 > 3$, Player 1 chooses **U**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 6) vs. $R$ (payoff 2). Since $6 > 2$, Player 2 chooses **L**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 8) vs. $R$ (payoff 9). Since $9 > 8$, Player 2 chooses **R**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   At **(U, L)**: Player 1 wants to switch to D. (Not an equilibrium)\n*   At **(D, R)**: Player 1 chooses U (best response to R), and Player 2 chooses R (best response to D). Neither player has an incentive to deviate.\n\n**Conclusion**\nThe only pure-strategy Nash equilibrium is **(D, R)**."
       }
-    ]
+    ],
+    "delta_vs_baseline": 0.0,
+    "delta_pp_vs_baseline": 0.0,
+    "equilibrium_count_delta_vs_baseline": {
+      "0": 0.0,
+      "1": 0.0,
+      "2": 0.0,
+      "3": 0.0
+    }
   },
   "runs": [
     {
-      "name": "qwen36_27b_sft_0250",
-      "report_path": "reports/qwen36_27b_sft_0250_report.json",
       "exact_match_accuracy": 0.534,
-      "delta_vs_baseline": -0.34199999999999997,
+      "accuracy_ci_95": {
+        "method": "clopper_pearson",
+        "confidence": 0.95,
+        "lower": 0.4891843832932963,
+        "upper": 0.5784113729613446
+      },
       "num_correct": 267,
       "num_incorrect": 233,
+      "total_examples": 500,
       "accuracy_by_number_of_equilibria": {
         "2": {
           "total": 141,
@@ -290,15 +309,29 @@
           ],
           "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is D. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
         }
-      ]
+      ],
+      "delta_vs_baseline": -0.34199999999999997,
+      "delta_pp_vs_baseline": -34.199999999999996,
+      "equilibrium_count_delta_vs_baseline": {
+        "0": -0.2,
+        "1": -0.18506493506493504,
+        "2": -0.7092198581560283,
+        "3": -0.8333333333333334
+      },
+      "name": "qwen36_27b_sft_0250",
+      "report_path": "reports/qwen36_27b_sft_0250_report.json"
     },
     {
-      "name": "qwen36_27b_sft_1000",
-      "report_path": "reports/qwen36_27b_sft_1000_report.json",
       "exact_match_accuracy": 0.916,
-      "delta_vs_baseline": 0.040000000000000036,
+      "accuracy_ci_95": {
+        "method": "clopper_pearson",
+        "confidence": 0.95,
+        "lower": 0.888151698754588,
+        "upper": 0.9387909413916524
+      },
       "num_correct": 458,
       "num_incorrect": 42,
+      "total_examples": 500,
       "accuracy_by_number_of_equilibria": {
         "2": {
           "total": 141,
@@ -448,15 +481,29 @@
           ],
           "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, R)."
         }
-      ]
+      ],
+      "delta_vs_baseline": 0.040000000000000036,
+      "delta_pp_vs_baseline": 4.0000000000000036,
+      "equilibrium_count_delta_vs_baseline": {
+        "0": 0.8,
+        "1": -0.01948051948051943,
+        "2": -0.07092198581560283,
+        "3": 0.0
+      },
+      "name": "qwen36_27b_sft_1000",
+      "report_path": "reports/qwen36_27b_sft_1000_report.json"
     },
     {
-      "name": "qwen36_27b_sft_5000",
-      "report_path": "reports/qwen36_27b_sft_5000_report.json",
       "exact_match_accuracy": 0.996,
-      "delta_vs_baseline": 0.12,
+      "accuracy_ci_95": {
+        "method": "clopper_pearson",
+        "confidence": 0.95,
+        "lower": 0.9856259214377997,
+        "upper": 0.99951521382371
+      },
       "num_correct": 498,
       "num_incorrect": 2,
+      "total_examples": 500,
       "accuracy_by_number_of_equilibria": {
         "2": {
           "total": 141,
@@ -510,16 +557,30 @@
           ],
           "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L), (U, R), and (D, L).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is U. Player 2's best responses to U are L and R, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, L), (U, R), and (D, L)."
         }
-      ]
+      ],
+      "delta_vs_baseline": 0.12,
+      "delta_pp_vs_baseline": 12.0,
+      "equilibrium_count_delta_vs_baseline": {
+        "0": 0.8,
+        "1": 0.06818181818181823,
+        "2": 0.014184397163120588,
+        "3": 0.16666666666666663
+      },
+      "name": "qwen36_27b_sft_5000",
+      "report_path": "reports/qwen36_27b_sft_5000_report.json"
     }
   ],
   "best_run": {
-    "name": "qwen36_27b_sft_5000",
-    "report_path": "reports/qwen36_27b_sft_5000_report.json",
     "exact_match_accuracy": 0.996,
-    "delta_vs_baseline": 0.12,
+    "accuracy_ci_95": {
+      "method": "clopper_pearson",
+      "confidence": 0.95,
+      "lower": 0.9856259214377997,
+      "upper": 0.99951521382371
+    },
     "num_correct": 498,
     "num_incorrect": 2,
+    "total_examples": 500,
     "accuracy_by_number_of_equilibria": {
       "2": {
         "total": 141,
@@ -573,7 +634,17 @@
         ],
         "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L), (U, R), and (D, L).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is U. Player 2's best responses to U are L and R, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, L), (U, R), and (D, L)."
       }
-    ]
+    ],
+    "delta_vs_baseline": 0.12,
+    "delta_pp_vs_baseline": 12.0,
+    "equilibrium_count_delta_vs_baseline": {
+      "0": 0.8,
+      "1": 0.06818181818181823,
+      "2": 0.014184397163120588,
+      "3": 0.16666666666666663
+    },
+    "name": "qwen36_27b_sft_5000",
+    "report_path": "reports/qwen36_27b_sft_5000_report.json"
   },
   "confirmation": {
     "gold_path": "data/confirm/confirm_seed20260505.jsonl",
@@ -581,8 +652,15 @@
     "baseline_report": "reports/confirm_baseline_qwen36_27b_seed20260505_report.json",
     "baseline": {
       "exact_match_accuracy": 0.892,
+      "accuracy_ci_95": {
+        "method": "clopper_pearson",
+        "confidence": 0.95,
+        "lower": 0.8710962391200021,
+        "upper": 0.9105609670175998
+      },
       "num_correct": 892,
       "num_incorrect": 108,
+      "total_examples": 1000,
       "accuracy_by_number_of_equilibria": {
         "1": {
           "total": 642,
@@ -676,16 +754,28 @@
           ],
           "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 9) vs. $D$ (payoff 4). Since $9 > 4$, Player 1 chooses **U**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 2) vs. $D$ (payoff 8). Since $8 > 2$, Player 1 chooses **D**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 2) vs. $R$ (payoff 8). Since $8 > 2$, Player 2 chooses **R**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 3) vs. $R$ (payoff 3). Since $3 = 3$, Player 2 is indifferent and can choose either **L** or **R**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing a best response to each other.\n1.  **Strategy Profile (U, R)**: Player 1 plays $U$ (best response to $R$) and Player 2 plays $R$ (best response to $U$). This is a Nash equilibrium.\n2.  **Strategy Profile (D, L)**: Player 1 plays $D$ (best response to $L$) and Player 2 plays $L$ (best response to $D$). This is a Nash equilibrium.\n3.  **Strategy Profile (D, R)**: Player 1 plays $D$ (best response to $R$) and Player 2 plays $R$ (best response to $D$). This is a Nash equilibrium.\n\n**Conclusion**\nThere are three pure-strategy Nash equilibria:\n1.  **(U, R)** with payoffs (2, 8)\n2.  **(D, L)** with payoffs (4, 3)\n3.  **(D, R)** with payoffs (8, 3)"
         }
-      ]
+      ],
+      "delta_vs_baseline": 0.0,
+      "delta_pp_vs_baseline": 0.0,
+      "equilibrium_count_delta_vs_baseline": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0
+      }
     },
     "runs": [
       {
-        "name": "qwen36_27b_sft_5000",
-        "report_path": "reports/confirm_qwen36_27b_sft_5000_seed20260505_report.json",
         "exact_match_accuracy": 0.997,
-        "delta_vs_baseline": 0.10499999999999998,
+        "accuracy_ci_95": {
+          "method": "clopper_pearson",
+          "confidence": 0.95,
+          "lower": 0.9912579767615217,
+          "upper": 0.9993809000683505
+        },
         "num_correct": 997,
         "num_incorrect": 3,
+        "total_examples": 1000,
         "accuracy_by_number_of_equilibria": {
           "1": {
             "total": 642,
@@ -758,16 +848,30 @@
             ],
             "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L), (U, R), (D, L), and (D, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best responses to R are U and D. Player 2's best responses to U are L and R, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, L), (U, R), (D, L), and (D, R)."
           }
-        ]
+        ],
+        "delta_vs_baseline": 0.10499999999999998,
+        "delta_pp_vs_baseline": 10.499999999999998,
+        "equilibrium_count_delta_vs_baseline": {
+          "0": 0.7021276595744681,
+          "1": 0.05763239875389403,
+          "2": 0.007843137254902044,
+          "3": 0.0
+        },
+        "name": "qwen36_27b_sft_5000",
+        "report_path": "reports/confirm_qwen36_27b_sft_5000_seed20260505_report.json"
       }
     ],
     "best_run": {
-      "name": "qwen36_27b_sft_5000",
-      "report_path": "reports/confirm_qwen36_27b_sft_5000_seed20260505_report.json",
       "exact_match_accuracy": 0.997,
-      "delta_vs_baseline": 0.10499999999999998,
+      "accuracy_ci_95": {
+        "method": "clopper_pearson",
+        "confidence": 0.95,
+        "lower": 0.9912579767615217,
+        "upper": 0.9993809000683505
+      },
       "num_correct": 997,
       "num_incorrect": 3,
+      "total_examples": 1000,
       "accuracy_by_number_of_equilibria": {
         "1": {
           "total": 642,
@@ -840,7 +944,17 @@
           ],
           "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L), (U, R), (D, L), and (D, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best responses to R are U and D. Player 2's best responses to U are L and R, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, L), (U, R), (D, L), and (D, R)."
         }
-      ]
+      ],
+      "delta_vs_baseline": 0.10499999999999998,
+      "delta_pp_vs_baseline": 10.499999999999998,
+      "equilibrium_count_delta_vs_baseline": {
+        "0": 0.7021276595744681,
+        "1": 0.05763239875389403,
+        "2": 0.007843137254902044,
+        "3": 0.0
+      },
+      "name": "qwen36_27b_sft_5000",
+      "report_path": "reports/confirm_qwen36_27b_sft_5000_seed20260505_report.json"
     }
   },
   "stress": {
@@ -849,8 +963,15 @@
     "baseline_report": "reports/stress_baseline_qwen36_27b_seed314159_report.json",
     "baseline": {
       "exact_match_accuracy": 0.816,
+      "accuracy_ci_95": {
+        "method": "clopper_pearson",
+        "confidence": 0.95,
+        "lower": 0.7623077889961897,
+        "upper": 0.8620265155538601
+      },
       "num_correct": 204,
       "num_incorrect": 46,
+      "total_examples": 250,
       "accuracy_by_number_of_equilibria": {
         "0": {
           "total": 50,
@@ -939,16 +1060,29 @@
           "gold": [],
           "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice. A Nash equilibrium occurs where both players are playing their best response simultaneously.\n\n### Step-by-Step Deduction\n\n**1. Analyze Player 1's Best Responses:**\nPlayer 1 chooses between **U** and **D** to maximize their first payoff number.\n*   **If Player 2 chooses L:** Player 1 compares $U$ (payoff 3) vs. $D$ (payoff 1). Since $3 > 1$, Player 1 chooses **U**.\n*   **If Player 2 chooses R:** Player 1 compares $U$ (payoff 1) vs. $D$ (payoff 6). Since $6 > 1$, Player 1 chooses **D**.\n\n**2. Analyze Player 2's Best Responses:**\nPlayer 2 chooses between **L** and **R** to maximize their second payoff number.\n*   **If Player 1 chooses U:** Player 2 compares $L$ (payoff 0) vs. $R$ (payoff 2). Since $2 > 0$, Player 2 chooses **R**.\n*   **If Player 1 chooses D:** Player 2 compares $L$ (payoff 2) vs. $R$ (payoff 1). Since $2 > 1$, Player 2 chooses **L**.\n\n**3. Identify Mutual Best Responses:**\nWe look for the cell where both players are playing their best response to the other.\n*   **(U, L):** Player 1 is happy, but Player 2 wants to switch to R. (Not an equilibrium)\n*   **(U, R):** Player 1 wants to switch to D, but Player 2 is happy. (Not an equilibrium)\n*   **(D, L):** Player 1 wants to switch to U, but Player 2 is happy. (Not an equilibrium)\n*   **(D, R):** Player 1 is happy (6 is best response to R), and Player 2 is happy (1 is best response to D).\n\n### Conclusion\n\nThe only pure-strategy Nash equilibrium is:\n\n**(D, R)** with payoffs **(6, 1)**."
         }
-      ]
+      ],
+      "delta_vs_baseline": 0.0,
+      "delta_pp_vs_baseline": 0.0,
+      "equilibrium_count_delta_vs_baseline": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0
+      }
     },
     "runs": [
       {
-        "name": "qwen36_27b_sft_5000",
-        "report_path": "reports/stress_qwen36_27b_sft_5000_seed314159_report.json",
         "exact_match_accuracy": 1.0,
-        "delta_vs_baseline": 0.18400000000000005,
+        "accuracy_ci_95": {
+          "method": "clopper_pearson",
+          "confidence": 0.95,
+          "lower": 0.9853528113643197,
+          "upper": 1.0
+        },
         "num_correct": 250,
         "num_incorrect": 0,
+        "total_examples": 250,
         "accuracy_by_number_of_equilibria": {
           "0": {
             "total": 50,
@@ -976,16 +1110,31 @@
             "accuracy": 1.0
           }
         },
-        "failed_examples_preview": []
+        "failed_examples_preview": [],
+        "delta_vs_baseline": 0.18400000000000005,
+        "delta_pp_vs_baseline": 18.400000000000006,
+        "equilibrium_count_delta_vs_baseline": {
+          "0": 0.6799999999999999,
+          "1": 0.020000000000000018,
+          "2": 0.0,
+          "3": 0.19999999999999996,
+          "4": 0.020000000000000018
+        },
+        "name": "qwen36_27b_sft_5000",
+        "report_path": "reports/stress_qwen36_27b_sft_5000_seed314159_report.json"
       }
     ],
     "best_run": {
-      "name": "qwen36_27b_sft_5000",
-      "report_path": "reports/stress_qwen36_27b_sft_5000_seed314159_report.json",
       "exact_match_accuracy": 1.0,
-      "delta_vs_baseline": 0.18400000000000005,
+      "accuracy_ci_95": {
+        "method": "clopper_pearson",
+        "confidence": 0.95,
+        "lower": 0.9853528113643197,
+        "upper": 1.0
+      },
       "num_correct": 250,
       "num_incorrect": 0,
+      "total_examples": 250,
       "accuracy_by_number_of_equilibria": {
         "0": {
           "total": 50,
@@ -1013,7 +1162,18 @@
           "accuracy": 1.0
         }
       },
-      "failed_examples_preview": []
+      "failed_examples_preview": [],
+      "delta_vs_baseline": 0.18400000000000005,
+      "delta_pp_vs_baseline": 18.400000000000006,
+      "equilibrium_count_delta_vs_baseline": {
+        "0": 0.6799999999999999,
+        "1": 0.020000000000000018,
+        "2": 0.0,
+        "3": 0.19999999999999996,
+        "4": 0.020000000000000018
+      },
+      "name": "qwen36_27b_sft_5000",
+      "report_path": "reports/stress_qwen36_27b_sft_5000_seed314159_report.json"
     }
   }
 }
