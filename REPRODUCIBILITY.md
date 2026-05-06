@@ -77,6 +77,27 @@ Stress set hashes:
 d5b397b1078794609016f1f6fd741f0ba3e1df9ca95eb0c356303a88f596e953  data/stress/tie_stress_seed314159_chat.jsonl
 ```
 
+## Prompt-Robustness Data
+
+Generate the prompt-robustness set:
+
+```bash
+.venv/bin/python generate_robustness_set.py \
+  --per-bucket 10 \
+  --seed 271828 \
+  --out data/robust/robust_seed271828.jsonl \
+  --chat-out data/robust/robust_seed271828_chat.jsonl
+```
+
+This creates 250 examples: 5 prompt variants x 5 equilibrium-count buckets x 10 examples.
+
+Robustness set hashes:
+
+```text
+ffc6c26df85c78df702d4eef910b835025a5b2a8344a9ef1d14e1ab7e78405e8  data/robust/robust_seed271828.jsonl
+69fd257b7cda77dac18de86fce775b401283d4e676c33d35a458e7b991ce6906  data/robust/robust_seed271828_chat.jsonl
+```
+
 ## Training
 
 The main sweep used:
@@ -163,5 +184,40 @@ The summary includes exact-match accuracy, percentage-point deltas, per-equilibr
 Generate the public figures:
 
 ```bash
-.venv/bin/python plot_results.py --summary reports/gt_bench_results.json --out-dir reports/figures
+.venv/bin/python plot_results.py \
+  --summary reports/gt_bench_results.json \
+  --robustness reports/robustness_results.json \
+  --out-dir reports/figures
+```
+
+Run and summarize the robustness evaluation with:
+
+```bash
+.venv/bin/python run_tinker_predict.py \
+  --config bench_config.json \
+  --gold data/robust/robust_seed271828.jsonl \
+  --out predictions/robust_baseline_qwen36_27b_seed271828.jsonl
+
+.venv/bin/python score_robustness.py \
+  --gold data/robust/robust_seed271828.jsonl \
+  --pred predictions/robust_baseline_qwen36_27b_seed271828.jsonl \
+  --out reports/robust_baseline_qwen36_27b_seed271828_report.json
+
+.venv/bin/python run_tinker_predict.py \
+  --config bench_config.json \
+  --gold data/robust/robust_seed271828.jsonl \
+  --model-path "tinker://..." \
+  --out predictions/robust_qwen36_27b_sft_5000_seed271828.jsonl
+
+.venv/bin/python score_robustness.py \
+  --gold data/robust/robust_seed271828.jsonl \
+  --pred predictions/robust_qwen36_27b_sft_5000_seed271828.jsonl \
+  --out reports/robust_qwen36_27b_sft_5000_seed271828_report.json
+
+.venv/bin/python summarize_robustness.py \
+  --gold data/robust/robust_seed271828.jsonl \
+  --baseline reports/robust_baseline_qwen36_27b_seed271828_report.json \
+  --finetuned reports/robust_qwen36_27b_sft_5000_seed271828_report.json \
+  --out-json reports/robustness_results.json \
+  --out-md reports/robustness_results.md
 ```

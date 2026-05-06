@@ -8,6 +8,7 @@ from typing import Any, Sequence
 
 
 SUMMARY_PATH = Path("reports/gt_bench_results.json")
+ROBUSTNESS_PATH = Path("reports/robustness_results.json")
 FIGURE_DIR = Path("reports/figures")
 
 BLUE = "#2563eb"
@@ -224,7 +225,48 @@ def draw_accuracy_by_equilibria(summary: dict[str, Any], out_path: Path) -> None
     out_path.write_text(svg_frame(width, height, "Stress Accuracy by Number of Equilibria", body), encoding="utf-8")
 
 
-def write_figures(summary_path: Path = SUMMARY_PATH, out_dir: Path = FIGURE_DIR) -> list[Path]:
+def draw_robustness_by_variant(robustness: dict[str, Any], out_path: Path) -> None:
+    baseline = require(require(robustness, "baseline", "robustness"), "accuracy_by_prompt_variant", "robustness.baseline")
+    finetuned = require(require(robustness, "finetuned", "robustness"), "accuracy_by_prompt_variant", "robustness.finetuned")
+    variants = sorted(baseline)
+
+    width, height = 1080, 560
+    left, top, right, bottom = 96, 116, 1030, 410
+    body: list[str] = [
+        text(40, 46, "Robustness Accuracy by Prompt Variant", size=24, weight="700"),
+        text(40, 74, "Same task, different prompt surfaces. Higher is better.", size=14, fill=MUTED),
+    ]
+    add_axes(body, left, top, right, bottom)
+
+    slot = (right - left) / len(variants)
+    bar_width = min(48, slot * 0.24)
+    for index, variant in enumerate(variants):
+        if variant not in finetuned:
+            raise KeyError(f"missing prompt variant {variant!r} in robustness finetuned summary")
+        center = left + slot * (index + 0.5)
+        for x_offset, row, color in [
+            (-bar_width * 0.62, baseline[variant], GRAY),
+            (bar_width * 0.62, finetuned[variant], BLUE),
+        ]:
+            value = float(require(row, "accuracy", f"robustness variant {variant}"))
+            bar_x = center + x_offset - bar_width / 2
+            bar_y = y_scale(value, top, bottom)
+            body.append(rect(bar_x, bar_y, bar_width, bottom - bar_y, color, 3))
+            body.append(text(center + x_offset, bar_y - 8, pct(value), size=11, anchor="middle", weight="700"))
+        body.append(text(center, bottom + 30, variant.replace("_", " "), size=11, fill=INK, anchor="middle"))
+
+    body.append(rect(780, 44, 16, 16, GRAY, 2))
+    body.append(text(804, 57, "baseline", size=13, fill=MUTED))
+    body.append(rect(880, 44, 16, 16, BLUE, 2))
+    body.append(text(904, 57, "5000 SFT", size=13, fill=MUTED))
+    out_path.write_text(svg_frame(width, height, "Robustness Accuracy by Prompt Variant", body), encoding="utf-8")
+
+
+def write_figures(
+    summary_path: Path = SUMMARY_PATH,
+    out_dir: Path = FIGURE_DIR,
+    robustness_path: Path | None = None,
+) -> list[Path]:
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     out_dir.mkdir(parents=True, exist_ok=True)
     outputs = [
@@ -240,19 +282,25 @@ def write_figures(summary_path: Path = SUMMARY_PATH, out_dir: Path = FIGURE_DIR)
     )
     draw_confirmation_stress(summary, outputs[1])
     draw_accuracy_by_equilibria(summary, outputs[2])
+    if robustness_path is not None and robustness_path.exists():
+        robust_out = out_dir / "robustness_by_variant.svg"
+        robustness = json.loads(robustness_path.read_text(encoding="utf-8"))
+        draw_robustness_by_variant(robustness, robust_out)
+        outputs.append(robust_out)
     return outputs
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate GT-Bench result figures as static SVG.")
     parser.add_argument("--summary", type=Path, default=SUMMARY_PATH)
+    parser.add_argument("--robustness", type=Path, default=ROBUSTNESS_PATH)
     parser.add_argument("--out-dir", type=Path, default=FIGURE_DIR)
     return parser.parse_args(argv)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
-    outputs = write_figures(args.summary, args.out_dir)
+    outputs = write_figures(args.summary, args.out_dir, args.robustness)
     for output in outputs:
         print(f"wrote {output}")
     return 0

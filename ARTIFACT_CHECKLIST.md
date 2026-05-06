@@ -27,6 +27,16 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
   --chat-out data/stress/tie_stress_seed314159_chat.jsonl
 ```
 
+- Regenerate the prompt-robustness set when changing robustness generation:
+
+```bash
+.venv/bin/python generate_robustness_set.py \
+  --per-bucket 10 \
+  --seed 271828 \
+  --out data/robust/robust_seed271828.jsonl \
+  --chat-out data/robust/robust_seed271828_chat.jsonl
+```
+
 - Regenerate the public summary after scoring:
 
 ```bash
@@ -46,10 +56,24 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
   --out-md reports/gt_bench_results.md
 ```
 
+- Regenerate the public robustness summary after robustness scoring:
+
+```bash
+.venv/bin/python summarize_robustness.py \
+  --gold data/robust/robust_seed271828.jsonl \
+  --baseline reports/robust_baseline_qwen36_27b_seed271828_report.json \
+  --finetuned reports/robust_qwen36_27b_sft_5000_seed271828_report.json \
+  --out-json reports/robustness_results.json \
+  --out-md reports/robustness_results.md
+```
+
 - Regenerate figures:
 
 ```bash
-.venv/bin/python plot_results.py --summary reports/gt_bench_results.json --out-dir reports/figures
+.venv/bin/python plot_results.py \
+  --summary reports/gt_bench_results.json \
+  --robustness reports/robustness_results.json \
+  --out-dir reports/figures
 ```
 
 ## Public-Release Safety
@@ -64,6 +88,6 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 
 ## Public Narrative
 
-- Confirm `README.md` links to `TECHNICAL_REPORT.md`, `RESULTS.md`, `REPRODUCIBILITY.md`, and `FAILURE_ANALYSIS.md`.
+- Confirm `README.md` links to `TECHNICAL_REPORT.md`, `RESULTS.md`, `REPRODUCIBILITY.md`, `FAILURE_ANALYSIS.md`, and `ROBUSTNESS.md`.
 - Confirm `reports/figures/*.svg` renders on GitHub.
 - Confirm the headline claim remains narrow: targeted fine-tuning improves one fully verifiable 2x2 pure-equilibrium task.

@@ -39,11 +39,22 @@ To probe the hardest cases more directly, I generated a 250-example stress set w
 
 The baseline remained strong on ordinary one- and two-equilibrium games but solved only 16 of 50 zero-equilibrium games. The 5000-example fine-tuned checkpoint solved every bucket: 0, 1, 2, 3, and 4 equilibria.
 
+## Prompt Robustness Result
+
+To check whether the model was simply matching the original prompt template, I evaluated on a 250-example robustness set with five prompt variants.
+
+| Run | Accuracy | Correct | Incorrect | Delta vs baseline |
+| --- | ---: | ---: | ---: | ---: |
+| baseline | 64.00% | 160 | 90 | 0.00 pp |
+| 5000-example SFT | 88.40% | 221 | 29 | +24.40 pp |
+
+The fine-tuned checkpoint improved substantially, but it was not fully prompt-invariant. The weakest remaining variants were compact payoff pairs and JSON-like payoff objects.
+
 ## Interpretation
 
 The strongest improvement is on zero-equilibrium cases. On the canonical split, the baseline solved only 9 of 45 zero-equilibrium games after parser correction, while the 1000-example and 5000-example fine-tunes solved all 45.
 
-The canonical and confirmation failures in the best run are tie-heavy cases where the model over-predicts an extra equilibrium. The balanced stress result suggests that this residual weakness is rare, but still worth tracking because it is exactly the kind of edge case a narrow formal benchmark can expose.
+The canonical and confirmation failures in the best run are tie-heavy cases where the model over-predicts an extra equilibrium. The balanced stress result suggests that this residual weakness is rare, but still worth tracking because it is exactly the kind of edge case a narrow formal benchmark can expose. The robustness result adds one more useful finding: prompt format matters, so future targeted data should include compact and structured payoff presentations.
 
 ## What This Does And Does Not Show
 

@@ -242,6 +242,8 @@ On a balanced 250-example stress set with 50 examples in each equilibrium-count 
 
 The full report is in `reports/gt_bench_results.md`. For the research narrative and reproducibility details, see `RESULTS.md`, `REPRODUCIBILITY.md`, and `FAILURE_ANALYSIS.md`.
 
+On a 250-example prompt-robustness set, the same checkpoint improved from 64.00% baseline accuracy to 88.40%. See `ROBUSTNESS.md` for the prompt-variant breakdown.
+
 ## Result figures
 
 ![Canonical test accuracy](reports/figures/accuracy_main.svg)
@@ -249,6 +251,8 @@ The full report is in `reports/gt_bench_results.md`. For the research narrative 
 ![Confirmation and stress accuracy](reports/figures/accuracy_confirm_stress.svg)
 
 ![Stress accuracy by number of equilibria](reports/figures/accuracy_by_equilibria.svg)
+
+![Robustness accuracy by prompt variant](reports/figures/robustness_by_variant.svg)
 
 ## Limitations
 

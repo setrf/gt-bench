@@ -1,5 +1,12 @@
 # Release Notes
 
+## v0.1.3-robustness-eval
+
+- Adds a 250-example prompt-robustness evaluation set with five prompt variants.
+- Evaluates baseline and the 5000-example SFT checkpoint without additional training.
+- Improves robustness accuracy from 64.00% baseline to 88.40% after fine-tuning.
+- Adds `ROBUSTNESS.md`, `reports/robustness_results.*`, and a prompt-variant SVG figure.
+
 ## v0.1.2-artifact-polish
 
 - Adds static SVG result figures generated from `reports/gt_bench_results.json`.

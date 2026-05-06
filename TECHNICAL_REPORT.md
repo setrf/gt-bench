@@ -77,11 +77,21 @@ The stress result shows the most important baseline weakness: zero-equilibrium g
 
 ![Stress accuracy by equilibria](reports/figures/accuracy_by_equilibria.svg)
 
+## Prompt Robustness
+
+To test whether the checkpoint was overfitting the original prompt template, I added a 250-example robustness set with five prompt variants: original table, compact payoff pairs, JSON-like payoff object, minimal matrix, and answer-only instruction.
+
+The 5000-example checkpoint improved from 64.00% baseline accuracy to 88.40%. The strongest gains were on `answer_only` and `standard_table`, while `compact_pairs` and `json_payoffs` remained weaker.
+
+![Robustness by prompt variant](reports/figures/robustness_by_variant.svg)
+
+This strengthens the result but also reveals the next frontier: the model is much better after fine-tuning, but not fully prompt-invariant.
+
 ## Most Important Failure Mode
 
 The base model often wants every 2x2 game to have at least one pure equilibrium. This creates many false positives on zero-equilibrium games, where the correct answer is the empty set.
 
-After fine-tuning, this failure mode is mostly removed. The remaining canonical and confirmation failures in the best checkpoint are tie-heavy games where the model identifies true equilibria but over-predicts one extra cell that is not actually a mutual best response.
+After fine-tuning, this failure mode is mostly removed. The remaining canonical and confirmation failures in the best checkpoint are tie-heavy games where the model identifies true equilibria but over-predicts one extra cell that is not actually a mutual best response. The robustness run adds a second failure mode: compact or structured payoff presentations can still reduce accuracy.
 
 ## Claim Boundaries
 
@@ -105,6 +115,6 @@ The full reproducibility recipe, including the complete summary command with all
 
 ## Next Steps
 
-The best next improvement is not to broaden the game-theory scope immediately. Instead, keep the task narrow and add a small adversarial tie-heavy training slice, then re-run the balanced stress set as a regression test.
+The best next improvement is not to broaden the game-theory scope immediately. Instead, keep the task narrow and add a small adversarial training slice with compact-pair prompts, JSON-like payoff prompts, zero-equilibrium cases, and tie-heavy cases. Then re-run the balanced stress and prompt-robustness sets as regression tests.
 
 After that, a second benchmark could be added as a separate task, rather than mixing new concepts into this one.
