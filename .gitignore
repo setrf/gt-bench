@@ -12,6 +12,7 @@ data/sweeps/*.jsonl
 reports/*.json
 !reports/gt_bench_results.json
 !reports/robustness_results.json
+!reports/adversarial_results.json
 predictions/
 predictions*.jsonl
 run_logs/

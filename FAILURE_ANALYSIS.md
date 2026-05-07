@@ -31,4 +31,6 @@ This makes the failure story sharper: the base model often wants every 2x2 game 
 
 ## Implication
 
-For this benchmark, the next targeted improvement would be to add a small adversarial tie-heavy slice to training and keep the balanced stress set as a regression test. I would not expand the game-theory scope until this residual edge case is handled.
+For this benchmark, the targeted improvement is now implemented as an adversarial prompt SFT pipeline. It adds compact-pair, JSON-like, answer-only, minimal-matrix, and standard-table examples while balancing zero-equilibrium and tie-heavy cases.
+
+The balanced stress and prompt-robustness sets should remain regression tests. I would not expand the game-theory scope until the adversarial checkpoint is evaluated and the prompt-format failure mode is either reduced or clearly documented.

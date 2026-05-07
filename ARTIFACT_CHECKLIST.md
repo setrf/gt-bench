@@ -6,6 +6,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 
 - Run `.venv/bin/python -m pytest -q`.
 - Run `.venv/bin/python check_no_secrets.py`.
+- Run `make public-artifacts` or `.venv/bin/python summarize_adversarial.py` plus `.venv/bin/python plot_results.py`.
 - Run `git diff --check`.
 - Confirm `git status -sb` contains only intended tracked changes.
 
@@ -35,6 +36,12 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
   --seed 271828 \
   --out data/robust/robust_seed271828.jsonl \
   --chat-out data/robust/robust_seed271828_chat.jsonl
+```
+
+- Regenerate the adversarial prompt supplement when changing adversarial generation:
+
+```bash
+.venv/bin/python generate_adversarial_training.py
 ```
 
 - Regenerate the public summary after scoring:
@@ -73,6 +80,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 .venv/bin/python plot_results.py \
   --summary reports/gt_bench_results.json \
   --robustness reports/robustness_results.json \
+  --adversarial reports/adversarial_results.json \
   --out-dir reports/figures
 ```
 
@@ -89,5 +97,6 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 ## Public Narrative
 
 - Confirm `README.md` links to `TECHNICAL_REPORT.md`, `RESULTS.md`, `REPRODUCIBILITY.md`, `FAILURE_ANALYSIS.md`, and `ROBUSTNESS.md`.
+- Confirm `ADVERSARIAL_SFT.md` and `reports/adversarial_results.md` accurately say whether the adversarial run is pending or complete.
 - Confirm `reports/figures/*.svg` renders on GitHub.
 - Confirm the headline claim remains narrow: targeted fine-tuning improves one fully verifiable 2x2 pure-equilibrium task.

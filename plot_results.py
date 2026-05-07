@@ -9,6 +9,7 @@ from typing import Any, Sequence
 
 SUMMARY_PATH = Path("reports/gt_bench_results.json")
 ROBUSTNESS_PATH = Path("reports/robustness_results.json")
+ADVERSARIAL_PATH = Path("reports/adversarial_results.json")
 FIGURE_DIR = Path("reports/figures")
 
 BLUE = "#2563eb"
@@ -262,10 +263,65 @@ def draw_robustness_by_variant(robustness: dict[str, Any], out_path: Path) -> No
     out_path.write_text(svg_frame(width, height, "Robustness Accuracy by Prompt Variant", body), encoding="utf-8")
 
 
+def adversarial_accuracy(row: dict[str, Any], run_key: str) -> float | None:
+    run = require(row, run_key, f"adversarial evaluation {run_key}")
+    if run.get("status") != "complete":
+        return None
+    return accuracy(run, f"adversarial evaluation {run_key}")
+
+
+def draw_adversarial_comparison(adversarial: dict[str, Any], out_path: Path) -> None:
+    evaluations = require(adversarial, "evaluations", "adversarial")
+    names = ["canonical", "confirmation", "stress", "robustness"]
+
+    width, height = 1040, 560
+    left, top, right, bottom = 96, 122, 990, 410
+    body: list[str] = [
+        text(40, 46, "Adversarial SFT Comparison", size=24, weight="700"),
+        text(
+            40,
+            74,
+            "Original 5000-example SFT vs prompt-adversarial SFT. Pending bars mark runs not yet completed.",
+            size=14,
+            fill=MUTED,
+        ),
+    ]
+    add_axes(body, left, top, right, bottom)
+
+    slot = (right - left) / len(names)
+    bar_width = 58
+    for index, name in enumerate(names):
+        if name not in evaluations:
+            raise KeyError(f"missing adversarial evaluation {name!r}")
+        row = evaluations[name]
+        center = left + slot * (index + 0.5)
+        for x_offset, run_key, color, label in [
+            (-bar_width * 0.62, "original_5000_sft", BLUE, "5000 SFT"),
+            (bar_width * 0.62, "adversarial_sft", TEAL, "adv SFT"),
+        ]:
+            value = adversarial_accuracy(row, run_key)
+            bar_x = center + x_offset - bar_width / 2
+            if value is None:
+                body.append(rect(bar_x, bottom - 6, bar_width, 6, color, 3))
+                body.append(text(center + x_offset, bottom - 14, "pending", size=11, anchor="middle", fill=MUTED))
+                continue
+            bar_y = y_scale(value, top, bottom)
+            body.append(rect(bar_x, bar_y, bar_width, bottom - bar_y, color, 3))
+            body.append(text(center + x_offset, bar_y - 8, pct(value), size=12, anchor="middle", weight="700"))
+        body.append(text(center, bottom + 30, name, size=12, fill=INK, anchor="middle"))
+
+    body.append(rect(720, 44, 16, 16, BLUE, 2))
+    body.append(text(744, 57, "5000 SFT", size=13, fill=MUTED))
+    body.append(rect(830, 44, 16, 16, TEAL, 2))
+    body.append(text(854, 57, "adversarial SFT", size=13, fill=MUTED))
+    out_path.write_text(svg_frame(width, height, "Adversarial SFT Comparison", body), encoding="utf-8")
+
+
 def write_figures(
     summary_path: Path = SUMMARY_PATH,
     out_dir: Path = FIGURE_DIR,
     robustness_path: Path | None = None,
+    adversarial_path: Path | None = None,
 ) -> list[Path]:
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -287,6 +343,11 @@ def write_figures(
         robustness = json.loads(robustness_path.read_text(encoding="utf-8"))
         draw_robustness_by_variant(robustness, robust_out)
         outputs.append(robust_out)
+    if adversarial_path is not None and adversarial_path.exists():
+        adversarial_out = out_dir / "adversarial_comparison.svg"
+        adversarial = json.loads(adversarial_path.read_text(encoding="utf-8"))
+        draw_adversarial_comparison(adversarial, adversarial_out)
+        outputs.append(adversarial_out)
     return outputs
 
 
@@ -294,13 +355,14 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate GT-Bench result figures as static SVG.")
     parser.add_argument("--summary", type=Path, default=SUMMARY_PATH)
     parser.add_argument("--robustness", type=Path, default=ROBUSTNESS_PATH)
+    parser.add_argument("--adversarial", type=Path, default=ADVERSARIAL_PATH)
     parser.add_argument("--out-dir", type=Path, default=FIGURE_DIR)
     return parser.parse_args(argv)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
-    outputs = write_figures(args.summary, args.out_dir, args.robustness)
+    outputs = write_figures(args.summary, args.out_dir, args.robustness, args.adversarial)
     for output in outputs:
         print(f"wrote {output}")
     return 0

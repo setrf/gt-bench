@@ -6,7 +6,7 @@ GT-Bench is a minimal Tinker fine-tuning benchmark for strategic reasoning. It g
 
 The repository is intentionally compact: one task, one exact solver, one dataset generator, one scorer, and focused tests.
 
-For the consolidated research narrative, see `TECHNICAL_REPORT.md`.
+For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ADVERSARIAL_SFT.md`.
 
 ## My context
 
@@ -244,6 +244,28 @@ The full report is in `reports/gt_bench_results.md`. For the research narrative 
 
 On a 250-example prompt-robustness set, the same checkpoint improved from 64.00% baseline accuracy to 88.40%. See `ROBUSTNESS.md` for the prompt-variant breakdown.
 
+## Adversarial robustness follow-up
+
+The remaining weakness is prompt format sensitivity: `compact_pairs` and `json_payoffs` are still weaker than the original table prompt. The next controlled follow-up adds a 1000-example adversarial prompt supplement to the 5000-example training set while keeping the mathematical task unchanged.
+
+Generate the supplemental training file and combined 6000-example chat file:
+
+```bash
+.venv/bin/python generate_adversarial_training.py
+```
+
+Run the adversarial SFT job:
+
+```bash
+.venv/bin/python run_tinker_sft.py \
+  --config bench_config.json \
+  --train-chat data/adversarial/train_6000_prompt_adv_chat.jsonl \
+  --run-name qwen36_27b_sft_5000_plus_prompt_adv \
+  --out-manifest runs/qwen36_27b_sft_5000_plus_prompt_adv.json
+```
+
+The public follow-up tracker is `ADVERSARIAL_SFT.md`, with machine-readable status in `reports/adversarial_results.json`.
+
 ## Result figures
 
 ![Canonical test accuracy](reports/figures/accuracy_main.svg)
@@ -253,6 +275,8 @@ On a 250-example prompt-robustness set, the same checkpoint improved from 64.00%
 ![Stress accuracy by number of equilibria](reports/figures/accuracy_by_equilibria.svg)
 
 ![Robustness accuracy by prompt variant](reports/figures/robustness_by_variant.svg)
+
+![Adversarial SFT comparison](reports/figures/adversarial_comparison.svg)
 
 ## Limitations
 
@@ -267,6 +291,8 @@ Run:
 ```bash
 .venv/bin/python -m pytest -q
 .venv/bin/python check_no_secrets.py
+.venv/bin/python summarize_adversarial.py
+.venv/bin/python plot_results.py
 ```
 
 The tests cover a Prisoner's Dilemma style one-equilibrium game, a coordination game with two equilibria, a matching pennies style game with no pure equilibrium, a tie case with multiple best responses, and common prediction parser formats.

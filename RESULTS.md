@@ -50,11 +50,17 @@ To check whether the model was simply matching the original prompt template, I e
 
 The fine-tuned checkpoint improved substantially, but it was not fully prompt-invariant. The weakest remaining variants were compact payoff pairs and JSON-like payoff objects.
 
+## Adversarial Follow-Up
+
+The adversarial SFT pipeline now targets that prompt-format gap directly. It adds a deterministic 1000-example supplement to the 5000-example training set, weighted toward compact payoff pairs and JSON-like payoff objects while balancing every prompt variant across equilibrium-count buckets.
+
+The follow-up result tracker is `ADVERSARIAL_SFT.md` and `reports/adversarial_results.md`. Until the bounded Tinker run is complete, the public tracker is marked pending rather than substituting a different model or checkpoint.
+
 ## Interpretation
 
 The strongest improvement is on zero-equilibrium cases. On the canonical split, the baseline solved only 9 of 45 zero-equilibrium games after parser correction, while the 1000-example and 5000-example fine-tunes solved all 45.
 
-The canonical and confirmation failures in the best run are tie-heavy cases where the model over-predicts an extra equilibrium. The balanced stress result suggests that this residual weakness is rare, but still worth tracking because it is exactly the kind of edge case a narrow formal benchmark can expose. The robustness result adds one more useful finding: prompt format matters, so future targeted data should include compact and structured payoff presentations.
+The canonical and confirmation failures in the best run are tie-heavy cases where the model over-predicts an extra equilibrium. The balanced stress result suggests that this residual weakness is rare, but still worth tracking because it is exactly the kind of edge case a narrow formal benchmark can expose. The robustness result adds one more useful finding: prompt format matters, so targeted data should include compact and structured payoff presentations.
 
 ## What This Does And Does Not Show
 

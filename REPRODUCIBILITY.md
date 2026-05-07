@@ -98,6 +98,24 @@ ffc6c26df85c78df702d4eef910b835025a5b2a8344a9ef1d14e1ab7e78405e8  data/robust/ro
 69fd257b7cda77dac18de86fce775b401283d4e676c33d35a458e7b991ce6906  data/robust/robust_seed271828_chat.jsonl
 ```
 
+## Adversarial Prompt Data
+
+Generate the adversarial prompt supplement:
+
+```bash
+.venv/bin/python generate_adversarial_training.py
+```
+
+This creates 1000 supplemental examples and a 6000-row combined chat file:
+
+```text
+data/adversarial/prompt_adv_seed161803.jsonl
+data/adversarial/prompt_adv_seed161803_chat.jsonl
+data/adversarial/train_6000_prompt_adv_chat.jsonl
+```
+
+The supplement avoids matrices already present in `data/train.jsonl`, emphasizes `compact_pairs` and `json_payoffs`, and balances every prompt variant across 0, 1, 2, 3, and 4 equilibria.
+
 ## Training
 
 The main sweep used:
@@ -124,6 +142,16 @@ Run the best 5000-example SFT:
   --train-chat data/sweeps/train_5000_chat.jsonl \
   --run-name qwen36_27b_sft_5000 \
   --out-manifest runs/qwen36_27b_sft_5000.json
+```
+
+Run the adversarial follow-up SFT:
+
+```bash
+.venv/bin/python run_tinker_sft.py \
+  --config bench_config.json \
+  --train-chat data/adversarial/train_6000_prompt_adv_chat.jsonl \
+  --run-name qwen36_27b_sft_5000_plus_prompt_adv \
+  --out-manifest runs/qwen36_27b_sft_5000_plus_prompt_adv.json
 ```
 
 ## Evaluation
@@ -220,4 +248,18 @@ Run and summarize the robustness evaluation with:
   --finetuned reports/robust_qwen36_27b_sft_5000_seed271828_report.json \
   --out-json reports/robustness_results.json \
   --out-md reports/robustness_results.md
+```
+
+After scoring the adversarial checkpoint on the canonical, confirmation, stress, and robustness sets, regenerate the adversarial public tracker:
+
+```bash
+.venv/bin/python summarize_adversarial.py \
+  --out-json reports/adversarial_results.json \
+  --out-md reports/adversarial_results.md
+
+.venv/bin/python plot_results.py \
+  --summary reports/gt_bench_results.json \
+  --robustness reports/robustness_results.json \
+  --adversarial reports/adversarial_results.json \
+  --out-dir reports/figures
 ```

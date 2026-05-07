@@ -8,7 +8,10 @@
     "val_chat": "data/val_chat.jsonl",
     "test": "data/test.jsonl",
     "sweep_dir": "data/sweeps",
-    "sweep_template": "train_{size:04d}_chat.jsonl"
+    "sweep_template": "train_{size:04d}_chat.jsonl",
+    "adversarial_train": "data/adversarial/prompt_adv_seed161803.jsonl",
+    "adversarial_train_chat": "data/adversarial/prompt_adv_seed161803_chat.jsonl",
+    "adversarial_combined_train_chat": "data/adversarial/train_6000_prompt_adv_chat.jsonl"
   },
   "lora": {
     "rank": 16,

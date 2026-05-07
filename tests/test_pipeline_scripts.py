@@ -2,11 +2,21 @@ import json
 
 import pytest
 
+from generate_adversarial_training import (
+    combine_chat_files,
+    generate_adversarial_examples,
+    metadata_signature,
+    to_adversarial_chat_row,
+)
 from generate_stress_set import generate_balanced_examples
 from generate_robustness_set import PROMPT_VARIANTS, generate_robustness_examples
 from make_sweep_splits import write_sweep_splits
 from plot_results import write_figures
 from score_robustness import score_robustness
+from summarize_adversarial import (
+    build_summary as build_adversarial_summary,
+    public_original_fallbacks,
+)
 from summarize_results import exact_binomial_ci
 
 
@@ -175,6 +185,67 @@ def test_write_figures_adds_robustness_figure_when_summary_exists(tmp_path) -> N
     assert "json payoffs" in robust_svg
 
 
+def test_write_figures_adds_adversarial_figure_when_summary_exists(tmp_path) -> None:
+    summary_path = tmp_path / "summary.json"
+    adversarial_path = tmp_path / "adversarial.json"
+    out_dir = tmp_path / "figures"
+    buckets = {
+        str(count): {"total": 10, "correct": 10, "accuracy": 1.0}
+        for count in range(5)
+    }
+    summary_path.write_text(
+        json.dumps(
+            {
+                "baseline": {"exact_match_accuracy": 0.8},
+                "runs": [{"name": "qwen36_27b_sft_5000", "exact_match_accuracy": 0.99}],
+                "confirmation": {
+                    "baseline": {"exact_match_accuracy": 0.88},
+                    "best_run": {"exact_match_accuracy": 0.99},
+                },
+                "stress": {
+                    "baseline": {
+                        "exact_match_accuracy": 0.82,
+                        "accuracy_by_number_of_equilibria": buckets,
+                    },
+                    "best_run": {
+                        "exact_match_accuracy": 1.0,
+                        "accuracy_by_number_of_equilibria": buckets,
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    adversarial_path.write_text(
+        json.dumps(
+            {
+                "evaluations": {
+                    name: {
+                        "original_5000_sft": {
+                            "status": "complete",
+                            "exact_match_accuracy": 0.9,
+                        },
+                        "adversarial_sft": {
+                            "status": "complete",
+                            "exact_match_accuracy": 0.95,
+                        },
+                    }
+                    for name in ["canonical", "confirmation", "stress", "robustness"]
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    outputs = write_figures(summary_path, out_dir, adversarial_path=adversarial_path)
+
+    assert "adversarial_comparison.svg" in {path.name for path in outputs}
+    adversarial_svg = (out_dir / "adversarial_comparison.svg").read_text(
+        encoding="utf-8"
+    ).lower()
+    assert "adversarial sft" in adversarial_svg
+
+
 def test_exact_binomial_ci_contains_observed_accuracy() -> None:
     ci = exact_binomial_ci(8, 10)
 
@@ -217,6 +288,81 @@ def test_generate_robustness_examples_is_deterministic_and_balanced() -> None:
     assert len(matrices) == len(examples)
 
 
+def test_generate_adversarial_examples_is_balanced_and_excludes_matrices() -> None:
+    seed_examples = generate_adversarial_examples(
+        seed=123,
+        variant_counts={"compact_pairs": 4},
+        counts=[0, 1],
+        max_attempts=20_000,
+    )
+    excluded = {metadata_signature(seed_examples[0])}
+
+    examples = generate_adversarial_examples(
+        seed=123,
+        variant_counts={"compact_pairs": 4, "json_payoffs": 4},
+        counts=[0, 1],
+        exclude_signatures=excluded,
+        max_attempts=20_000,
+    )
+    examples_again = generate_adversarial_examples(
+        seed=123,
+        variant_counts={"compact_pairs": 4, "json_payoffs": 4},
+        counts=[0, 1],
+        exclude_signatures=excluded,
+        max_attempts=20_000,
+    )
+
+    assert examples == examples_again
+    assert metadata_signature(examples[0]) not in excluded
+    by_variant_count: dict[tuple[str, int], int] = {}
+    signatures = set()
+    for example in examples:
+        metadata = example["metadata"]  # type: ignore[index]
+        key = (metadata["prompt_variant"], metadata["equilibrium_count"])  # type: ignore[index]
+        by_variant_count[key] = by_variant_count.get(key, 0) + 1
+        signatures.add(metadata_signature(example))
+
+    assert by_variant_count == {
+        ("compact_pairs", 0): 2,
+        ("compact_pairs", 1): 2,
+        ("json_payoffs", 0): 2,
+        ("json_payoffs", 1): 2,
+    }
+    assert len(signatures) == len(examples)
+
+
+def test_adversarial_answer_only_chat_omits_reasoning() -> None:
+    example = generate_adversarial_examples(
+        seed=321,
+        variant_counts={"answer_only": 2},
+        counts=[0],
+        max_attempts=20_000,
+    )[0]
+
+    chat = to_adversarial_chat_row(example)
+
+    assistant = chat["messages"][1]["content"]  # type: ignore[index]
+    assert assistant.startswith("Final answer:")
+    assert "Reasoning:" not in assistant
+
+
+def test_combine_chat_files_preserves_row_counts(tmp_path) -> None:
+    base = tmp_path / "base.jsonl"
+    supplement = tmp_path / "supplement.jsonl"
+    out = tmp_path / "combined.jsonl"
+    base.write_text('{"base": 1}\n{"base": 2}\n', encoding="utf-8")
+    supplement.write_text('{"supplement": 1}\n', encoding="utf-8")
+
+    total = combine_chat_files(base, supplement, out)
+
+    assert total == 3
+    assert out.read_text(encoding="utf-8").splitlines() == [
+        '{"base": 1}',
+        '{"base": 2}',
+        '{"supplement": 1}',
+    ]
+
+
 def test_all_prompt_variants_are_configured() -> None:
     assert set(PROMPT_VARIANTS) == {
         "standard_table",
@@ -250,3 +396,76 @@ def test_score_robustness_groups_and_counts_missing_predictions() -> None:
     assert set(report["accuracy_by_number_of_equilibria"]) == {"0", "1"}
     assert len(report["failed_examples"]) == 2
     assert any(failure["prediction"] == "" for failure in report["failed_examples"])
+
+
+def test_adversarial_summary_marks_missing_new_run_pending(tmp_path) -> None:
+    original_path = tmp_path / "original.json"
+    original_path.write_text(
+        json.dumps(
+            {
+                "total_examples": 10,
+                "exact_match_accuracy": 0.9,
+                "num_correct": 9,
+                "num_incorrect": 1,
+                "accuracy_by_number_of_equilibria": {},
+                "failed_examples": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    summary = build_adversarial_summary(
+        {
+            "canonical": (original_path, tmp_path / "missing_canonical.json"),
+            "confirmation": (original_path, tmp_path / "missing_confirmation.json"),
+            "stress": (original_path, tmp_path / "missing_stress.json"),
+            "robustness": (original_path, tmp_path / "missing_robustness.json"),
+        }
+    )
+
+    assert summary["status"] == "pending"
+    assert summary["evaluations"]["canonical"]["adversarial_sft"]["status"] == "pending"
+
+
+def test_adversarial_summary_uses_public_fallbacks(tmp_path) -> None:
+    results_path = tmp_path / "gt_bench_results.json"
+    robustness_path = tmp_path / "robustness_results.json"
+    public_row = {
+        "report_path": "reports/public_original.json",
+        "total_examples": 10,
+        "exact_match_accuracy": 0.9,
+        "num_correct": 9,
+        "num_incorrect": 1,
+        "accuracy_by_number_of_equilibria": {},
+        "failed_examples_preview": [],
+    }
+    results_path.write_text(
+        json.dumps(
+            {
+                "best_run": public_row,
+                "confirmation": {"best_run": public_row},
+                "stress": {"best_run": public_row},
+            }
+        ),
+        encoding="utf-8",
+    )
+    robustness_path.write_text(
+        json.dumps({"finetuned": {**public_row, "accuracy_by_prompt_variant": {}}}),
+        encoding="utf-8",
+    )
+
+    summary = build_adversarial_summary(
+        {
+            "canonical": (tmp_path / "missing_canonical.json", None),
+            "confirmation": (tmp_path / "missing_confirmation.json", None),
+            "stress": (tmp_path / "missing_stress.json", None),
+            "robustness": (tmp_path / "missing_robustness.json", None),
+        },
+        public_original_fallbacks(results_path, robustness_path),
+    )
+
+    assert summary["evaluations"]["canonical"]["original_5000_sft"]["status"] == "complete"
+    assert (
+        summary["evaluations"]["canonical"]["original_5000_sft"]["report_path"]
+        == "reports/public_original.json"
+    )

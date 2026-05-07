@@ -1,5 +1,13 @@
 # Release Notes
 
+## v0.2-adversarial-robustness
+
+- Adds the adversarial prompt SFT pipeline for the robustness gap found in `v0.1.3`.
+- Generates a deterministic 1000-example supplemental training set weighted toward `compact_pairs` and `json_payoffs`.
+- Adds `ADVERSARIAL_SFT.md`, `reports/adversarial_results.*`, and `reports/figures/adversarial_comparison.svg`.
+- Adds a Makefile and GitHub Actions CI for tests, secret scanning, and public artifact regeneration.
+- Release should be finalized after the bounded Tinker SFT/evaluation run meets the documented acceptance criteria.
+
 ## v0.1.3-robustness-eval
 
 - Adds a 250-example prompt-robustness evaluation set with five prompt variants.

@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run tests
+        run: python -m pytest -q
+      - name: Secret scan
+        run: python check_no_secrets.py
+      - name: Regenerate public summaries and figures
+        run: |
+          python summarize_adversarial.py
+          python plot_results.py \
+            --summary reports/gt_bench_results.json \
+            --robustness reports/robustness_results.json \
+            --adversarial reports/adversarial_results.json \
+            --out-dir reports/figures
+      - name: Check committed artifacts are current
+        run: git diff --exit-code
