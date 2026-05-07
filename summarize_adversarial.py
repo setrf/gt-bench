@@ -45,7 +45,10 @@ def summarize_report(path: Path | None, fallback: dict[str, Any] | None = None) 
         "num_correct": correct,
         "num_incorrect": int(report["num_incorrect"]),
         "accuracy_by_number_of_equilibria": report.get("accuracy_by_number_of_equilibria", {}),
-        "failed_examples_preview": report.get("failed_examples", [])[:10],
+        "failed_examples_preview": report.get(
+            "failed_examples_preview",
+            report.get("failed_examples", [])[:10],
+        ),
     }
     if "accuracy_by_prompt_variant" in report:
         summary["accuracy_by_prompt_variant"] = report["accuracy_by_prompt_variant"]
