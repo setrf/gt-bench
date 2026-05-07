@@ -54,7 +54,7 @@ The fine-tuned checkpoint improved substantially, but it was not fully prompt-in
 
 The adversarial SFT pipeline now targets that prompt-format gap directly. It adds a deterministic 1000-example supplement to the 5000-example training set, weighted toward compact payoff pairs and JSON-like payoff objects while balancing every prompt variant across equilibrium-count buckets.
 
-The follow-up result tracker is `ADVERSARIAL_SFT.md` and `reports/adversarial_results.md`. Until the bounded Tinker run is complete, the public tracker is marked pending rather than substituting a different model or checkpoint.
+The follow-up result tracker is `reports/adversarial_results.md`. Until the bounded Tinker run is complete, the public tracker is marked pending rather than substituting a different model or checkpoint.
 
 ## Interpretation
 

@@ -97,6 +97,6 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 ## Public Narrative
 
 - Confirm `README.md` links to `TECHNICAL_REPORT.md`, `RESULTS.md`, `REPRODUCIBILITY.md`, `FAILURE_ANALYSIS.md`, and `ROBUSTNESS.md`.
-- Confirm `ADVERSARIAL_SFT.md` and `reports/adversarial_results.md` accurately say whether the adversarial run is pending or complete.
+- Confirm `reports/adversarial_results.md` accurately says whether the adversarial run is pending or complete.
 - Confirm `reports/figures/*.svg` renders on GitHub.
 - Confirm the headline claim remains narrow: targeted fine-tuning improves one fully verifiable 2x2 pure-equilibrium task.

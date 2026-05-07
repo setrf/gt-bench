@@ -6,7 +6,7 @@ GT-Bench is a minimal Tinker fine-tuning benchmark for strategic reasoning. It g
 
 The repository is intentionally compact: one task, one exact solver, one dataset generator, one scorer, and focused tests.
 
-For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ADVERSARIAL_SFT.md`.
+For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`.
 
 ## My context
 
@@ -264,7 +264,7 @@ Run the adversarial SFT job:
   --out-manifest runs/qwen36_27b_sft_5000_plus_prompt_adv.json
 ```
 
-The public follow-up tracker is `ADVERSARIAL_SFT.md`, with machine-readable status in `reports/adversarial_results.json`.
+The public follow-up tracker is `reports/adversarial_results.md`, with machine-readable status in `reports/adversarial_results.json`.
 
 ## Result figures
 

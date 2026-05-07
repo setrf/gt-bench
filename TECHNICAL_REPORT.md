@@ -95,7 +95,7 @@ The planned run is `qwen36_27b_sft_5000_plus_prompt_adv`: the original 5000-exam
 
 ![Adversarial SFT comparison](reports/figures/adversarial_comparison.svg)
 
-The public tracker is `ADVERSARIAL_SFT.md` and `reports/adversarial_results.md`. If the run is pending, these files document the exact pipeline rather than reporting substituted results.
+The public tracker is `reports/adversarial_results.md`. If the run is pending, this file documents the exact pipeline rather than reporting substituted results.
 
 ## Most Important Failure Mode
 

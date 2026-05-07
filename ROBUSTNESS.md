@@ -49,4 +49,4 @@ The checkpoint is not fully prompt-invariant. `compact_pairs` and `json_payoffs`
 
 The targeted adversarial SFT pipeline is now implemented in `generate_adversarial_training.py`. It keeps the same 2x2 pure-equilibrium task and adds a 1000-example prompt-variant supplement to the 5000-example training set, with extra weight on `compact_pairs` and `json_payoffs`.
 
-The follow-up tracker is `ADVERSARIAL_SFT.md` and `reports/adversarial_results.md`. The run should be published only if it improves robustness substantially without meaningfully regressing canonical accuracy.
+The follow-up tracker is `reports/adversarial_results.md`. The run should be published only if it improves robustness substantially without meaningfully regressing canonical accuracy.
