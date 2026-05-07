@@ -277,11 +277,13 @@ def build_summary(
 
     complete = all(row["status"] == "complete" for rows in runs.values() for row in rows)
     test_path = Path(config["data"]["test"])
+    public_summary = read_json(fallback_path) or {}
+    test_sha = sha256_file(test_path) if test_path.exists() else public_summary.get("test_sha256")
     return {
         "model_id": config["model_id"],
         "status": "complete" if complete else "pending",
         "test_path": str(test_path),
-        "test_sha256": sha256_file(test_path) if test_path.exists() else None,
+        "test_sha256": test_sha,
         "baseline_report": str(baseline_path),
         "baseline": baseline,
         "seeds": list(seeds),
@@ -289,6 +291,16 @@ def build_summary(
         "runs": {str(size): runs[size] for size in sizes},
         "statistics": build_statistics(runs, baseline_accuracy),
     }
+
+
+def stable_floats(value: Any) -> Any:
+    if isinstance(value, float):
+        return round(value, 12)
+    if isinstance(value, list):
+        return [stable_floats(item) for item in value]
+    if isinstance(value, dict):
+        return {key: stable_floats(item) for key, item in value.items()}
+    return value
 
 
 def interval_text(interval: dict[str, Any], scale: float = 1.0) -> str:
@@ -396,6 +408,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     seeds = args.seeds or list(DEFAULT_SEEDS)
     sizes = args.sizes or list(DEFAULT_SIZES)
     summary = build_summary(load_config(args.config), args.baseline, seeds, sizes, fallback_path=args.out_json)
+    summary = stable_floats(summary)
     args.out_json.parent.mkdir(parents=True, exist_ok=True)
     args.out_json.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     write_markdown(args.out_md, summary)
