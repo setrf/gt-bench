@@ -1,6 +1,6 @@
 # Reproducibility
 
-This file records the exact GT-Bench v0.1 demo setup.
+This file records the exact GT-Bench demo setup.
 
 ## Environment
 
