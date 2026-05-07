@@ -52,9 +52,11 @@ The fine-tuned checkpoint improved substantially, but it was not fully prompt-in
 
 ## Adversarial Follow-Up
 
-The adversarial SFT pipeline now targets that prompt-format gap directly. It adds a deterministic 1000-example supplement to the 5000-example training set, weighted toward compact payoff pairs and JSON-like payoff objects while balancing every prompt variant across equilibrium-count buckets.
+The adversarial SFT pipeline targets that prompt-format gap directly. It adds a deterministic 500-example supplement to the 5000-example training set, weighted toward compact payoff pairs and JSON-like payoff objects while balancing every prompt variant across equilibrium-count buckets.
 
-The follow-up result tracker is `reports/adversarial_results.md`. Until the bounded Tinker run is complete, the public tracker is marked pending rather than substituting a different model or checkpoint.
+The follow-up result met the acceptance criteria: canonical accuracy increased from 99.60% to 99.80%, and prompt-robustness accuracy increased from 88.40% to 98.80%. The weakest original variants improved from 78.00% to 100.00% for compact payoff pairs and from 68.00% to 94.00% for JSON-like payoff objects.
+
+The public follow-up summary is `reports/adversarial_results.md`.
 
 ## Interpretation
 

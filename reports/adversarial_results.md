@@ -1,29 +1,27 @@
 # GT-Bench Adversarial SFT Follow-Up
 
-Status: `pending`
+Status: `complete`
 
-This follow-up keeps the mathematical task unchanged and targets the prompt-format weakness exposed by the robustness set. The adversarial training supplement emphasizes compact payoff pairs, JSON-like payoff objects, answer-only prompts, minimal matrices, and balanced equilibrium-count buckets.
-
-The public pipeline is implemented, but the new Tinker SFT/evaluation run has not been completed in this checkout yet.
+This follow-up keeps the mathematical task unchanged and targets the prompt-format weakness exposed by the robustness set. The adversarial training supplement adds 500 conservative prompt-variant examples, emphasizing compact payoff pairs and JSON-like payoff objects while preserving balanced equilibrium-count buckets.
 
 ## Accuracy Summary
 
 | Evaluation | Original 5000 SFT | Adversarial SFT | Delta |
 | --- | ---: | ---: | ---: |
-| canonical | 99.60% | pending | pending |
-| confirmation | 99.70% | pending | pending |
-| stress | 100.00% | pending | pending |
-| robustness | 88.40% | pending | pending |
+| canonical | 99.60% | 99.80% | +0.20 pp |
+| confirmation | 99.70% | 99.90% | +0.20 pp |
+| stress | 100.00% | 100.00% | +0.00 pp |
+| robustness | 88.40% | 98.80% | +10.40 pp |
 
 ## Robustness By Prompt Variant
 
 | Prompt variant | Original 5000 SFT | Adversarial SFT | Delta |
 | --- | ---: | ---: | ---: |
-| `answer_only` | 100.00% | pending | pending |
-| `compact_pairs` | 78.00% | pending | pending |
-| `json_payoffs` | 68.00% | pending | pending |
-| `minimal_matrix` | 96.00% | pending | pending |
-| `standard_table` | 100.00% | pending | pending |
+| `answer_only` | 100.00% | 100.00% | +0.00 pp |
+| `compact_pairs` | 78.00% | 100.00% | +22.00 pp |
+| `json_payoffs` | 68.00% | 94.00% | +26.00 pp |
+| `minimal_matrix` | 96.00% | 100.00% | +4.00 pp |
+| `standard_table` | 100.00% | 100.00% | +0.00 pp |
 
 ## Acceptance Criteria
 

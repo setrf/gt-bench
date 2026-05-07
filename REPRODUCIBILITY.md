@@ -106,12 +106,12 @@ Generate the adversarial prompt supplement:
 .venv/bin/python generate_adversarial_training.py
 ```
 
-This creates 1000 supplemental examples and a 6000-row combined chat file:
+This creates 500 supplemental examples and a 5500-row combined chat file:
 
 ```text
-data/adversarial/prompt_adv_seed161803.jsonl
-data/adversarial/prompt_adv_seed161803_chat.jsonl
-data/adversarial/train_6000_prompt_adv_chat.jsonl
+data/adversarial/prompt_adv500_seed161804.jsonl
+data/adversarial/prompt_adv500_seed161804_chat.jsonl
+data/adversarial/train_5500_prompt_adv500_chat.jsonl
 ```
 
 The supplement avoids matrices already present in `data/train.jsonl`, emphasizes `compact_pairs` and `json_payoffs`, and balances every prompt variant across 0, 1, 2, 3, and 4 equilibria.
@@ -149,9 +149,9 @@ Run the adversarial follow-up SFT:
 ```bash
 .venv/bin/python run_tinker_sft.py \
   --config bench_config.json \
-  --train-chat data/adversarial/train_6000_prompt_adv_chat.jsonl \
-  --run-name qwen36_27b_sft_5000_plus_prompt_adv \
-  --out-manifest runs/qwen36_27b_sft_5000_plus_prompt_adv.json
+  --train-chat data/adversarial/train_5500_prompt_adv500_chat.jsonl \
+  --run-name qwen36_27b_sft_5000_plus_prompt_adv500 \
+  --out-manifest runs/qwen36_27b_sft_5000_plus_prompt_adv500.json
 ```
 
 ## Evaluation

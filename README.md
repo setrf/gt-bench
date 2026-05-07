@@ -6,7 +6,7 @@ GT-Bench is a minimal Tinker fine-tuning benchmark for strategic reasoning. It g
 
 The repository is intentionally compact: one task, one exact solver, one dataset generator, one scorer, and focused tests.
 
-For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`.
+For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`. A paper-style writeup is available at `paper/gt_bench_paper.tex`.
 
 ## My context
 
@@ -246,9 +246,9 @@ On a 250-example prompt-robustness set, the same checkpoint improved from 64.00%
 
 ## Adversarial robustness follow-up
 
-The remaining weakness is prompt format sensitivity: `compact_pairs` and `json_payoffs` are still weaker than the original table prompt. The next controlled follow-up adds a 1000-example adversarial prompt supplement to the 5000-example training set while keeping the mathematical task unchanged.
+The remaining weakness after the first robustness run was prompt format sensitivity: `compact_pairs` and `json_payoffs` were weaker than the original table prompt. The controlled follow-up adds a conservative 500-example adversarial prompt supplement to the 5000-example training set while keeping the mathematical task unchanged.
 
-Generate the supplemental training file and combined 6000-example chat file:
+Generate the supplemental training file and combined 5500-example chat file:
 
 ```bash
 .venv/bin/python generate_adversarial_training.py
@@ -259,12 +259,14 @@ Run the adversarial SFT job:
 ```bash
 .venv/bin/python run_tinker_sft.py \
   --config bench_config.json \
-  --train-chat data/adversarial/train_6000_prompt_adv_chat.jsonl \
-  --run-name qwen36_27b_sft_5000_plus_prompt_adv \
-  --out-manifest runs/qwen36_27b_sft_5000_plus_prompt_adv.json
+  --train-chat data/adversarial/train_5500_prompt_adv500_chat.jsonl \
+  --run-name qwen36_27b_sft_5000_plus_prompt_adv500 \
+  --out-manifest runs/qwen36_27b_sft_5000_plus_prompt_adv500.json
 ```
 
-The public follow-up tracker is `reports/adversarial_results.md`, with machine-readable status in `reports/adversarial_results.json`.
+The adversarial checkpoint reached 99.80% canonical accuracy, 99.90% confirmation accuracy, 100.00% stress accuracy, and 98.80% prompt-robustness accuracy. `compact_pairs` improved to 100.00%, and `json_payoffs` improved to 94.00%.
+
+The public follow-up summary is `reports/adversarial_results.md`, with machine-readable results in `reports/adversarial_results.json`.
 
 ## Result figures
 

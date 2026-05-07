@@ -15,6 +15,7 @@ from plot_results import write_figures
 from score_robustness import score_robustness
 from summarize_adversarial import (
     build_summary as build_adversarial_summary,
+    public_adversarial_fallbacks,
     public_original_fallbacks,
 )
 from summarize_results import exact_binomial_ci
@@ -468,4 +469,57 @@ def test_adversarial_summary_uses_public_fallbacks(tmp_path) -> None:
     assert (
         summary["evaluations"]["canonical"]["original_5000_sft"]["report_path"]
         == "reports/public_original.json"
+    )
+
+
+def test_adversarial_summary_uses_public_adversarial_fallbacks(tmp_path) -> None:
+    adversarial_path = tmp_path / "adversarial_results.json"
+    public_adversarial = {
+        "status": "complete",
+        "report_path": "reports/public_adversarial.json",
+        "total_examples": 20,
+        "exact_match_accuracy": 0.95,
+        "num_correct": 19,
+        "num_incorrect": 1,
+        "accuracy_by_number_of_equilibria": {},
+        "failed_examples_preview": [],
+    }
+    adversarial_path.write_text(
+        json.dumps(
+            {
+                "evaluations": {
+                    name: {"adversarial_sft": public_adversarial}
+                    for name in ("canonical", "confirmation", "stress", "robustness")
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    original = {
+        "status": "complete",
+        "report_path": "reports/public_original.json",
+        "total_examples": 10,
+        "exact_match_accuracy": 0.9,
+        "num_correct": 9,
+        "num_incorrect": 1,
+        "accuracy_by_number_of_equilibria": {},
+        "failed_examples_preview": [],
+    }
+    summary = build_adversarial_summary(
+        {
+            "canonical": (None, tmp_path / "missing_canonical.json"),
+            "confirmation": (None, tmp_path / "missing_confirmation.json"),
+            "stress": (None, tmp_path / "missing_stress.json"),
+            "robustness": (None, tmp_path / "missing_robustness.json"),
+        },
+        {name: original for name in ("canonical", "confirmation", "stress", "robustness")},
+        public_adversarial_fallbacks(adversarial_path),
+    )
+
+    assert summary["status"] == "complete"
+    assert summary["run_name"] == "qwen36_27b_sft_5000_plus_prompt_adv500"
+    assert (
+        summary["evaluations"]["canonical"]["adversarial_sft"]["report_path"]
+        == "reports/public_adversarial.json"
     )

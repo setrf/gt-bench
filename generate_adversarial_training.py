@@ -21,11 +21,11 @@ from tinker_common import jsonl_rows
 
 
 DEFAULT_VARIANT_COUNTS = {
-    "compact_pairs": 300,
-    "json_payoffs": 300,
-    "minimal_matrix": 150,
-    "answer_only": 150,
+    "compact_pairs": 150,
+    "json_payoffs": 150,
     "standard_table": 100,
+    "minimal_matrix": 50,
+    "answer_only": 50,
 }
 DEFAULT_COUNTS = (0, 1, 2, 3, 4)
 
@@ -189,7 +189,7 @@ def combine_chat_files(base_chat: Path, supplement_chat: Path, out_path: Path) -
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate GT-Bench adversarial prompt SFT data.")
-    parser.add_argument("--seed", type=int, default=161803)
+    parser.add_argument("--seed", type=int, default=161804)
     parser.add_argument("--base", type=Path, default=Path("data/train.jsonl"))
     parser.add_argument("--base-chat", type=Path, default=Path("data/train_chat.jsonl"))
     parser.add_argument(
@@ -197,24 +197,24 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         action="append",
         type=parse_variant_count,
         default=[],
-        help="Override a default variant count, e.g. compact_pairs=300.",
+        help="Override a default variant count, e.g. compact_pairs=150.",
     )
     parser.add_argument("--counts", type=int, nargs="+", default=list(DEFAULT_COUNTS))
     parser.add_argument("--max-attempts", type=int, default=5_000_000)
     parser.add_argument(
         "--out",
         type=Path,
-        default=Path("data/adversarial/prompt_adv_seed161803.jsonl"),
+        default=Path("data/adversarial/prompt_adv500_seed161804.jsonl"),
     )
     parser.add_argument(
         "--chat-out",
         type=Path,
-        default=Path("data/adversarial/prompt_adv_seed161803_chat.jsonl"),
+        default=Path("data/adversarial/prompt_adv500_seed161804_chat.jsonl"),
     )
     parser.add_argument(
         "--combined-chat-out",
         type=Path,
-        default=Path("data/adversarial/train_6000_prompt_adv_chat.jsonl"),
+        default=Path("data/adversarial/train_5500_prompt_adv500_chat.jsonl"),
     )
     return parser.parse_args(argv)
 

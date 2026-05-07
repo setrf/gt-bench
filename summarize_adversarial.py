@@ -16,6 +16,8 @@ EVALUATIONS = (
 )
 PUBLIC_RESULTS_PATH = Path("reports/gt_bench_results.json")
 PUBLIC_ROBUSTNESS_PATH = Path("reports/robustness_results.json")
+PUBLIC_ADVERSARIAL_PATH = Path("reports/adversarial_results.json")
+ADVERSARIAL_RUN_NAME = "qwen36_27b_sft_5000_plus_prompt_adv500"
 
 
 def read_report(path: Path | None) -> dict[str, Any] | None:
@@ -111,17 +113,43 @@ def public_original_fallbacks(
     return fallbacks
 
 
+def public_adversarial_fallbacks(
+    adversarial_path: Path = PUBLIC_ADVERSARIAL_PATH,
+) -> dict[str, dict[str, Any]]:
+    public_summary = read_report(adversarial_path)
+    if not public_summary:
+        return {}
+    evaluations = public_summary.get("evaluations", {})
+    if not isinstance(evaluations, dict):
+        return {}
+
+    fallbacks: dict[str, dict[str, Any]] = {}
+    for name in EVALUATIONS:
+        row = evaluations.get(name)
+        if not isinstance(row, dict):
+            continue
+        adversarial = row.get("adversarial_sft")
+        if isinstance(adversarial, dict) and adversarial.get("status") == "complete":
+            fallbacks[name] = adversarial
+    return fallbacks
+
+
 def build_summary(
     paths: dict[str, tuple[Path | None, Path | None]],
     original_fallbacks: dict[str, dict[str, Any]] | None = None,
+    adversarial_fallbacks: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     original_fallbacks = original_fallbacks or {}
+    adversarial_fallbacks = adversarial_fallbacks or {}
     evaluations: dict[str, Any] = {}
     for name in EVALUATIONS:
         original_path, adversarial_path = paths[name]
         row = {
             "original_5000_sft": summarize_report(original_path, original_fallbacks.get(name)),
-            "adversarial_sft": summarize_report(adversarial_path),
+            "adversarial_sft": summarize_report(
+                adversarial_path,
+                adversarial_fallbacks.get(name),
+            ),
         }
         add_delta(row)
         if name == "robustness":
@@ -148,7 +176,7 @@ def build_summary(
         acceptance["canonical_regression_within_bound"] = delta_pp >= -0.5
 
     return {
-        "run_name": "qwen36_27b_sft_5000_plus_prompt_adv",
+        "run_name": ADVERSARIAL_RUN_NAME,
         "model_id": "Qwen/Qwen3.6-27B",
         "status": (
             "complete"
@@ -227,7 +255,7 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
         "",
         f"Status: `{status}`",
         "",
-        "This follow-up keeps the mathematical task unchanged and targets the prompt-format weakness exposed by the robustness set. The adversarial training supplement emphasizes compact payoff pairs, JSON-like payoff objects, answer-only prompts, minimal matrices, and balanced equilibrium-count buckets.",
+        "This follow-up keeps the mathematical task unchanged and targets the prompt-format weakness exposed by the robustness set. The adversarial training supplement adds 500 conservative prompt-variant examples, emphasizing compact payoff pairs and JSON-like payoff objects while preserving balanced equilibrium-count buckets.",
         "",
     ]
     if status == "pending":
@@ -261,13 +289,13 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Summarize GT-Bench adversarial SFT follow-up reports.")
     parser.add_argument("--canonical-original", type=Path, default=Path("reports/qwen36_27b_sft_5000_report.json"))
-    parser.add_argument("--canonical-adversarial", type=Path, default=Path("reports/qwen36_27b_sft_5000_plus_prompt_adv_report.json"))
+    parser.add_argument("--canonical-adversarial", type=Path, default=Path("reports/qwen36_27b_sft_5000_plus_prompt_adv500_report.json"))
     parser.add_argument("--confirmation-original", type=Path, default=Path("reports/confirm_qwen36_27b_sft_5000_seed20260505_report.json"))
-    parser.add_argument("--confirmation-adversarial", type=Path, default=Path("reports/confirm_qwen36_27b_sft_5000_plus_prompt_adv_seed20260505_report.json"))
+    parser.add_argument("--confirmation-adversarial", type=Path, default=Path("reports/confirm_qwen36_27b_sft_5000_plus_prompt_adv500_seed20260505_report.json"))
     parser.add_argument("--stress-original", type=Path, default=Path("reports/stress_qwen36_27b_sft_5000_seed314159_report.json"))
-    parser.add_argument("--stress-adversarial", type=Path, default=Path("reports/stress_qwen36_27b_sft_5000_plus_prompt_adv_seed314159_report.json"))
+    parser.add_argument("--stress-adversarial", type=Path, default=Path("reports/stress_qwen36_27b_sft_5000_plus_prompt_adv500_seed314159_report.json"))
     parser.add_argument("--robustness-original", type=Path, default=Path("reports/robust_qwen36_27b_sft_5000_seed271828_report.json"))
-    parser.add_argument("--robustness-adversarial", type=Path, default=Path("reports/robust_qwen36_27b_sft_5000_plus_prompt_adv_seed271828_report.json"))
+    parser.add_argument("--robustness-adversarial", type=Path, default=Path("reports/robust_qwen36_27b_sft_5000_plus_prompt_adv500_seed271828_report.json"))
     parser.add_argument("--public-results", type=Path, default=PUBLIC_RESULTS_PATH)
     parser.add_argument("--public-robustness", type=Path, default=PUBLIC_ROBUSTNESS_PATH)
     parser.add_argument("--out-json", type=Path, default=Path("reports/adversarial_results.json"))
@@ -285,6 +313,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "robustness": (args.robustness_original, args.robustness_adversarial),
         },
         public_original_fallbacks(args.public_results, args.public_robustness),
+        public_adversarial_fallbacks(args.out_json),
     )
     args.out_json.parent.mkdir(parents=True, exist_ok=True)
     args.out_json.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

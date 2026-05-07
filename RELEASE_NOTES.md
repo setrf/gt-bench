@@ -2,11 +2,12 @@
 
 ## v0.2-adversarial-robustness
 
-- Adds the adversarial prompt SFT pipeline for the robustness gap found in `v0.1.3`.
-- Generates a deterministic 1000-example supplemental training set weighted toward `compact_pairs` and `json_payoffs`.
+- Adds the adversarial prompt SFT result for the robustness gap found in `v0.1.3`.
+- Generates a deterministic 500-example supplemental training set weighted toward `compact_pairs` and `json_payoffs`.
+- Improves robustness accuracy from 88.40% to 98.80% versus the original 5000-example SFT checkpoint, while canonical accuracy increases from 99.60% to 99.80%.
+- Improves `compact_pairs` from 78.00% to 100.00% and `json_payoffs` from 68.00% to 94.00%.
 - Adds `reports/adversarial_results.*` and `reports/figures/adversarial_comparison.svg`.
 - Adds a Makefile and GitHub Actions CI for tests, secret scanning, and public artifact regeneration.
-- Release should be finalized after the bounded Tinker SFT/evaluation run meets the documented acceptance criteria.
 
 ## v0.1.3-robustness-eval
 

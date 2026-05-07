@@ -1,0 +1,146 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+\title{GT-Bench: Targeted Fine-Tuning for a Minimal Game-Theory Reasoning Task}
+\author{Mert Gulsun\\UC Berkeley}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+GT-Bench is a minimal, exactly verifiable benchmark for studying targeted fine-tuning on a narrow formal reasoning task. Each example gives a randomly generated 2x2 two-player normal-form payoff matrix and asks a model to identify all pure-strategy Nash equilibria. Because the task has an exact solver, synthetic data can be generated at scale and model outputs can be scored without subjective judgment. Using Thinking Machines Lab Tinker, LoRA supervised fine-tuning of Qwen/Qwen3.6-27B on 5000 synthetic examples improved canonical exact-match accuracy from 87.60\% to 99.60\%. A conservative 500-example adversarial prompt supplement further improved prompt robustness from 88.40\% to 98.80\% relative to the original 5000-example fine-tuned checkpoint, without canonical regression. The result supports a narrow claim: targeted fine-tuning can improve one controlled formal reasoning skill and targeted adversarial fine-tuning can improve robustness to equivalent prompt presentations. It does not demonstrate broad game-theory reasoning competence.
+\end{abstract}
+
+\section{Introduction}
+
+Large language models often appear capable of formal reasoning, but broad qualitative examples make it difficult to separate genuine rule acquisition from prompt familiarity or surface pattern matching. GT-Bench isolates one small mathematical task: given a 2x2 normal-form game, return exactly the set of pure-strategy Nash equilibria. The benchmark is intentionally narrow, synthetic, and mechanically verifiable.
+
+This project was developed in the context of a Thinking Machines Lab Tinker research grant. The experimental goal was practical rather than expansive: build a clean public artifact showing whether targeted supervised fine-tuning can measurably improve a model on a precisely specified formal game-theory skill.
+
+\section{Task Definition}
+
+Each game has two players. Player 1 chooses $U$ or $D$, and Player 2 chooses $L$ or $R$. Each cell contains a pair of integer payoffs in the range 0 through 9. A pure-strategy Nash equilibrium is a strategy profile in which both players are best responding. Ties are handled exactly, so a game may have zero, one, two, three, or four pure equilibria.
+
+The benchmark excludes mixed strategies, dominance, welfare analysis, sequential games, auctions, public goods games, Nim, and story problems. This restriction is deliberate: the goal is to test one rule under controlled conditions, not to build a general game-theory benchmark.
+
+\section{Dataset and Scoring}
+
+The canonical dataset is generated with seed 42 and contains 5000 training examples, 500 validation examples, and 500 held-out test examples. The generator avoids duplicate payoff matrices and exports both standard JSONL and chat-format JSONL. The chat-format examples provide the matrix prompt and an assistant answer containing the final equilibrium set plus concise best-response reasoning.
+
+The scorer parses common answer forms such as \texttt{(U, L)}, \texttt{U,L}, and natural-language empty-set statements such as \texttt{none} or \texttt{no pure Nash equilibrium}. Predictions are converted into equilibrium sets and compared to the solver output while ignoring order. Accuracy is exact-match accuracy; a prediction is correct only if it names exactly the gold set.
+
+\section{Tinker Fine-Tuning Setup}
+
+The model was \texttt{Qwen/Qwen3.6-27B}. Experiments used the Tinker \texttt{qwen3\_disable\_thinking} renderer and LoRA supervised fine-tuning with rank 16, 3 epochs, effective batch size 32, and learning rate $10^{-4}$. Decoding used temperature 0 and one sample. Three training sizes were tested: 250, 1000, and 5000 examples.
+
+\section{Canonical Results}
+
+Table~\ref{tab:canonical} shows exact-match accuracy on the 500-example canonical held-out test set. The 250-example run reduced performance, the 1000-example run improved modestly, and the 5000-example run nearly solved the split.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrr}
+\hline
+Run & Accuracy & Correct & Incorrect & Delta vs. baseline \\
+\hline
+Baseline & 87.60\% & 438 & 62 & 0.00 pp \\
+250-example SFT & 53.40\% & 267 & 233 & -34.20 pp \\
+1000-example SFT & 91.60\% & 458 & 42 & +4.00 pp \\
+5000-example SFT & 99.60\% & 498 & 2 & +12.00 pp \\
+\hline
+\end{tabular}
+\caption{Canonical exact-match accuracy on 500 held-out examples.}
+\label{tab:canonical}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox{0.85\linewidth}{\centering Public SVG figure: \href{../reports/figures/accuracy_main.svg}{\texttt{reports/figures/accuracy\_main.svg}}}}
+\caption{Canonical accuracy across baseline and SFT training sizes.}
+\end{figure}
+
+\section{Confirmation and Stress Evaluation}
+
+To check whether the result was specific to the canonical test split, a fresh 1000-example confirmation set was generated with seed 20260505. The baseline achieved 89.20\%, while the 5000-example checkpoint achieved 99.70\%.
+
+A balanced 250-example stress set was also generated, with exactly 50 examples in each equilibrium-count bucket from zero through four. This set probes tie-heavy and zero-equilibrium cases more directly. The baseline achieved 81.60\%; the 5000-example checkpoint achieved 100.00\%.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrr}
+\hline
+Evaluation & Baseline & 5000-example SFT & Delta \\
+\hline
+Confirmation & 89.20\% & 99.70\% & +10.50 pp \\
+Stress & 81.60\% & 100.00\% & +18.40 pp \\
+\hline
+\end{tabular}
+\caption{Generalization checks beyond the canonical split.}
+\label{tab:confirm-stress}
+\end{table}
+
+The most important baseline failure mode was zero-equilibrium overprediction. On the balanced stress set, the baseline solved only 16 of 50 zero-equilibrium examples, while the 5000-example checkpoint solved all 50.
+
+\section{Prompt Robustness}
+
+A 250-example robustness set tested five semantically equivalent prompt surfaces: the original table, compact payoff pairs, JSON-like payoff objects, a minimal matrix, and an answer-only instruction. The baseline achieved 64.00\%, while the original 5000-example checkpoint achieved 88.40\%. This improved robustness substantially, but \texttt{compact\_pairs} and \texttt{json\_payoffs} remained weak at 78.00\% and 68.00\%, respectively.
+
+\section{Adversarial Prompt Fine-Tuning}
+
+The final follow-up added a conservative 500-example adversarial prompt supplement to the original 5000-example training set. The supplement emphasized compact payoff pairs and JSON-like payoff objects while balancing examples across the five equilibrium-count buckets. No new mathematical task types were introduced.
+
+Table~\ref{tab:adversarial} compares the original 5000-example checkpoint with the adversarially supplemented checkpoint. The adversarial checkpoint improved robustness to 98.80\%, while canonical accuracy increased slightly to 99.80\%.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrr}
+\hline
+Evaluation & Original 5000 SFT & Adversarial SFT & Delta \\
+\hline
+Canonical & 99.60\% & 99.80\% & +0.20 pp \\
+Confirmation & 99.70\% & 99.90\% & +0.20 pp \\
+Stress & 100.00\% & 100.00\% & +0.00 pp \\
+Robustness & 88.40\% & 98.80\% & +10.40 pp \\
+\hline
+\end{tabular}
+\caption{Adversarial prompt SFT results.}
+\label{tab:adversarial}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrr}
+\hline
+Prompt variant & Original 5000 SFT & Adversarial SFT & Delta \\
+\hline
+\texttt{answer\_only} & 100.00\% & 100.00\% & +0.00 pp \\
+\texttt{compact\_pairs} & 78.00\% & 100.00\% & +22.00 pp \\
+\texttt{json\_payoffs} & 68.00\% & 94.00\% & +26.00 pp \\
+\texttt{minimal\_matrix} & 96.00\% & 100.00\% & +4.00 pp \\
+\texttt{standard\_table} & 100.00\% & 100.00\% & +0.00 pp \\
+\hline
+\end{tabular}
+\caption{Prompt-variant robustness after adversarial SFT.}
+\label{tab:variants}
+\end{table}
+
+\section{Discussion}
+
+The results support two controlled claims. First, targeted SFT improved Qwen/Qwen3.6-27B on a narrow formal task with exact verification. Second, targeted adversarial SFT improved robustness to equivalent prompt presentations without degrading canonical accuracy.
+
+The negative 250-example result is also informative. A small amount of narrow training data can hurt performance, suggesting that this benchmark is sensitive enough to detect not only improvement but also poor fine-tuning regimes.
+
+\section{Limitations}
+
+GT-Bench is not a general game-theory evaluation. It uses synthetic data, only 2x2 games, only integer payoffs, and only pure-strategy equilibria. It does not test mixed strategies, dominance, welfare comparisons, sequential reasoning, auctions, public goods games, or natural-language story problems. It also does not prove that the model acquired a human-like concept of Nash equilibrium.
+
+The benchmark is useful precisely because it is constrained. The rule is exact, the data is reproducible, and failures can be inspected mechanically.
+
+\section{Conclusion}
+
+GT-Bench demonstrates that a compact, reproducible Tinker fine-tuning artifact can produce measurable gains on a fully verifiable formal reasoning task. The strongest checkpoint improved canonical accuracy from 87.60\% to 99.60\%, and an adversarial prompt supplement improved robustness from 88.40\% to 98.80\% relative to the original 5000-example checkpoint. The appropriate conclusion is narrow but useful: targeted fine-tuning can improve a specific formal skill, and targeted data can close prompt-format robustness gaps for that same skill.
+
+\end{document}

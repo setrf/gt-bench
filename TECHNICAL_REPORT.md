@@ -89,19 +89,26 @@ This strengthens the result but also reveals the next frontier: the model is muc
 
 ## Adversarial Robustness Follow-Up
 
-The finish-up milestone adds a targeted adversarial SFT pipeline for the weakest robustness variants. The supplemental data contains 1000 additional chat examples, weighted toward compact payoff pairs and JSON-like payoff objects while remaining balanced across 0-, 1-, 2-, 3-, and 4-equilibrium games.
+The finish-up milestone adds a targeted adversarial SFT pipeline for the weakest robustness variants. The final supplemental data contains 500 additional chat examples, weighted toward compact payoff pairs and JSON-like payoff objects while remaining balanced across 0-, 1-, 2-, 3-, and 4-equilibrium games.
 
-The planned run is `qwen36_27b_sft_5000_plus_prompt_adv`: the original 5000-example training set plus the adversarial prompt supplement, using the same `Qwen/Qwen3.6-27B` LoRA SFT settings. The acceptance target is at least 95.00% prompt-robustness accuracy without more than a 0.50 percentage-point regression on the canonical test.
+The final run is `qwen36_27b_sft_5000_plus_prompt_adv500`: the original 5000-example training set plus the conservative adversarial prompt supplement, using the same `Qwen/Qwen3.6-27B` LoRA SFT settings. It met the acceptance target: prompt-robustness accuracy reached 98.80%, and canonical accuracy increased from 99.60% to 99.80%.
+
+| Evaluation | Original 5000 SFT | Adversarial SFT | Delta |
+| --- | ---: | ---: | ---: |
+| canonical | 99.60% | 99.80% | +0.20 pp |
+| confirmation | 99.70% | 99.90% | +0.20 pp |
+| stress | 100.00% | 100.00% | +0.00 pp |
+| robustness | 88.40% | 98.80% | +10.40 pp |
 
 ![Adversarial SFT comparison](reports/figures/adversarial_comparison.svg)
 
-The public tracker is `reports/adversarial_results.md`. If the run is pending, this file documents the exact pipeline rather than reporting substituted results.
+The public summary is `reports/adversarial_results.md`.
 
 ## Most Important Failure Mode
 
 The base model often wants every 2x2 game to have at least one pure equilibrium. This creates many false positives on zero-equilibrium games, where the correct answer is the empty set.
 
-After fine-tuning, this failure mode is mostly removed. The remaining canonical and confirmation failures in the best checkpoint are tie-heavy games where the model identifies true equilibria but over-predicts one extra cell that is not actually a mutual best response. The robustness run adds a second failure mode: compact or structured payoff presentations can still reduce accuracy. The adversarial follow-up is designed specifically to test whether that second failure mode can be reduced without weakening the canonical result.
+After fine-tuning, this failure mode is mostly removed. The remaining canonical and confirmation failures in the best checkpoint are tie-heavy games where the model identifies true equilibria but over-predicts one extra cell that is not actually a mutual best response. The robustness run adds a second failure mode: compact or structured payoff presentations can still reduce accuracy. The adversarial follow-up substantially reduces that second failure mode without weakening the canonical result; the remaining robustness errors are concentrated in the JSON-like payoff format.
 
 ## Claim Boundaries
 
@@ -125,6 +132,4 @@ The full reproducibility recipe, including the complete summary command with all
 
 ## Next Steps
 
-Complete the adversarial SFT run and evaluate it on the canonical, confirmation, stress, and robustness sets. If robustness reaches the target without canonical regression, publish the result as `v0.2-adversarial-robustness`.
-
-After that, the next scientific step is a repeated-seed learning curve. A second benchmark should be added only as a separate task, rather than mixing new game-theory concepts into this controlled artifact.
+The next scientific step is a repeated-seed learning curve. A second benchmark should be added only as a separate task, rather than mixing new game-theory concepts into this controlled artifact.
