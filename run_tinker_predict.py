@@ -37,6 +37,7 @@ def run_predictions(
     max_tokens: int | None,
     temperature: float | None,
     limit: int | None,
+    concurrency: int = 1,
 ) -> int:
     require_api_key()
 
@@ -65,22 +66,44 @@ def run_predictions(
         seed=int(config["seed"]),
     )
 
+    if concurrency < 1:
+        raise ValueError("concurrency must be at least 1")
+
+    rows = list(jsonl_rows(gold_path))
+    if limit is not None:
+        rows = rows[:limit]
+
+    def submit(row: dict[str, Any]) -> Any:
+        prompt = renderer.build_generation_prompt(build_messages(str(row["prompt"])))
+        return sampling_client.sample(prompt=prompt, num_samples=1, sampling_params=params)
+
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    count = 0
+    written = 0
+    next_index = 0
+    pending: list[tuple[dict[str, Any], Any]] = []
     with out_path.open("w", encoding="utf-8") as handle:
-        for row in jsonl_rows(gold_path):
-            if limit is not None and count >= limit:
-                break
-            prompt = renderer.build_generation_prompt(build_messages(str(row["prompt"])))
-            result = sampling_client.sample(prompt=prompt, num_samples=1, sampling_params=params).result()
+        while next_index < len(rows) and len(pending) < concurrency:
+            row = rows[next_index]
+            pending.append((row, submit(row)))
+            next_index += 1
+
+        while pending:
+            row, future = pending.pop(0)
+            result = future.result()
             prediction = text_from_response(renderer, result.sequences[0].tokens)
             handle.write(json.dumps({"id": row["id"], "prediction": prediction}) + "\n")
             handle.flush()
-            count += 1
-            if count % 25 == 0:
-                print(f"completed {count} predictions")
-    print(f"wrote {count} predictions to {out_path}")
-    return count
+            written += 1
+            if written % 25 == 0:
+                print(f"completed {written} predictions")
+
+            while next_index < len(rows) and len(pending) < concurrency:
+                next_row = rows[next_index]
+                pending.append((next_row, submit(next_row)))
+                next_index += 1
+
+    print(f"wrote {written} predictions to {out_path}")
+    return written
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
@@ -93,6 +116,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-tokens", type=int, default=None)
     parser.add_argument("--temperature", type=float, default=None)
     parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument("--concurrency", type=int, default=1)
     return parser.parse_args(argv)
 
 
@@ -108,6 +132,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.max_tokens,
             args.temperature,
             args.limit,
+            args.concurrency,
         )
     except (TinkerSetupError, ImportError) as exc:
         return fail(str(exc))

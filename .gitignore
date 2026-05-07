@@ -13,6 +13,7 @@ reports/*.json
 !reports/gt_bench_results.json
 !reports/robustness_results.json
 !reports/adversarial_results.json
+!reports/seed_sweep_results.json
 predictions/
 predictions*.jsonl
 run_logs/

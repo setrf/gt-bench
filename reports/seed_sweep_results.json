@@ -1,0 +1,1643 @@
+{
+  "model_id": "Qwen/Qwen3.6-27B",
+  "status": "complete",
+  "test_path": "data/test.jsonl",
+  "test_sha256": "a9af74346a7b67cc13952fc858570dee6d03e4248b04e830c42f8c1bb935d219",
+  "baseline_report": "reports/baseline_qwen36_27b_report.json",
+  "baseline": {
+    "status": "complete",
+    "report_path": "reports/baseline_qwen36_27b_report.json",
+    "total_examples": 500,
+    "exact_match_accuracy": 0.876,
+    "accuracy_ci_95": {
+      "method": "clopper_pearson",
+      "confidence": 0.95,
+      "lower": 0.8438707543486276,
+      "upper": 0.9035937168491702
+    },
+    "num_correct": 438,
+    "num_incorrect": 62,
+    "accuracy_by_number_of_equilibria": {
+      "2": {
+        "total": 141,
+        "correct": 137,
+        "accuracy": 0.9716312056737588
+      },
+      "1": {
+        "total": 308,
+        "correct": 287,
+        "accuracy": 0.9318181818181818
+      },
+      "0": {
+        "total": 45,
+        "correct": 9,
+        "accuracy": 0.2
+      },
+      "3": {
+        "total": 6,
+        "correct": 5,
+        "accuracy": 0.8333333333333334
+      }
+    },
+    "failed_examples_preview": [
+      {
+        "id": "example_005503",
+        "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (3,8)   (8,0)\nD    (3,2)   (4,2)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+        "gold": [
+          [
+            "D",
+            "L"
+          ],
+          [
+            "U",
+            "L"
+          ]
+        ],
+        "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 3) vs. $D$ (payoff 3). Player 1 is indifferent; both are best responses.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 8) vs. $D$ (payoff 4). Player 1 chooses **U**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 8) vs. $R$ (payoff 0). Player 2 chooses **L**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 2) vs. $R$ (payoff 2). Player 2 is indifferent; both are best responses.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing a best response simultaneously.\n1.  **Strategy Profile (U, L)**: Player 1 plays $U$ (best response to $L$) and Player 2 plays $L$ (best response to $U$). This is a Nash equilibrium.\n2.  **Strategy Profile (D, R)**: Player 1 plays $D$ (best response to $R$) and Player 2 plays $R$ (best response to $D$). This is a Nash equilibrium.\n\n**Conclusion**\nThe pure-strategy Nash equilibria are:\n**$(U, L)$ and $(D, R)$**"
+      },
+      {
+        "id": "example_005519",
+        "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (0,9)   (2,5)\nD    (8,7)   (2,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+        "gold": [
+          [
+            "D",
+            "R"
+          ]
+        ],
+        "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 0) vs. $D$ (payoff 8). Since $8 > 0$, Player 1 chooses **D**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 2) vs. $D$ (payoff 2). Since $2 = 2$, Player 1 is indifferent and can choose either **U** or **D**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 9) vs. $R$ (payoff 5). Since $9 > 5$, Player 2 chooses **L**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 7) vs. $R$ (payoff 8). Since $8 > 7$, Player 2 chooses **R**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   **Strategy Profile (D, R)**: Player 1 chooses D (best response to R), and Player 2 chooses R (best response to D). This is a Nash equilibrium.\n*   **Strategy Profile (U, R)**: Player 1 chooses U (best response to R, as payoffs are equal), and Player 2 chooses R (best response to U). This is a Nash equilibrium.\n\n**Conclusion**\nThe pure-strategy Nash equilibria are:\n1.  **(D, R)** with payoffs (2, 8)\n2.  **(U, R)** with payoffs (2, 5)"
+      },
+      {
+        "id": "example_005523",
+        "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (3,6)   (4,9)\nD    (0,8)   (4,7)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+        "gold": [
+          [
+            "U",
+            "R"
+          ]
+        ],
+        "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 3) vs. $D$ (payoff 0). Since $3 > 0$, Player 1 chooses **U**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 4) vs. $D$ (payoff 4). Since $4 = 4$, Player 1 is indifferent and can choose either **U** or **D**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 6) vs. $R$ (payoff 9). Since $9 > 6$, Player 2 chooses **R**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 8) vs. $R$ (payoff 7). Since $8 > 7$, Player 2 chooses **L**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   **(U, R)**: Player 1 chooses U (best response to R), and Player 2 chooses R (best response to U). This is a Nash equilibrium.\n*   **(D, L)**: Player 1 chooses D (best response to L), and Player 2 chooses L (best response to D). This is a Nash equilibrium.\n\n**Conclusion**\nThe pure-strategy Nash equilibria are **(U, R)** and **(D, L)**."
+      },
+      {
+        "id": "example_005550",
+        "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (8,0)   (3,3)\nD    (0,8)   (6,4)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+        "gold": [],
+        "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice. A Nash equilibrium occurs where both players are playing their best response simultaneously.\n\n### Step-by-Step Deduction\n\n**1. Analyze Player 1's Best Responses:**\nPlayer 1 chooses between **U** and **D** to maximize their first payoff number.\n*   **If Player 2 chooses L:** Player 1 compares $U$ (payoff 8) vs. $D$ (payoff 0). Since $8 > 0$, Player 1 chooses **U**.\n*   **If Player 2 chooses R:** Player 1 compares $U$ (payoff 3) vs. $D$ (payoff 6). Since $6 > 3$, Player 1 chooses **D**.\n\n**2. Analyze Player 2's Best Responses:**\nPlayer 2 chooses between **L** and **R** to maximize their second payoff number.\n*   **If Player 1 chooses U:** Player 2 compares $L$ (payoff 0) vs. $R$ (payoff 3). Since $3 > 0$, Player 2 chooses **R**.\n*   **If Player 1 chooses D:** Player 2 compares $L$ (payoff 8) vs. $R$ (payoff 4). Since $8 > 4$, Player 2 chooses **L**.\n\n**3. Identify Mutual Best Responses:**\nWe look for the cell where both players are playing their best response to the other.\n*   **(U, L):** Player 1 is happy, but Player 2 wants to switch to R. (Not an equilibrium)\n*   **(U, R):** Player 1 wants to switch to D, and Player 2 is happy. (Not an equilibrium)\n*   **(D, L):** Player 1 wants to switch to U, and Player 2 is happy. (Not an equilibrium)\n*   **(D, R):** Player 1 is happy (6 > 3), and Player 2 is happy (4 > 0). **(Nash Equilibrium)**\n\n### Conclusion\n\nThere is only one pure-strategy Nash equilibrium:\n\n**{D, R}** with payoffs **(6, 4)**."
+      },
+      {
+        "id": "example_005553",
+        "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (1,5)   (9,0)\nD    (5,1)   (8,2)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+        "gold": [],
+        "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 1) vs. $D$ (payoff 5). Since $5 > 1$, Player 1 chooses **D**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 9) vs. $D$ (payoff 8). Since $9 > 8$, Player 1 chooses **U**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 5) vs. $R$ (payoff 0). Since $5 > 0$, Player 2 chooses **L**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 1) vs. $R$ (payoff 2). Since $2 > 1$, Player 2 chooses **R**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   At **(U, L)**: Player 1 wants to switch to D. (Not an equilibrium)\n*   At **(D, R)**: Player 1 chooses D (best response to R), and Player 2 chooses R (best response to D). Neither player has an incentive to deviate.\n\n**Conclusion**\nThe only pure-strategy Nash equilibrium is **(D, R)**."
+      },
+      {
+        "id": "example_005558",
+        "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (6,5)   (7,3)\nD    (7,4)   (4,9)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+        "gold": [],
+        "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 6) vs. $D$ (payoff 7). Since $7 > 6$, Player 1 chooses **D**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 7) vs. $D$ (payoff 4). Since $7 > 4$, Player 1 chooses **U**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 5) vs. $R$ (payoff 3). Since $5 > 3$, Player 2 chooses **L**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 4) vs. $R$ (payoff 9). Since $9 > 4$, Player 2 chooses **R**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   At **(U, L)**: Player 1 wants to switch to D. (Not an equilibrium)\n*   At **(U, R)**: Player 2 wants to switch to L. (Not an equilibrium)\n*   At **(D, L)**: Player 2 wants to switch to R. (Not an equilibrium)\n*   At **(D, R)**: Player 1 is playing their best response to R, and Player 2 is playing their best response to D. Neither player has an incentive to deviate.\n\n**Conclusion**\nThe only pure-strategy Nash equilibrium is **(D, R)**."
+      },
+      {
+        "id": "example_005559",
+        "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (6,6)   (6,0)\nD    (7,2)   (3,6)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+        "gold": [],
+        "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 6) vs. $D$ (payoff 7). Since $7 > 6$, Player 1 chooses **D**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 6) vs. $D$ (payoff 3). Since $6 > 3$, Player 1 chooses **U**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 6) vs. $R$ (payoff 0). Since $6 > 0$, Player 2 chooses **L**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 2) vs. $R$ (payoff 6). Since $6 > 2$, Player 2 chooses **R**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   At **(U, L)**: Player 1 wants to switch to D. (Not an equilibrium)\n*   At **(D, R)**: Player 1 chooses U (best response to R), and Player 2 chooses R (best response to D). Neither player has an incentive to deviate.\n\n**Conclusion**\nThe only pure-strategy Nash equilibrium is **(D, R)**."
+      },
+      {
+        "id": "example_005565",
+        "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (2,6)   (6,8)\nD    (4,8)   (0,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+        "gold": [
+          [
+            "D",
+            "L"
+          ],
+          [
+            "U",
+            "R"
+          ]
+        ],
+        "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 2) vs. $D$ (payoff 4). Since $4 > 2$, Player 1 chooses **D**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 6) vs. $D$ (payoff 0). Since $6 > 0$, Player 1 chooses **U**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 6) vs. $R$ (payoff 8). Since $8 > 6$, Player 2 chooses **R**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 8) vs. $R$ (payoff 3). Since $8 > 3$, Player 2 chooses **L**.\n\n**Step 3: Identify the Nash Equilibrium**\nA Nash equilibrium occurs where both players are playing their best response simultaneously (mutual best responses).\n*   At **(U, R)**: Player 1 plays $U$ (best response to $R$) and Player 2 plays $R$ (best response to $U$).\n\n**Conclusion**\nThe unique pure-strategy Nash equilibrium is **(U, R)**."
+      },
+      {
+        "id": "example_005567",
+        "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (5,2)   (4,8)\nD    (1,3)   (5,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+        "gold": [
+          [
+            "D",
+            "R"
+          ]
+        ],
+        "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 5) vs. $D$ (payoff 1). Since $5 > 1$, Player 1 chooses **U**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 4) vs. $D$ (payoff 5). Since $5 > 4$, Player 1 chooses **D**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 2) vs. $R$ (payoff 8). Since $8 > 2$, Player 2 chooses **R**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 3) vs. $R$ (payoff 3). Since $3 = 3$, Player 2 is indifferent and can choose either **L** or **R**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing a best response to each other.\n1.  **Strategy Profile (D, L)**: Player 1 plays $D$ (best response to $L$) and Player 2 plays $L$ (best response to $D$). This is a Nash equilibrium.\n2.  **Strategy Profile (D, R)**: Player 1 plays $D$ (best response to $R$) and Player 2 plays $R$ (best response to $D$). This is a Nash equilibrium.\n\n**Conclusion**\nThe pure-strategy Nash equilibria are **(D, L)** and **(D, R)**."
+      },
+      {
+        "id": "example_005568",
+        "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (7,6)   (4,2)\nD    (9,8)   (3,9)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+        "gold": [],
+        "prediction": "To find the pure-strategy Nash equilibria, we determine the best response for each player given the other player's choice.\n\n**Step 1: Find Player 1's best responses**\n*   If Player 2 chooses **L**: Player 1 compares $U$ (payoff 7) vs. $D$ (payoff 9). Since $9 > 7$, Player 1 chooses **D**.\n*   If Player 2 chooses **R**: Player 1 compares $U$ (payoff 4) vs. $D$ (payoff 3). Since $4 > 3$, Player 1 chooses **U**.\n\n**Step 2: Find Player 2's best responses**\n*   If Player 1 chooses **U**: Player 2 compares $L$ (payoff 6) vs. $R$ (payoff 2). Since $6 > 2$, Player 2 chooses **L**.\n*   If Player 1 chooses **D**: Player 2 compares $L$ (payoff 8) vs. $R$ (payoff 9). Since $9 > 8$, Player 2 chooses **R**.\n\n**Step 3: Identify Mutual Best Responses**\nA Nash equilibrium occurs where both players are playing their best response simultaneously.\n*   At **(U, L)**: Player 1 wants to switch to D. (Not an equilibrium)\n*   At **(D, R)**: Player 1 chooses U (best response to R), and Player 2 chooses R (best response to D). Neither player has an incentive to deviate.\n\n**Conclusion**\nThe only pure-strategy Nash equilibrium is **(D, R)**."
+      }
+    ]
+  },
+  "seeds": [
+    42,
+    1009,
+    2027
+  ],
+  "train_sizes": [
+    250,
+    1000,
+    5000
+  ],
+  "runs": {
+    "250": [
+      {
+        "status": "complete",
+        "report_path": "reports/qwen36_27b_sft_0250_report.json",
+        "total_examples": 500,
+        "exact_match_accuracy": 0.534,
+        "accuracy_ci_95": {
+          "method": "clopper_pearson",
+          "confidence": 0.95,
+          "lower": 0.4891843832932963,
+          "upper": 0.5784113729613446
+        },
+        "num_correct": 267,
+        "num_incorrect": 233,
+        "accuracy_by_number_of_equilibria": {
+          "2": {
+            "total": 141,
+            "correct": 37,
+            "accuracy": 0.2624113475177305
+          },
+          "1": {
+            "total": 308,
+            "correct": 230,
+            "accuracy": 0.7467532467532467
+          },
+          "0": {
+            "total": 45,
+            "correct": 0,
+            "accuracy": 0.0
+          },
+          "3": {
+            "total": 6,
+            "correct": 0,
+            "accuracy": 0.0
+          }
+        },
+        "failed_examples_preview": [
+          {
+            "id": "example_005501",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,9)   (5,2)\nD    (4,5)   (7,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L) and (D, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, L) and (D, R)."
+          },
+          {
+            "id": "example_005502",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (5,1)   (5,5)\nD    (7,8)   (2,6)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best responses to R are U and D. Player 2's best response to U is R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, R)."
+          },
+          {
+            "id": "example_005504",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (7,1)   (6,1)\nD    (8,6)   (2,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005508",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (9,2)   (2,9)\nD    (4,1)   (2,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profile is (U, R)."
+          },
+          {
+            "id": "example_005514",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (5,4)   (9,0)\nD    (4,7)   (9,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best responses to R are U and D. Player 2's best response to U is L, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005517",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (2,8)   (6,8)\nD    (5,6)   (4,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best responses to U are L and R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, R)."
+          },
+          {
+            "id": "example_005524",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,9)   (1,1)\nD    (6,3)   (4,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "D",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005529",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (8,4)   (8,6)\nD    (1,0)   (6,6)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, R) and (D, R)."
+          },
+          {
+            "id": "example_005531",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (0,1)   (7,4)\nD    (9,5)   (3,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005533",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (6,6)   (7,8)\nD    (8,4)   (5,7)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is D. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
+          }
+        ],
+        "seed": 42,
+        "train_size": 250,
+        "name": "qwen36_27b_sft_0250",
+        "delta_vs_baseline": -0.34199999999999997,
+        "delta_pp_vs_baseline": -34.199999999999996
+      },
+      {
+        "status": "complete",
+        "report_path": "reports/qwen36_27b_seed1009_sft_0250_report.json",
+        "total_examples": 500,
+        "exact_match_accuracy": 0.462,
+        "accuracy_ci_95": {
+          "method": "clopper_pearson",
+          "confidence": 0.95,
+          "lower": 0.41763759283444046,
+          "upper": 0.5068142164819197
+        },
+        "num_correct": 231,
+        "num_incorrect": 269,
+        "accuracy_by_number_of_equilibria": {
+          "2": {
+            "total": 141,
+            "correct": 69,
+            "accuracy": 0.48936170212765956
+          },
+          "1": {
+            "total": 308,
+            "correct": 162,
+            "accuracy": 0.525974025974026
+          },
+          "0": {
+            "total": 45,
+            "correct": 0,
+            "accuracy": 0.0
+          },
+          "3": {
+            "total": 6,
+            "correct": 0,
+            "accuracy": 0.0
+          }
+        },
+        "failed_examples_preview": [
+          {
+            "id": "example_005501",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,9)   (5,2)\nD    (4,5)   (7,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L) and (D, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, L) and (D, R)."
+          },
+          {
+            "id": "example_005504",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (7,1)   (6,1)\nD    (8,6)   (2,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best response to U is L, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005506",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (7,0)   (3,8)\nD    (5,4)   (7,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is D. Player 2's best response to U is R, and Player 2's best responses to D are L and R. Therefore the mutual best-response profiles are (U, R) and (D, R)."
+          },
+          {
+            "id": "example_005508",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (9,2)   (2,9)\nD    (4,1)   (2,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profile is (U, R)."
+          },
+          {
+            "id": "example_005511",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (1,8)   (9,2)\nD    (5,8)   (8,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L) and (D, L).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is U. Player 2's best response to U is L, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, L) and (D, L)."
+          },
+          {
+            "id": "example_005517",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (2,8)   (6,8)\nD    (5,6)   (4,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L) and (U, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best responses to U are L and R, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, L) and (U, R)."
+          },
+          {
+            "id": "example_005519",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (0,9)   (2,5)\nD    (8,7)   (2,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L) and (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best responses to R are U and D. Player 2's best response to U is L, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, L) and (D, R)."
+          },
+          {
+            "id": "example_005524",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,9)   (1,1)\nD    (6,3)   (4,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "D",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005525",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (0,3)   (1,0)\nD    (1,6)   (6,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L) and (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, L) and (D, R)."
+          },
+          {
+            "id": "example_005529",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (8,4)   (8,6)\nD    (1,0)   (6,6)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, R) and (D, R)."
+          }
+        ],
+        "seed": 1009,
+        "train_size": 250,
+        "name": "qwen36_27b_seed1009_sft_0250",
+        "delta_vs_baseline": -0.414,
+        "delta_pp_vs_baseline": -41.4
+      },
+      {
+        "status": "complete",
+        "report_path": "reports/qwen36_27b_seed2027_sft_0250_report.json",
+        "total_examples": 500,
+        "exact_match_accuracy": 0.522,
+        "accuracy_ci_95": {
+          "method": "clopper_pearson",
+          "confidence": 0.95,
+          "lower": 0.47719702157263155,
+          "upper": 0.566541419025252
+        },
+        "num_correct": 261,
+        "num_incorrect": 239,
+        "accuracy_by_number_of_equilibria": {
+          "2": {
+            "total": 141,
+            "correct": 38,
+            "accuracy": 0.2695035460992908
+          },
+          "1": {
+            "total": 308,
+            "correct": 223,
+            "accuracy": 0.724025974025974
+          },
+          "0": {
+            "total": 45,
+            "correct": 0,
+            "accuracy": 0.0
+          },
+          "3": {
+            "total": 6,
+            "correct": 0,
+            "accuracy": 0.0
+          }
+        },
+        "failed_examples_preview": [
+          {
+            "id": "example_005501",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,9)   (5,2)\nD    (4,5)   (7,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, L).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, L)."
+          },
+          {
+            "id": "example_005502",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (5,1)   (5,5)\nD    (7,8)   (2,6)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best responses to R are U and D. Player 2's best response to U is R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, R)."
+          },
+          {
+            "id": "example_005503",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (3,8)   (8,0)\nD    (3,2)   (4,2)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L) and (D, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is U. Player 2's best response to U is L, and Player 2's best responses to D are L and R. Therefore the mutual best-response profiles are (U, L) and (D, R)."
+          },
+          {
+            "id": "example_005504",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (7,1)   (6,1)\nD    (8,6)   (2,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best responses to U are L and R, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005508",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (9,2)   (2,9)\nD    (4,1)   (2,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profile is (U, R)."
+          },
+          {
+            "id": "example_005513",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (0,3)   (2,8)\nD    (2,6)   (7,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is D. Player 2's best response to U is R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005517",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (2,8)   (6,8)\nD    (5,6)   (4,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, L).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best responses to U are L and R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, L)."
+          },
+          {
+            "id": "example_005524",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,9)   (1,1)\nD    (6,3)   (4,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "D",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005529",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (8,4)   (8,6)\nD    (1,0)   (6,6)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best responses to R are U and D. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, R) and (D, R)."
+          },
+          {
+            "id": "example_005535",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (2,3)   (8,9)\nD    (3,5)   (4,4)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, R)."
+          }
+        ],
+        "seed": 2027,
+        "train_size": 250,
+        "name": "qwen36_27b_seed2027_sft_0250",
+        "delta_vs_baseline": -0.354,
+        "delta_pp_vs_baseline": -35.4
+      }
+    ],
+    "1000": [
+      {
+        "status": "complete",
+        "report_path": "reports/qwen36_27b_sft_1000_report.json",
+        "total_examples": 500,
+        "exact_match_accuracy": 0.916,
+        "accuracy_ci_95": {
+          "method": "clopper_pearson",
+          "confidence": 0.95,
+          "lower": 0.888151698754588,
+          "upper": 0.9387909413916524
+        },
+        "num_correct": 458,
+        "num_incorrect": 42,
+        "accuracy_by_number_of_equilibria": {
+          "2": {
+            "total": 141,
+            "correct": 127,
+            "accuracy": 0.900709219858156
+          },
+          "1": {
+            "total": 308,
+            "correct": 281,
+            "accuracy": 0.9123376623376623
+          },
+          "0": {
+            "total": 45,
+            "correct": 45,
+            "accuracy": 1.0
+          },
+          "3": {
+            "total": 6,
+            "correct": 5,
+            "accuracy": 0.8333333333333334
+          }
+        },
+        "failed_examples_preview": [
+          {
+            "id": "example_005502",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (5,1)   (5,5)\nD    (7,8)   (2,6)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, R)."
+          },
+          {
+            "id": "example_005504",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (7,1)   (6,1)\nD    (8,6)   (2,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, L).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best responses to U are L and R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (D, L)."
+          },
+          {
+            "id": "example_005528",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (6,2)   (2,9)\nD    (5,1)   (1,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, L).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, R) and (D, L)."
+          },
+          {
+            "id": "example_005530",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (0,0)   (2,6)\nD    (0,4)   (6,9)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is D. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, R) and (D, R)."
+          },
+          {
+            "id": "example_005567",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (5,2)   (4,8)\nD    (1,3)   (5,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is D. Player 2's best response to U is R, and Player 2's best responses to D are L and R. Therefore the mutual best-response profiles are (U, R) and (D, R)."
+          },
+          {
+            "id": "example_005577",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (3,6)   (8,9)\nD    (1,0)   (8,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R), (D, L), and (D, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best responses to R are U and D. Player 2's best response to U is R, and Player 2's best responses to D are L and R. Therefore the mutual best-response profiles are (U, R), (D, L), and (D, R)."
+          },
+          {
+            "id": "example_005580",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (1,6)   (9,9)\nD    (1,6)   (5,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, L).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, R) and (D, L)."
+          },
+          {
+            "id": "example_005590",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,8)   (1,4)\nD    (4,0)   (0,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L), (D, L), and (D, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is U. Player 2's best response to U is L, and Player 2's best responses to D are L and R. Therefore the mutual best-response profiles are (U, L), (D, L), and (D, R)."
+          },
+          {
+            "id": "example_005592",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (1,0)   (6,4)\nD    (0,7)   (9,7)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is D. Player 2's best response to U is R, and Player 2's best responses to D are L and R. Therefore the mutual best-response profiles are (U, R) and (D, R)."
+          },
+          {
+            "id": "example_005609",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (6,0)   (4,6)\nD    (7,8)   (2,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, R)."
+          }
+        ],
+        "seed": 42,
+        "train_size": 1000,
+        "name": "qwen36_27b_sft_1000",
+        "delta_vs_baseline": 0.040000000000000036,
+        "delta_pp_vs_baseline": 4.0000000000000036
+      },
+      {
+        "status": "complete",
+        "report_path": "reports/qwen36_27b_seed1009_sft_1000_report.json",
+        "total_examples": 500,
+        "exact_match_accuracy": 0.922,
+        "accuracy_ci_95": {
+          "method": "clopper_pearson",
+          "confidence": 0.95,
+          "lower": 0.8949122735699343,
+          "upper": 0.9439488262244398
+        },
+        "num_correct": 461,
+        "num_incorrect": 39,
+        "accuracy_by_number_of_equilibria": {
+          "2": {
+            "total": 141,
+            "correct": 115,
+            "accuracy": 0.8156028368794326
+          },
+          "1": {
+            "total": 308,
+            "correct": 297,
+            "accuracy": 0.9642857142857143
+          },
+          "0": {
+            "total": 45,
+            "correct": 45,
+            "accuracy": 1.0
+          },
+          "3": {
+            "total": 6,
+            "correct": 4,
+            "accuracy": 0.6666666666666666
+          }
+        },
+        "failed_examples_preview": [
+          {
+            "id": "example_005503",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (3,8)   (8,0)\nD    (3,2)   (4,2)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L), (D, L), and (D, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is U. Player 2's best response to U is L, and Player 2's best responses to D are L and R. Therefore the mutual best-response profiles are (U, L), (D, L), and (D, R)."
+          },
+          {
+            "id": "example_005554",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (3,7)   (7,2)\nD    (1,0)   (9,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best responses to D are L and R. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005561",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (8,1)   (8,0)\nD    (3,6)   (8,9)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, L).\n\nReasoning: Player 1's best response to L is U, and Player 1's best responses to R are U and D. Player 2's best response to U is L, and Player 2's best response to D is R. Therefore the mutual best-response profile is (U, L)."
+          },
+          {
+            "id": "example_005566",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (1,6)   (3,6)\nD    (7,8)   (1,7)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, L).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best responses to U are L and R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (D, L)."
+          },
+          {
+            "id": "example_005572",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,9)   (9,7)\nD    (4,7)   (5,4)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L), (D, L), and (U, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is U. Player 2's best response to U is L, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, L), (D, L), and (U, R)."
+          },
+          {
+            "id": "example_005590",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,8)   (1,4)\nD    (4,0)   (0,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L), (D, L), and (D, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best responses to R are U and D. Player 2's best response to U is L, and Player 2's best responses to D are L and R. Therefore the mutual best-response profiles are (U, L), (D, L), and (D, R)."
+          },
+          {
+            "id": "example_005641",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,6)   (7,6)\nD    (4,2)   (8,1)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L), (U, R), and (D, L).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is D. Player 2's best responses to U are L and R, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, L), (U, R), and (D, L)."
+          },
+          {
+            "id": "example_005656",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (9,2)   (0,6)\nD    (9,6)   (5,6)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "D",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R), (D, L), and (D, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is D. Player 2's best response to U is R, and Player 2's best responses to D are L and R. Therefore the mutual best-response profiles are (U, R), (D, L), and (D, R)."
+          },
+          {
+            "id": "example_005658",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (6,2)   (2,3)\nD    (6,8)   (3,1)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, L).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is D. Player 2's best response to U is R, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, R) and (D, L)."
+          },
+          {
+            "id": "example_005670",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,2)   (2,5)\nD    (3,9)   (3,9)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (D, L) and (D, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best response to R is D. Player 2's best response to U is R, and Player 2's best responses to D are L and R. Therefore the mutual best-response profiles are (D, L) and (D, R)."
+          }
+        ],
+        "seed": 1009,
+        "train_size": 1000,
+        "name": "qwen36_27b_seed1009_sft_1000",
+        "delta_vs_baseline": 0.04600000000000004,
+        "delta_pp_vs_baseline": 4.600000000000004
+      },
+      {
+        "status": "complete",
+        "report_path": "reports/qwen36_27b_seed2027_sft_1000_report.json",
+        "total_examples": 500,
+        "exact_match_accuracy": 0.702,
+        "accuracy_ci_95": {
+          "method": "clopper_pearson",
+          "confidence": 0.95,
+          "lower": 0.659798274296897,
+          "upper": 0.7417938253981298
+        },
+        "num_correct": 351,
+        "num_incorrect": 149,
+        "accuracy_by_number_of_equilibria": {
+          "2": {
+            "total": 141,
+            "correct": 12,
+            "accuracy": 0.0851063829787234
+          },
+          "1": {
+            "total": 308,
+            "correct": 302,
+            "accuracy": 0.9805194805194806
+          },
+          "0": {
+            "total": 45,
+            "correct": 37,
+            "accuracy": 0.8222222222222222
+          },
+          "3": {
+            "total": 6,
+            "correct": 0,
+            "accuracy": 0.0
+          }
+        },
+        "failed_examples_preview": [
+          {
+            "id": "example_005501",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,9)   (5,2)\nD    (4,5)   (7,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, L).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, L)."
+          },
+          {
+            "id": "example_005502",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (5,1)   (5,5)\nD    (7,8)   (2,6)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, R)."
+          },
+          {
+            "id": "example_005503",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (3,8)   (8,0)\nD    (3,2)   (4,2)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, L).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is U. Player 2's best response to U is L, and Player 2's best responses to D are L and R. Therefore the mutual best-response profile is (U, L)."
+          },
+          {
+            "id": "example_005504",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (7,1)   (6,1)\nD    (8,6)   (2,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best responses to U are L and R, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005508",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (9,2)   (2,9)\nD    (4,1)   (2,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is U, and Player 1's best responses to R are U and D. Player 2's best response to U is R, and Player 2's best response to D is R. Therefore the mutual best-response profile is (U, R)."
+          },
+          {
+            "id": "example_005509",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (2,8)   (0,6)\nD    (2,5)   (3,9)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best response to D is R. Therefore the mutual best-response profile is (D, R)."
+          },
+          {
+            "id": "example_005510",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,1)   (8,5)\nD    (4,5)   (5,4)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is U. Player 2's best response to U is R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, R)."
+          },
+          {
+            "id": "example_005514",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (5,4)   (9,0)\nD    (4,7)   (9,8)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, L).\n\nReasoning: Player 1's best response to L is U, and Player 1's best responses to R are U and D. Player 2's best response to U is L, and Player 2's best response to D is R. Therefore the mutual best-response profile is (U, L)."
+          },
+          {
+            "id": "example_005515",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (6,5)   (7,1)\nD    (6,8)   (9,6)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (D, L).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is D. Player 2's best response to U is L, and Player 2's best response to D is L. Therefore the mutual best-response profile is (D, L)."
+          },
+          {
+            "id": "example_005517",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (2,8)   (6,8)\nD    (5,6)   (4,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is U. Player 2's best responses to U are L and R, and Player 2's best response to D is L. Therefore the mutual best-response profile is (U, R)."
+          }
+        ],
+        "seed": 2027,
+        "train_size": 1000,
+        "name": "qwen36_27b_seed2027_sft_1000",
+        "delta_vs_baseline": -0.17400000000000004,
+        "delta_pp_vs_baseline": -17.400000000000006
+      }
+    ],
+    "5000": [
+      {
+        "status": "complete",
+        "report_path": "reports/qwen36_27b_sft_5000_report.json",
+        "total_examples": 500,
+        "exact_match_accuracy": 0.996,
+        "accuracy_ci_95": {
+          "method": "clopper_pearson",
+          "confidence": 0.95,
+          "lower": 0.9856259214377997,
+          "upper": 0.99951521382371
+        },
+        "num_correct": 498,
+        "num_incorrect": 2,
+        "accuracy_by_number_of_equilibria": {
+          "2": {
+            "total": 141,
+            "correct": 139,
+            "accuracy": 0.9858156028368794
+          },
+          "1": {
+            "total": 308,
+            "correct": 308,
+            "accuracy": 1.0
+          },
+          "0": {
+            "total": 45,
+            "correct": 45,
+            "accuracy": 1.0
+          },
+          "3": {
+            "total": 6,
+            "correct": 6,
+            "accuracy": 1.0
+          }
+        },
+        "failed_examples_preview": [
+          {
+            "id": "example_005625",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (1,7)   (9,7)\nD    (5,1)   (9,3)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "R"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R), (D, L), and (D, R).\n\nReasoning: Player 1's best response to L is D, and Player 1's best responses to R are U and D. Player 2's best responses to U are L and R, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, R), (D, L), and (D, R)."
+          },
+          {
+            "id": "example_005990",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (4,6)   (9,6)\nD    (4,5)   (8,9)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "U",
+                "L"
+              ],
+              [
+                "U",
+                "R"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, L), (U, R), and (D, L).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is U. Player 2's best responses to U are L and R, and Player 2's best response to D is R. Therefore the mutual best-response profiles are (U, L), (U, R), and (D, L)."
+          }
+        ],
+        "seed": 42,
+        "train_size": 5000,
+        "name": "qwen36_27b_sft_5000",
+        "delta_vs_baseline": 0.12,
+        "delta_pp_vs_baseline": 12.0
+      },
+      {
+        "status": "complete",
+        "report_path": "reports/qwen36_27b_seed1009_sft_5000_report.json",
+        "total_examples": 500,
+        "exact_match_accuracy": 0.992,
+        "accuracy_ci_95": {
+          "method": "clopper_pearson",
+          "confidence": 0.95,
+          "lower": 0.9796443674062562,
+          "upper": 0.9978160918916579
+        },
+        "num_correct": 496,
+        "num_incorrect": 4,
+        "accuracy_by_number_of_equilibria": {
+          "2": {
+            "total": 141,
+            "correct": 140,
+            "accuracy": 0.9929078014184397
+          },
+          "1": {
+            "total": 308,
+            "correct": 305,
+            "accuracy": 0.9902597402597403
+          },
+          "0": {
+            "total": 45,
+            "correct": 45,
+            "accuracy": 1.0
+          },
+          "3": {
+            "total": 6,
+            "correct": 6,
+            "accuracy": 1.0
+          }
+        },
+        "failed_examples_preview": [
+          {
+            "id": "example_005743",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (0,9)   (7,9)\nD    (6,2)   (9,1)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, L).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is D. Player 2's best responses to U are L and R, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, R) and (D, L)."
+          },
+          {
+            "id": "example_005785",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (5,6)   (0,6)\nD    (7,7)   (5,5)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, L).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is D. Player 2's best responses to U are L and R, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, R) and (D, L)."
+          },
+          {
+            "id": "example_005787",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (5,7)   (7,2)\nD    (5,0)   (4,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ],
+              [
+                "U",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibrium is (U, L).\n\nReasoning: Player 1's best responses to L are U and D, and Player 1's best response to R is U. Player 2's best response to U is L, and Player 2's best responses to D are L and R. Therefore the mutual best-response profile is (U, L)."
+          },
+          {
+            "id": "example_005916",
+            "prompt": "Player 1 chooses U or D. Player 2 chooses L or R. Payoffs are shown as (Player 1 payoff, Player 2 payoff):\n\n        L       R\nU    (5,0)   (4,0)\nD    (9,3)   (7,0)\n\nFind all pure-strategy Nash equilibria. Explain briefly.",
+            "gold": [
+              [
+                "D",
+                "L"
+              ]
+            ],
+            "prediction": "Final answer: The pure-strategy Nash equilibria are (U, R) and (D, L).\n\nReasoning: Player 1's best response to L is D, and Player 1's best response to R is D. Player 2's best responses to U are L and R, and Player 2's best response to D is L. Therefore the mutual best-response profiles are (U, R) and (D, L)."
+          }
+        ],
+        "seed": 1009,
+        "train_size": 5000,
+        "name": "qwen36_27b_seed1009_sft_5000",
+        "delta_vs_baseline": 0.11599999999999999,
+        "delta_pp_vs_baseline": 11.6
+      },
+      {
+        "status": "complete",
+        "report_path": "reports/qwen36_27b_seed2027_sft_5000_report.json",
+        "total_examples": 500,
+        "exact_match_accuracy": 1.0,
+        "accuracy_ci_95": {
+          "method": "clopper_pearson",
+          "confidence": 0.95,
+          "lower": 0.9926493899480923,
+          "upper": 1.0
+        },
+        "num_correct": 500,
+        "num_incorrect": 0,
+        "accuracy_by_number_of_equilibria": {
+          "2": {
+            "total": 141,
+            "correct": 141,
+            "accuracy": 1.0
+          },
+          "1": {
+            "total": 308,
+            "correct": 308,
+            "accuracy": 1.0
+          },
+          "0": {
+            "total": 45,
+            "correct": 45,
+            "accuracy": 1.0
+          },
+          "3": {
+            "total": 6,
+            "correct": 6,
+            "accuracy": 1.0
+          }
+        },
+        "failed_examples_preview": [],
+        "seed": 2027,
+        "train_size": 5000,
+        "name": "qwen36_27b_seed2027_sft_5000",
+        "delta_vs_baseline": 0.124,
+        "delta_pp_vs_baseline": 12.4
+      }
+    ]
+  },
+  "statistics": {
+    "250": {
+      "status": "complete",
+      "accuracy": {
+        "n": 3,
+        "mean": 0.506,
+        "sample_std": 0.038574603043971825,
+        "min": 0.462,
+        "max": 0.534,
+        "t_interval_95": {
+          "method": "t_interval_seed_mean",
+          "confidence": 0.95,
+          "lower": 0.4101676397869697,
+          "upper": 0.6018323602130303
+        },
+        "bootstrap_interval_95": {
+          "method": "paired_seed_bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "lower": 0.462,
+          "upper": 0.534
+        }
+      },
+      "delta_vs_baseline": {
+        "n": 3,
+        "mean": -0.36999999999999994,
+        "sample_std": 0.038574603043971825,
+        "min": -0.414,
+        "max": -0.34199999999999997,
+        "t_interval_95": {
+          "method": "t_interval_seed_mean",
+          "confidence": 0.95,
+          "lower": -0.4658323602130303,
+          "upper": -0.27416763978696956
+        },
+        "bootstrap_interval_95": {
+          "method": "paired_seed_bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "lower": -0.414,
+          "upper": -0.3419999999999999
+        }
+      },
+      "mean_delta_pp_vs_baseline": -36.99999999999999
+    },
+    "1000": {
+      "status": "complete",
+      "accuracy": {
+        "n": 3,
+        "mean": 0.8466666666666667,
+        "sample_std": 0.12532092137122733,
+        "min": 0.702,
+        "max": 0.922,
+        "t_interval_95": {
+          "method": "t_interval_seed_mean",
+          "confidence": 0.95,
+          "lower": 0.5353271134018893,
+          "upper": 1.0
+        },
+        "bootstrap_interval_95": {
+          "method": "paired_seed_bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "lower": 0.702,
+          "upper": 0.922
+        }
+      },
+      "delta_vs_baseline": {
+        "n": 3,
+        "mean": -0.029333333333333322,
+        "sample_std": 0.12532092137122733,
+        "min": -0.17400000000000004,
+        "max": 0.04600000000000004,
+        "t_interval_95": {
+          "method": "t_interval_seed_mean",
+          "confidence": 0.95,
+          "lower": -0.34067288659811074,
+          "upper": 0.2820062199314441
+        },
+        "bootstrap_interval_95": {
+          "method": "paired_seed_bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "lower": -0.17400000000000004,
+          "upper": 0.04600000000000004
+        }
+      },
+      "mean_delta_pp_vs_baseline": -2.9333333333333322
+    },
+    "5000": {
+      "status": "complete",
+      "accuracy": {
+        "n": 3,
+        "mean": 0.996,
+        "sample_std": 0.0040000000000000036,
+        "min": 0.992,
+        "max": 1.0,
+        "t_interval_95": {
+          "method": "t_interval_seed_mean",
+          "confidence": 0.95,
+          "lower": 0.9860626471667081,
+          "upper": 1.0
+        },
+        "bootstrap_interval_95": {
+          "method": "paired_seed_bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "lower": 0.992,
+          "upper": 1.0
+        }
+      },
+      "delta_vs_baseline": {
+        "n": 3,
+        "mean": 0.12,
+        "sample_std": 0.0040000000000000036,
+        "min": 0.11599999999999999,
+        "max": 0.124,
+        "t_interval_95": {
+          "method": "t_interval_seed_mean",
+          "confidence": 0.95,
+          "lower": 0.11006264716670815,
+          "upper": 0.12993735283329183
+        },
+        "bootstrap_interval_95": {
+          "method": "paired_seed_bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "lower": 0.11599999999999999,
+          "upper": 0.124
+        }
+      },
+      "mean_delta_pp_vs_baseline": 12.0
+    },
+    "paired_comparisons": {
+      "1000_vs_250": {
+        "status": "complete",
+        "n": 3,
+        "seeds": [
+          42,
+          1009,
+          2027
+        ],
+        "mean_delta": 0.3406666666666667,
+        "mean_delta_pp": 34.06666666666667,
+        "sample_std_delta": 0.14450374850962638,
+        "t_interval_95_delta": {
+          "method": "t_interval_seed_mean",
+          "confidence": 0.95,
+          "lower": -0.018329517001690054,
+          "upper": 0.6996628503350234
+        },
+        "bootstrap_interval_95_delta": {
+          "method": "paired_seed_bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "lower": 0.17999999999999994,
+          "upper": 0.46
+        }
+      },
+      "5000_vs_1000": {
+        "status": "complete",
+        "n": 3,
+        "seeds": [
+          42,
+          1009,
+          2027
+        ],
+        "mean_delta": 0.14933333333333332,
+        "mean_delta_pp": 14.933333333333332,
+        "sample_std_delta": 0.12884616150019118,
+        "t_interval_95_delta": {
+          "method": "t_interval_seed_mean",
+          "confidence": 0.95,
+          "lower": -0.17076410867734237,
+          "upper": 0.469430775344009
+        },
+        "bootstrap_interval_95_delta": {
+          "method": "paired_seed_bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "lower": 0.06999999999999995,
+          "upper": 0.29800000000000004
+        }
+      },
+      "5000_vs_250": {
+        "status": "complete",
+        "n": 3,
+        "seeds": [
+          42,
+          1009,
+          2027
+        ],
+        "mean_delta": 0.49,
+        "mean_delta_pp": 49.0,
+        "sample_std_delta": 0.03555277766926239,
+        "t_interval_95_delta": {
+          "method": "t_interval_seed_mean",
+          "confidence": 0.95,
+          "lower": 0.4016748760242401,
+          "upper": 0.5783251239757599
+        },
+        "bootstrap_interval_95_delta": {
+          "method": "paired_seed_bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "lower": 0.46199999999999997,
+          "upper": 0.53
+        }
+      }
+    }
+  }
+}

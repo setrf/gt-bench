@@ -11,7 +11,7 @@
 \maketitle
 
 \begin{abstract}
-GT-Bench is a minimal, exactly verifiable benchmark for studying targeted fine-tuning on a narrow formal reasoning task. Each example gives a randomly generated 2x2 two-player normal-form payoff matrix and asks a model to identify all pure-strategy Nash equilibria. Because the task has an exact solver, synthetic data can be generated at scale and model outputs can be scored without subjective judgment. Using Thinking Machines Lab Tinker, LoRA supervised fine-tuning of Qwen/Qwen3.6-27B on 5000 synthetic examples improved canonical exact-match accuracy from 87.60\% to 99.60\%. A conservative 500-example adversarial prompt supplement further improved prompt robustness from 88.40\% to 98.80\% relative to the original 5000-example fine-tuned checkpoint, without canonical regression. The result supports a narrow claim: targeted fine-tuning can improve one controlled formal reasoning skill and targeted adversarial fine-tuning can improve robustness to equivalent prompt presentations. It does not demonstrate broad game-theory reasoning competence.
+GT-Bench is a minimal, exactly verifiable benchmark for studying targeted fine-tuning on a narrow formal reasoning task. Each example gives a randomly generated 2x2 two-player normal-form payoff matrix and asks a model to identify all pure-strategy Nash equilibria. Because the task has an exact solver, synthetic data can be generated at scale and model outputs can be scored without subjective judgment. Using Thinking Machines Lab Tinker, LoRA supervised fine-tuning of Qwen/Qwen3.6-27B on 5000 synthetic examples improved canonical exact-match accuracy from 87.60\% to 99.60\%. A three-seed learning curve found that the 5000-example condition was stable, with 99.60\% mean accuracy and 0.40 percentage-point seed standard deviation, while the 1000-example condition was volatile. A conservative 500-example adversarial prompt supplement further improved prompt robustness from 88.40\% to 98.80\% relative to the original 5000-example fine-tuned checkpoint, without canonical regression. The result supports a narrow claim: targeted fine-tuning can improve one controlled formal reasoning skill and targeted adversarial fine-tuning can improve robustness to equivalent prompt presentations. It does not demonstrate broad game-theory reasoning competence.
 \end{abstract}
 
 \section{Introduction}
@@ -61,6 +61,27 @@ Baseline & 87.60\% & 438 & 62 & 0.00 pp \\
 \fbox{\parbox{0.85\linewidth}{\centering Public SVG figure: \href{../reports/figures/accuracy_main.svg}{\texttt{reports/figures/accuracy\_main.svg}}}}
 \caption{Canonical accuracy across baseline and SFT training sizes.}
 \end{figure}
+
+\section{Repeated-Seed Learning Curve}
+
+To test whether the learning curve was sensitive to the synthetic training-data seed, the SFT sweep was repeated across three training-data seeds while keeping the canonical 500-example test set fixed. Seed 42 is the original public sweep; seeds 1009 and 2027 were newly generated for this comparison.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrr}
+\hline
+Train size & Mean accuracy & Seed SD & Mean delta vs. baseline \\
+\hline
+250 & 50.60\% & 3.86 pp & -37.00 pp \\
+1000 & 84.67\% & 12.53 pp & -2.93 pp \\
+5000 & 99.60\% & 0.40 pp & +12.00 pp \\
+\hline
+\end{tabular}
+\caption{Repeated-seed learning curve on the fixed canonical test set.}
+\label{tab:seed-sweep}
+\end{table}
+
+The 5000-example condition was stable across all three seeds, with individual accuracies of 99.60\%, 99.20\%, and 100.00\%. The 1000-example condition was volatile: two seeds improved over baseline, but seed 2027 fell to 70.20\%. The 250-example condition consistently underperformed baseline.
 
 \section{Confirmation and Stress Evaluation}
 
@@ -141,6 +162,6 @@ The benchmark is useful precisely because it is constrained. The rule is exact, 
 
 \section{Conclusion}
 
-GT-Bench demonstrates that a compact, reproducible Tinker fine-tuning artifact can produce measurable gains on a fully verifiable formal reasoning task. The strongest checkpoint improved canonical accuracy from 87.60\% to 99.60\%, and an adversarial prompt supplement improved robustness from 88.40\% to 98.80\% relative to the original 5000-example checkpoint. The appropriate conclusion is narrow but useful: targeted fine-tuning can improve a specific formal skill, and targeted data can close prompt-format robustness gaps for that same skill.
+GT-Bench demonstrates that a compact, reproducible Tinker fine-tuning artifact can produce measurable gains on a fully verifiable formal reasoning task. The strongest checkpoint improved canonical accuracy from 87.60\% to 99.60\%, the three-seed sweep showed that the 5000-example condition was stable, and an adversarial prompt supplement improved robustness from 88.40\% to 98.80\% relative to the original 5000-example checkpoint. The appropriate conclusion is narrow but useful: targeted fine-tuning can improve a specific formal skill, and targeted data can close prompt-format robustness gaps for that same skill.
 
 \end{document}

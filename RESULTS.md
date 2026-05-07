@@ -58,11 +58,25 @@ The follow-up result met the acceptance criteria: canonical accuracy increased f
 
 The public follow-up summary is `reports/adversarial_results.md`.
 
+## Repeated-Seed Learning Curve
+
+I repeated the SFT training-size sweep across three independent training-data seeds while keeping the canonical 500-example test set fixed. Seed `42` is the original sweep; seeds `1009` and `2027` were newly generated.
+
+| Train size | Mean accuracy | Seed SD | Mean delta vs baseline |
+| ---: | ---: | ---: | ---: |
+| 250 | 50.60% | 3.86 pp | -37.00 pp |
+| 1000 | 84.67% | 12.53 pp | -2.93 pp |
+| 5000 | 99.60% | 0.40 pp | +12.00 pp |
+
+The key result is that 5000-example SFT is stable across seeds: 99.60%, 99.20%, and 100.00%. The 1000-example condition is not stable; two seeds improved over baseline, but seed `2027` fell to 70.20%. The 250-example condition consistently underperformed baseline.
+
+The public repeated-seed summary is `reports/seed_sweep_results.md`.
+
 ## Interpretation
 
 The strongest improvement is on zero-equilibrium cases. On the canonical split, the baseline solved only 9 of 45 zero-equilibrium games after parser correction, while the 1000-example and 5000-example fine-tunes solved all 45.
 
-The canonical and confirmation failures in the best run are tie-heavy cases where the model over-predicts an extra equilibrium. The balanced stress result suggests that this residual weakness is rare, but still worth tracking because it is exactly the kind of edge case a narrow formal benchmark can expose. The robustness result adds one more useful finding: prompt format matters, so targeted data should include compact and structured payoff presentations.
+The canonical and confirmation failures in the best run are tie-heavy cases where the model over-predicts an extra equilibrium. The balanced stress result suggests that this residual weakness is rare, but still worth tracking because it is exactly the kind of edge case a narrow formal benchmark can expose. The robustness result adds one more useful finding: prompt format matters, so targeted data should include compact and structured payoff presentations. The repeated-seed result adds a second caveat: 1000 examples can be enough, but that regime is seed-sensitive; 5000 examples is the stable setting in this experiment.
 
 ## What This Does And Does Not Show
 

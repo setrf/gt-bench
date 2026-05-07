@@ -1,4 +1,4 @@
-.PHONY: test secrets figures adversarial-summary public-artifacts check
+.PHONY: test secrets figures adversarial-summary seed-sweep-summary public-artifacts check
 
 PYTHON ?= .venv/bin/python
 
@@ -11,14 +11,18 @@ secrets:
 adversarial-summary:
 	$(PYTHON) summarize_adversarial.py
 
+seed-sweep-summary:
+	$(PYTHON) summarize_seed_sweep.py
+
 figures:
 	$(PYTHON) plot_results.py \
 		--summary reports/gt_bench_results.json \
 		--robustness reports/robustness_results.json \
 		--adversarial reports/adversarial_results.json \
+		--seed-sweep reports/seed_sweep_results.json \
 		--out-dir reports/figures
 
-public-artifacts: adversarial-summary figures
+public-artifacts: adversarial-summary seed-sweep-summary figures
 
 check: test secrets public-artifacts
 	git diff --check

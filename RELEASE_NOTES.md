@@ -1,5 +1,14 @@
 # Release Notes
 
+## v0.3-repeated-seed-learning-curve
+
+- Adds a repeated-seed SFT learning curve across training-data seeds `42`, `1009`, and `2027`.
+- Keeps evaluation fixed on the canonical 500-example test set to isolate training-data seed variation.
+- Shows 5000-example SFT is stable across seeds: 99.60% mean accuracy with 0.40 percentage-point seed SD.
+- Shows 1000-example SFT is volatile: mean accuracy 84.67% with 12.53 percentage-point seed SD.
+- Adds `make_repeated_seed_splits.py`, `summarize_seed_sweep.py`, `reports/seed_sweep_results.*`, and `reports/figures/seed_sweep_learning_curve.svg`.
+- Adds bounded concurrent Tinker inference via `run_tinker_predict.py --concurrency`.
+
 ## v0.2-adversarial-robustness
 
 - Adds the adversarial prompt SFT result for the robustness gap found in `v0.1.3`.

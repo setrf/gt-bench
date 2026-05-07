@@ -10,6 +10,7 @@ from typing import Any, Sequence
 SUMMARY_PATH = Path("reports/gt_bench_results.json")
 ROBUSTNESS_PATH = Path("reports/robustness_results.json")
 ADVERSARIAL_PATH = Path("reports/adversarial_results.json")
+SEED_SWEEP_PATH = Path("reports/seed_sweep_results.json")
 FIGURE_DIR = Path("reports/figures")
 
 BLUE = "#2563eb"
@@ -317,11 +318,78 @@ def draw_adversarial_comparison(adversarial: dict[str, Any], out_path: Path) -> 
     out_path.write_text(svg_frame(width, height, "Adversarial SFT Comparison", body), encoding="utf-8")
 
 
+def draw_seed_sweep(seed_sweep: dict[str, Any], out_path: Path) -> None:
+    sizes = [int(size) for size in require(seed_sweep, "train_sizes", "seed_sweep")]
+    runs = require(seed_sweep, "runs", "seed_sweep")
+    statistics = require(seed_sweep, "statistics", "seed_sweep")
+    baseline = accuracy(require(seed_sweep, "baseline", "seed_sweep"), "seed_sweep.baseline")
+
+    width, height = 1040, 560
+    left, top, right, bottom = 104, 120, 980, 410
+    body: list[str] = [
+        text(40, 46, "Repeated-Seed Learning Curve", size=24, weight="700"),
+        text(
+            40,
+            74,
+            "Mean exact-match accuracy across training-data seeds on the fixed canonical test set.",
+            size=14,
+            fill=MUTED,
+        ),
+    ]
+    add_axes(body, left, top, right, bottom)
+
+    body.append(line(left, y_scale(baseline, top, bottom), right, y_scale(baseline, top, bottom), color=GRAY, width=1.8))
+    body.append(text(right - 4, y_scale(baseline, top, bottom) - 8, f"baseline {pct(baseline)}", size=12, fill=GRAY, anchor="end"))
+
+    if len(sizes) == 1:
+        x_positions = {sizes[0]: (left + right) / 2}
+    else:
+        x_positions = {
+            size: left + index * (right - left) / (len(sizes) - 1)
+            for index, size in enumerate(sizes)
+        }
+
+    points: list[tuple[float, float]] = []
+    for size in sizes:
+        size_key = str(size)
+        x = x_positions[size]
+        rows = require(runs, size_key, f"seed_sweep.runs[{size_key}]")
+        if not isinstance(rows, list):
+            raise TypeError(f"seed_sweep.runs[{size_key}] must be a list")
+        for row in rows:
+            if row.get("status") != "complete":
+                continue
+            value = accuracy(row, f"seed_sweep.runs[{size_key}]")
+            y = y_scale(value, top, bottom)
+            body.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.0" fill="{TEAL}" opacity="0.42" />')
+
+        stat = require(statistics, size_key, f"seed_sweep.statistics[{size_key}]")
+        if stat.get("status") != "complete":
+            continue
+        mean_acc = float(require(require(stat, "accuracy", f"seed_sweep.statistics[{size_key}]"), "mean", f"seed_sweep.statistics[{size_key}].accuracy"))
+        y = y_scale(mean_acc, top, bottom)
+        points.append((x, y))
+        body.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="7.0" fill="{BLUE}" />')
+        body.append(text(x, y - 14, pct(mean_acc), size=13, anchor="middle", weight="700"))
+        body.append(text(x, bottom + 30, str(size), size=13, fill=INK, anchor="middle"))
+
+    for (x1, y1), (x2, y2) in zip(points, points[1:]):
+        body.append(line(x1, y1, x2, y2, color=BLUE, width=2.5))
+
+    body.append(text((left + right) / 2, bottom + 62, "SFT training examples", size=13, fill=MUTED, anchor="middle"))
+    body.append(f'<circle cx="758.0" cy="52.0" r="4.0" fill="{TEAL}" opacity="0.42" />')
+    body.append(text(774, 57, "seed run", size=13, fill=MUTED))
+    body.append(f'<circle cx="852.0" cy="52.0" r="7.0" fill="{BLUE}" />')
+    body.append(text(868, 57, "mean", size=13, fill=MUTED))
+    out_path.write_text(svg_frame(width, height, "Repeated-Seed Learning Curve", body), encoding="utf-8")
+
+
 def write_figures(
     summary_path: Path = SUMMARY_PATH,
     out_dir: Path = FIGURE_DIR,
     robustness_path: Path | None = None,
     adversarial_path: Path | None = None,
+    seed_sweep_path: Path | None = None,
 ) -> list[Path]:
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -348,6 +416,11 @@ def write_figures(
         adversarial = json.loads(adversarial_path.read_text(encoding="utf-8"))
         draw_adversarial_comparison(adversarial, adversarial_out)
         outputs.append(adversarial_out)
+    if seed_sweep_path is not None and seed_sweep_path.exists():
+        seed_sweep_out = out_dir / "seed_sweep_learning_curve.svg"
+        seed_sweep = json.loads(seed_sweep_path.read_text(encoding="utf-8"))
+        draw_seed_sweep(seed_sweep, seed_sweep_out)
+        outputs.append(seed_sweep_out)
     return outputs
 
 
@@ -356,13 +429,14 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--summary", type=Path, default=SUMMARY_PATH)
     parser.add_argument("--robustness", type=Path, default=ROBUSTNESS_PATH)
     parser.add_argument("--adversarial", type=Path, default=ADVERSARIAL_PATH)
+    parser.add_argument("--seed-sweep", type=Path, default=SEED_SWEEP_PATH)
     parser.add_argument("--out-dir", type=Path, default=FIGURE_DIR)
     return parser.parse_args(argv)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
-    outputs = write_figures(args.summary, args.out_dir, args.robustness, args.adversarial)
+    outputs = write_figures(args.summary, args.out_dir, args.robustness, args.adversarial, args.seed_sweep)
     for output in outputs:
         print(f"wrote {output}")
     return 0

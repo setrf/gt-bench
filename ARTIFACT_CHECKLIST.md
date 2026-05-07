@@ -6,7 +6,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 
 - Run `.venv/bin/python -m pytest -q`.
 - Run `.venv/bin/python check_no_secrets.py`.
-- Run `make public-artifacts` or `.venv/bin/python summarize_adversarial.py` plus `.venv/bin/python plot_results.py`.
+- Run `make public-artifacts` or the individual summary scripts plus `.venv/bin/python plot_results.py`.
 - Run `git diff --check`.
 - Confirm `git status -sb` contains only intended tracked changes.
 
@@ -42,6 +42,12 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 
 ```bash
 .venv/bin/python generate_adversarial_training.py
+```
+
+- Regenerate repeated-seed train splits when changing repeated-seed generation:
+
+```bash
+.venv/bin/python make_repeated_seed_splits.py --seed 1009 --seed 2027
 ```
 
 - Regenerate the public summary after scoring:
@@ -81,6 +87,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
   --summary reports/gt_bench_results.json \
   --robustness reports/robustness_results.json \
   --adversarial reports/adversarial_results.json \
+  --seed-sweep reports/seed_sweep_results.json \
   --out-dir reports/figures
 ```
 

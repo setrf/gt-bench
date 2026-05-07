@@ -154,6 +154,46 @@ Run the adversarial follow-up SFT:
   --out-manifest runs/qwen36_27b_sft_5000_plus_prompt_adv500.json
 ```
 
+## Repeated-Seed Sweep
+
+Generate the two additional training-data seeds used for the repeated-seed learning curve:
+
+```bash
+.venv/bin/python make_repeated_seed_splits.py --seed 1009 --seed 2027
+```
+
+This writes seed-specific train/validation data and sweep files under `data/repeated_seeds/`.
+
+Run each seed-specific SFT job using the same Tinker settings. For example:
+
+```bash
+.venv/bin/python run_tinker_sft.py \
+  --config bench_config.json \
+  --train-chat data/repeated_seeds/seed_1009/sweeps/train_1000_chat.jsonl \
+  --run-name qwen36_27b_seed1009_sft_1000 \
+  --out-manifest runs/qwen36_27b_seed1009_sft_1000.json
+```
+
+Evaluate every seed-specific checkpoint on the fixed canonical test set:
+
+```bash
+.venv/bin/python run_tinker_predict.py \
+  --config bench_config.json \
+  --gold data/test.jsonl \
+  --model-path "tinker://..." \
+  --max-tokens 256 \
+  --concurrency 16 \
+  --out predictions/qwen36_27b_seed1009_sft_1000.jsonl
+```
+
+Score each prediction file with `score_predictions.py`, then summarize the repeated-seed statistics:
+
+```bash
+.venv/bin/python summarize_seed_sweep.py \
+  --out-json reports/seed_sweep_results.json \
+  --out-md reports/seed_sweep_results.md
+```
+
 ## Evaluation
 
 Score predictions with:
@@ -215,6 +255,7 @@ Generate the public figures:
 .venv/bin/python plot_results.py \
   --summary reports/gt_bench_results.json \
   --robustness reports/robustness_results.json \
+  --seed-sweep reports/seed_sweep_results.json \
   --out-dir reports/figures
 ```
 
@@ -261,5 +302,6 @@ After scoring the adversarial checkpoint on the canonical, confirmation, stress,
   --summary reports/gt_bench_results.json \
   --robustness reports/robustness_results.json \
   --adversarial reports/adversarial_results.json \
+  --seed-sweep reports/seed_sweep_results.json \
   --out-dir reports/figures
 ```

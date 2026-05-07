@@ -6,7 +6,7 @@ GT-Bench is a minimal Tinker fine-tuning benchmark for strategic reasoning. It g
 
 The repository is intentionally compact: one task, one exact solver, one dataset generator, one scorer, and focused tests.
 
-For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`. A paper-style writeup is available at `paper/gt_bench_paper.tex`.
+For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`. The repeated-seed learning curve is tracked in `reports/seed_sweep_results.md`. A paper-style writeup is available at `paper/gt_bench_paper.tex`.
 
 ## My context
 
@@ -218,7 +218,12 @@ Then summarize the reports:
 Generate static SVG figures from the public summary:
 
 ```bash
-.venv/bin/python plot_results.py --summary reports/gt_bench_results.json --out-dir reports/figures
+.venv/bin/python plot_results.py \
+  --summary reports/gt_bench_results.json \
+  --robustness reports/robustness_results.json \
+  --adversarial reports/adversarial_results.json \
+  --seed-sweep reports/seed_sweep_results.json \
+  --out-dir reports/figures
 ```
 
 ## Expected result
@@ -244,6 +249,8 @@ The full report is in `reports/gt_bench_results.md`. For the research narrative 
 
 On a 250-example prompt-robustness set, the same checkpoint improved from 64.00% baseline accuracy to 88.40%. See `ROBUSTNESS.md` for the prompt-variant breakdown.
 
+Across a three-seed repeated training-data sweep on the fixed canonical test set, the 5000-example SFT condition was stable: 99.60% mean accuracy with 0.40 percentage-point seed SD. The 1000-example condition was volatile, with one seed dropping to 70.20%, while the 250-example condition consistently underperformed baseline. See `reports/seed_sweep_results.md`.
+
 ## Adversarial robustness follow-up
 
 The remaining weakness after the first robustness run was prompt format sensitivity: `compact_pairs` and `json_payoffs` were weaker than the original table prompt. The controlled follow-up adds a conservative 500-example adversarial prompt supplement to the 5000-example training set while keeping the mathematical task unchanged.
@@ -268,6 +275,22 @@ The adversarial checkpoint reached 99.80% canonical accuracy, 99.90% confirmatio
 
 The public follow-up summary is `reports/adversarial_results.md`, with machine-readable results in `reports/adversarial_results.json`.
 
+## Repeated-seed learning curve
+
+Generate the additional training-data seed splits:
+
+```bash
+.venv/bin/python make_repeated_seed_splits.py --seed 1009 --seed 2027
+```
+
+After running the seed-specific SFT jobs and scoring each checkpoint on `data/test.jsonl`, summarize the repeated-seed statistics:
+
+```bash
+.venv/bin/python summarize_seed_sweep.py
+```
+
+The public repeated-seed summary is `reports/seed_sweep_results.md`, with machine-readable statistics in `reports/seed_sweep_results.json`.
+
 ## Result figures
 
 ![Canonical test accuracy](reports/figures/accuracy_main.svg)
@@ -279,6 +302,8 @@ The public follow-up summary is `reports/adversarial_results.md`, with machine-r
 ![Robustness accuracy by prompt variant](reports/figures/robustness_by_variant.svg)
 
 ![Adversarial SFT comparison](reports/figures/adversarial_comparison.svg)
+
+![Repeated-seed learning curve](reports/figures/seed_sweep_learning_curve.svg)
 
 ## Limitations
 

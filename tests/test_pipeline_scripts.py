@@ -8,6 +8,7 @@ from generate_adversarial_training import (
     metadata_signature,
     to_adversarial_chat_row,
 )
+from make_repeated_seed_splits import generate_seed_splits
 from generate_stress_set import generate_balanced_examples
 from generate_robustness_set import PROMPT_VARIANTS, generate_robustness_examples
 from make_sweep_splits import write_sweep_splits
@@ -19,6 +20,7 @@ from summarize_adversarial import (
     public_original_fallbacks,
 )
 from summarize_results import exact_binomial_ci
+from summarize_seed_sweep import build_summary as build_seed_sweep_summary
 
 
 def test_write_sweep_splits_uses_first_n_rows(tmp_path, monkeypatch) -> None:
@@ -247,6 +249,69 @@ def test_write_figures_adds_adversarial_figure_when_summary_exists(tmp_path) -> 
     assert "adversarial sft" in adversarial_svg
 
 
+def test_write_figures_adds_seed_sweep_figure_when_summary_exists(tmp_path) -> None:
+    summary_path = tmp_path / "summary.json"
+    seed_sweep_path = tmp_path / "seed_sweep.json"
+    out_dir = tmp_path / "figures"
+    buckets = {
+        str(count): {"total": 10, "correct": 10, "accuracy": 1.0}
+        for count in range(5)
+    }
+    summary_path.write_text(
+        json.dumps(
+            {
+                "baseline": {"exact_match_accuracy": 0.8},
+                "runs": [{"name": "qwen36_27b_sft_5000", "exact_match_accuracy": 0.99}],
+                "confirmation": {
+                    "baseline": {"exact_match_accuracy": 0.88},
+                    "best_run": {"exact_match_accuracy": 0.99},
+                },
+                "stress": {
+                    "baseline": {
+                        "exact_match_accuracy": 0.82,
+                        "accuracy_by_number_of_equilibria": buckets,
+                    },
+                    "best_run": {
+                        "exact_match_accuracy": 1.0,
+                        "accuracy_by_number_of_equilibria": buckets,
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    seed_sweep_path.write_text(
+        json.dumps(
+            {
+                "baseline": {"exact_match_accuracy": 0.8},
+                "train_sizes": [250, 1000],
+                "runs": {
+                    "250": [
+                        {"status": "complete", "seed": 1, "exact_match_accuracy": 0.7},
+                        {"status": "complete", "seed": 2, "exact_match_accuracy": 0.75},
+                    ],
+                    "1000": [
+                        {"status": "complete", "seed": 1, "exact_match_accuracy": 0.9},
+                        {"status": "complete", "seed": 2, "exact_match_accuracy": 0.92},
+                    ],
+                },
+                "statistics": {
+                    "250": {"status": "complete", "accuracy": {"mean": 0.725}},
+                    "1000": {"status": "complete", "accuracy": {"mean": 0.91}},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    outputs = write_figures(summary_path, out_dir, seed_sweep_path=seed_sweep_path)
+
+    assert "seed_sweep_learning_curve.svg" in {path.name for path in outputs}
+    svg = (out_dir / "seed_sweep_learning_curve.svg").read_text(encoding="utf-8").lower()
+    assert "repeated-seed learning curve" in svg
+    assert "baseline" in svg
+
+
 def test_exact_binomial_ci_contains_observed_accuracy() -> None:
     ci = exact_binomial_ci(8, 10)
 
@@ -362,6 +427,24 @@ def test_combine_chat_files_preserves_row_counts(tmp_path) -> None:
         '{"base": 2}',
         '{"supplement": 1}',
     ]
+
+
+def test_generate_repeated_seed_splits_writes_expected_files(tmp_path) -> None:
+    outputs = generate_seed_splits(
+        seeds=[11],
+        sizes=[2, 4],
+        train=5,
+        val=1,
+        out_dir=tmp_path / "repeated",
+    )
+
+    assert [(seed, size) for seed, _, size in outputs] == [(11, 2), (11, 4)]
+    seed_dir = tmp_path / "repeated" / "seed_11"
+    assert (seed_dir / "train.jsonl").exists()
+    assert (seed_dir / "val_chat.jsonl").exists()
+    assert (seed_dir / "sweeps" / "train_0002_chat.jsonl").read_text(
+        encoding="utf-8"
+    ).count("\n") == 2
 
 
 def test_all_prompt_variants_are_configured() -> None:
@@ -523,3 +606,92 @@ def test_adversarial_summary_uses_public_adversarial_fallbacks(tmp_path) -> None
         summary["evaluations"]["canonical"]["adversarial_sft"]["report_path"]
         == "reports/public_adversarial.json"
     )
+
+
+def write_score_report(path, correct: int, total: int) -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "total_examples": total,
+                "exact_match_accuracy": correct / total,
+                "num_correct": correct,
+                "num_incorrect": total - correct,
+                "accuracy_by_number_of_equilibria": {},
+                "failed_examples": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def test_seed_sweep_summary_computes_statistics_and_pairwise_deltas(tmp_path) -> None:
+    baseline = tmp_path / "baseline.json"
+    write_score_report(baseline, correct=80, total=100)
+    report_paths = {}
+    for seed, scores in {
+        1: {250: 70, 1000: 88, 5000: 98},
+        2: {250: 72, 1000: 90, 5000: 99},
+        3: {250: 74, 1000: 92, 5000: 100},
+    }.items():
+        for size, correct in scores.items():
+            path = tmp_path / f"seed{seed}_{size}.json"
+            write_score_report(path, correct=correct, total=100)
+            report_paths[(seed, size)] = path
+
+    summary = build_seed_sweep_summary(
+        {"model_id": "Qwen/Qwen3.6-27B", "data": {"test": str(tmp_path / "test.jsonl")}},
+        baseline,
+        seeds=[1, 2, 3],
+        sizes=[250, 1000, 5000],
+        report_paths=report_paths,
+        fallback_path=tmp_path / "missing_public.json",
+    )
+
+    assert summary["status"] == "complete"
+    assert summary["statistics"]["250"]["accuracy"]["n"] == 3
+    assert summary["statistics"]["250"]["mean_delta_pp_vs_baseline"] == pytest.approx(-8.0)
+    comparison = summary["statistics"]["paired_comparisons"]["5000_vs_1000"]
+    assert comparison["n"] == 3
+    assert comparison["mean_delta_pp"] == pytest.approx(9.0)
+
+
+def test_seed_sweep_summary_uses_public_baseline_and_seed_fallbacks(tmp_path) -> None:
+    public_results = tmp_path / "gt_bench_results.json"
+    public_seed = tmp_path / "seed_sweep_results.json"
+    baseline = {
+        "status": "complete",
+        "report_path": "reports/public_baseline.json",
+        "total_examples": 10,
+        "exact_match_accuracy": 0.8,
+        "num_correct": 8,
+        "num_incorrect": 2,
+        "accuracy_by_number_of_equilibria": {},
+        "failed_examples_preview": [],
+    }
+    row = {
+        "status": "complete",
+        "seed": 1,
+        "train_size": 250,
+        "report_path": "reports/public_seed.json",
+        "total_examples": 10,
+        "exact_match_accuracy": 0.9,
+        "num_correct": 9,
+        "num_incorrect": 1,
+        "accuracy_by_number_of_equilibria": {},
+        "failed_examples_preview": [],
+    }
+    public_results.write_text(json.dumps({"baseline": baseline}), encoding="utf-8")
+    public_seed.write_text(json.dumps({"runs": {"250": [row]}}), encoding="utf-8")
+
+    summary = build_seed_sweep_summary(
+        {"model_id": "Qwen/Qwen3.6-27B", "data": {"test": str(tmp_path / "test.jsonl")}},
+        tmp_path / "missing_baseline.json",
+        seeds=[1],
+        sizes=[250],
+        fallback_path=public_seed,
+        public_results_path=public_results,
+    )
+
+    assert summary["status"] == "complete"
+    assert summary["baseline"]["report_path"] == "reports/public_baseline.json"
+    assert summary["runs"]["250"][0]["report_path"] == "reports/public_seed.json"

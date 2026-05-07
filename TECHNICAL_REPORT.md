@@ -6,7 +6,7 @@ GT-Bench is a compact Tinker fine-tuning experiment for one formal reasoning tas
 
 The project was built by Mert Gulsun, a UC Berkeley master's student and Thinking Machines Lab Tinker research grant recipient. The goal is to show whether targeted fine-tuning can measurably improve a model on a narrow, exactly verifiable game-theory task.
 
-The main result is positive: `Qwen/Qwen3.6-27B` improved from 87.60% exact-match accuracy at baseline to 99.60% after LoRA SFT on 5000 synthetic examples. The result held on an independent confirmation set and became sharper on a balanced stress set.
+The main result is positive: `Qwen/Qwen3.6-27B` improved from 87.60% exact-match accuracy at baseline to 99.60% after LoRA SFT on 5000 synthetic examples. The result held on an independent confirmation set, became sharper on a balanced stress set, and remained stable in a three-seed training-data sweep.
 
 ## Task
 
@@ -104,6 +104,20 @@ The final run is `qwen36_27b_sft_5000_plus_prompt_adv500`: the original 5000-exa
 
 The public summary is `reports/adversarial_results.md`.
 
+## Repeated-Seed Learning Curve
+
+I repeated the training-size sweep across three independently generated training sets while keeping the canonical 500-example test set fixed. This tests whether the learning curve is stable under synthetic training-data seed variation.
+
+| Train size | Mean accuracy | Seed SD | Mean delta vs baseline |
+| ---: | ---: | ---: | ---: |
+| 250 | 50.60% | 3.86 pp | -37.00 pp |
+| 1000 | 84.67% | 12.53 pp | -2.93 pp |
+| 5000 | 99.60% | 0.40 pp | +12.00 pp |
+
+![Repeated-seed learning curve](reports/figures/seed_sweep_learning_curve.svg)
+
+The result sharpens the original story. The 5000-example condition is stable across seeds, with individual accuracies of 99.60%, 99.20%, and 100.00%. The 1000-example condition is volatile: two seeds improve over baseline, but seed `2027` falls to 70.20%. The 250-example condition consistently underperforms baseline.
+
 ## Most Important Failure Mode
 
 The base model often wants every 2x2 game to have at least one pure equilibrium. This creates many false positives on zero-equilibrium games, where the correct answer is the empty set.
@@ -132,4 +146,4 @@ The full reproducibility recipe, including the complete summary command with all
 
 ## Next Steps
 
-The next scientific step is a repeated-seed learning curve. A second benchmark should be added only as a separate task, rather than mixing new game-theory concepts into this controlled artifact.
+The next scientific step is to diagnose the unstable 1000-example regime by inspecting the seed `2027` failures and training distribution, then optionally run a five-seed sweep if more statistical power is needed. A second benchmark should be added only as a separate task, rather than mixing new game-theory concepts into this controlled artifact.
