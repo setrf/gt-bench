@@ -4,6 +4,8 @@
 
 GT-Bench is a compact Tinker fine-tuning experiment for one formal reasoning task: given a 2x2 two-player normal-form payoff matrix, identify all pure-strategy Nash equilibria.
 
+The repository also includes an optional broader task suite with exact solvers for mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form backward induction, natural-language game descriptions, and repeated interaction. Those suite tasks are code-complete and exactly scored, but the model results below are only for the canonical 2x2 pure-equilibrium task.
+
 The project was built by Mert Gulsun, a UC Berkeley master's student and Thinking Machines Lab Tinker research grant recipient. The goal is to show whether targeted fine-tuning can measurably improve a model on a narrow, exactly verifiable game-theory task.
 
 The main result is positive: `Qwen/Qwen3.6-27B` improved from 87.60% exact-match accuracy at baseline to 99.60% after LoRA SFT on 5000 synthetic examples. The result held on an independent confirmation set, became sharper on a balanced stress set, and remained stable in a three-seed training-data sweep.
@@ -19,7 +21,7 @@ Each example presents a 2x2 payoff matrix:
 
 The target answer is the complete set of pure-strategy Nash equilibria. A cell is correct only when both players are best responding in that cell. Ties are handled exactly, so games may have zero, one, two, three, or four pure equilibria.
 
-The benchmark intentionally excludes mixed strategies, dominance, welfare analysis, sequential games, auctions, public goods, Nim, and story problems.
+The reported Tinker experiment intentionally excludes mixed strategies, dominance, welfare analysis, sequential games, auctions, public goods, Nim, and story problems. The separate suite generator covers the most important next task families without changing the canonical result.
 
 ## Data and Scoring
 
@@ -128,7 +130,7 @@ After fine-tuning, this failure mode is mostly removed. The remaining canonical 
 
 GT-Bench supports a narrow claim: targeted Tinker fine-tuning can substantially improve `Qwen/Qwen3.6-27B` on a synthetic, fully verifiable 2x2 pure-strategy Nash equilibrium task.
 
-It does not show broad game-theory reasoning competence. It does not test mixed strategies, dominance, welfare analysis, sequential games, auctions, public goods, Nim, or natural-language story problems.
+It does not show broad game-theory reasoning competence. The broader suite now tests mixed strategies, dominance, larger normal-form games, sequential games, natural-language descriptions, and repeated interaction at the artifact level, but those tasks do not yet have model evaluations or fine-tuning claims.
 
 The value of the benchmark is control: the task is simple, exactly solvable, cheap to generate, and scored without subjective judgment.
 
@@ -146,4 +148,4 @@ The full reproducibility recipe, including the complete summary command with all
 
 ## Next Steps
 
-The next scientific step is to diagnose the unstable 1000-example regime by inspecting the seed `2027` failures and training distribution, then optionally run a five-seed sweep if more statistical power is needed. A second benchmark should be added only as a separate task, rather than mixing new game-theory concepts into this controlled artifact.
+The next scientific step is to evaluate the broader suite with the same baseline and fine-tuning protocol, while keeping results separated by task family. For the canonical task, the remaining useful follow-up is to diagnose the unstable 1000-example regime by inspecting the seed `2027` failures and training distribution.

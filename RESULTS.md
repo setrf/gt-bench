@@ -82,4 +82,4 @@ The canonical and confirmation failures in the best run are tie-heavy cases wher
 
 This shows that targeted Tinker SFT can measurably improve a model on a narrow, fully verifiable formal reasoning task.
 
-It does not show broad game-theory competence. The benchmark covers only 2x2 normal-form games, pure equilibria, integer payoffs, and synthetic prompts.
+It does not show broad game-theory competence. These results cover only 2x2 normal-form games, pure equilibria, integer payoffs, and synthetic prompts. The repository now includes a broader exactly scored suite for mixed strategies, dominance, larger normal-form games, extensive form, natural-language descriptions, and repeated interaction, but no model-result claim is attached to that suite yet.

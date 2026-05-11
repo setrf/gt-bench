@@ -1,10 +1,13 @@
-# GT-Bench: Targeted Fine-Tuning for 2x2 Pure-Equilibrium Reasoning
+# GT-Bench: Verifiable Game-Theory Reasoning Tasks
 
 ## Project overview
 
-GT-Bench is a minimal Tinker fine-tuning benchmark for strategic reasoning. It generates small, fully verifiable 2x2 normal-form games and asks a model to find all pure-strategy Nash equilibria with a brief explanation.
+GT-Bench is a compact Tinker fine-tuning benchmark for strategic reasoning. The reported experiment uses a narrow, fully verifiable 2x2 normal-form task and asks a model to find all pure-strategy Nash equilibria with a brief explanation.
 
-The repository is intentionally compact: one task, one exact solver, one dataset generator, one scorer, and focused tests.
+The repository now has two layers:
+
+- `generate_dataset.py` and `score_predictions.py`: the canonical 2x2 pure-equilibrium experiment used for the published Qwen3.6-27B result.
+- `generate_benchmark_suite.py` and `score_suite.py`: an optional broader suite covering mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form games, natural-language game descriptions, and repeated interaction.
 
 For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`. The repeated-seed learning curve is tracked in `reports/seed_sweep_results.md`. An arXiv-ready paper draft is available at `paper/gt_bench_paper.tex`.
 
@@ -25,7 +28,7 @@ mkdir -p paper/build
 
 The local build output and arXiv source zip live under `paper/build/`, which is ignored by git.
 
-## Task
+## Canonical task
 
 Each example is a 2x2 two-player normal-form payoff matrix.
 
@@ -35,7 +38,18 @@ Each example is a 2x2 two-player normal-form payoff matrix.
 
 The model must find all pure-strategy Nash equilibria. A profile is a pure Nash equilibrium when both players are best responding at that cell. Ties are handled exactly, so a game may have zero, one, two, three, or four pure equilibria.
 
-This benchmark does not include mixed strategies, dominance, welfare analysis, sequential games, auctions, public goods, Nim, or story problems.
+The Qwen3.6-27B Tinker result reported in this repo is limited to this canonical task.
+
+## Broader suite
+
+The broader suite is deterministic and exactly scored, but it is not part of the reported Tinker fine-tuning result yet. It adds six task families:
+
+- `mixed_2x2`: fully mixed equilibria for 2x2 games with no pure equilibrium.
+- `dominance`: iterated elimination of strictly dominated pure strategies.
+- `large_normal_form`: pure equilibria in 2x3 and 3x3 normal-form games.
+- `extensive_form`: backward induction in perfect-information sequential games.
+- `natural_language`: story descriptions that must be mapped to payoff/action structure.
+- `repeated_interaction`: finite repeated prisoner's-dilemma simulations for fixed policies.
 
 ## Why this is useful
 
@@ -68,6 +82,18 @@ This writes:
 - `data/test_chat.jsonl`
 
 Small sample files are included in `examples/`.
+
+Generate the broader suite:
+
+```bash
+.venv/bin/python generate_benchmark_suite.py \
+  --per-family 50 \
+  --seed 20260511 \
+  --out data/suite/gt_bench_suite.jsonl \
+  --chat-out data/suite/gt_bench_suite_chat.jsonl
+```
+
+Small suite samples are included in `examples/sample_suite.jsonl` and `examples/sample_suite_chat.jsonl`.
 
 Generate a balanced stress set with equal numbers of 0-, 1-, 2-, 3-, and 4-equilibrium games:
 
@@ -183,6 +209,17 @@ Run the fine-tuned model on the same `data/test.jsonl`, save predictions to `pre
 
 Compare exact-match accuracy between `reports/baseline_report.json` and `reports/finetuned_report.json`.
 
+Score broader-suite predictions with:
+
+```bash
+.venv/bin/python score_suite.py \
+  --gold data/suite/gt_bench_suite.jsonl \
+  --pred predictions/suite_predictions.jsonl \
+  --out reports/suite_report.json
+```
+
+The suite scorer reports exact-match accuracy overall and by task family.
+
 For the Qwen3.6-27B sweep, score each prediction file:
 
 ```bash
@@ -239,7 +276,7 @@ Generate static SVG figures from the public summary:
 
 ## Expected result
 
-The expected demonstration is an increase in exact-match accuracy on held-out 2x2 Nash equilibrium problems after fine-tuning.
+The demonstrated result is an increase in exact-match accuracy on held-out 2x2 pure-equilibrium problems after fine-tuning. The broader suite is ready for future evaluation but does not yet have Tinker training or model-result claims attached to it.
 
 ## Current Qwen3.6-27B result
 

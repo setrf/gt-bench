@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Adds a broader exactly scored GT-Bench suite with `mixed_2x2`, `dominance`, `large_normal_form`, `extensive_form`, `natural_language`, and `repeated_interaction` task families.
+- Adds `generate_benchmark_suite.py`, `score_suite.py`, suite solver tests, and small tracked suite samples under `examples/`.
+- Updates documentation to separate the canonical 2x2 pure-equilibrium model result from the broader suite infrastructure.
 - Expands `paper/gt_bench_paper.tex` into an arXiv-ready draft focused on 2x2 pure-equilibrium reasoning.
 - Adds related work, leakage controls, simple baselines, training-time notes, parser details, a concrete failure example, exact adversarial supplement mix, reproducibility appendix, and code/data/ethics notes.
 - Adds arXiv-safe PNG paper figures under `paper/figures/`.

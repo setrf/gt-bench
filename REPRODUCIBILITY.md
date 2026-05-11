@@ -98,6 +98,31 @@ ffc6c26df85c78df702d4eef910b835025a5b2a8344a9ef1d14e1ab7e78405e8  data/robust/ro
 69fd257b7cda77dac18de86fce775b401283d4e676c33d35a458e7b991ce6906  data/robust/robust_seed271828_chat.jsonl
 ```
 
+## Broader Suite Data
+
+The reported Qwen3.6-27B fine-tuning result is still the canonical 2x2 pure-equilibrium experiment. The repository also includes an optional broader suite with exact solvers and task-family scoring:
+
+```bash
+.venv/bin/python generate_benchmark_suite.py \
+  --per-family 50 \
+  --seed 20260511 \
+  --out data/suite/gt_bench_suite.jsonl \
+  --chat-out data/suite/gt_bench_suite_chat.jsonl
+```
+
+This creates 300 examples: 50 each for `mixed_2x2`, `dominance`, `large_normal_form`, `extensive_form`, `natural_language`, and `repeated_interaction`.
+
+Score suite predictions with:
+
+```bash
+.venv/bin/python score_suite.py \
+  --gold data/suite/gt_bench_suite.jsonl \
+  --pred predictions/suite_predictions.jsonl \
+  --out reports/suite_report.json
+```
+
+Generated suite JSONL files and raw suite reports are ignored by git. The tracked sample files are `examples/sample_suite.jsonl` and `examples/sample_suite_chat.jsonl`.
+
 ## Adversarial Prompt Data
 
 Generate the adversarial prompt supplement:

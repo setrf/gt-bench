@@ -11,7 +11,9 @@
     "sweep_template": "train_{size:04d}_chat.jsonl",
     "adversarial_train": "data/adversarial/prompt_adv500_seed161804.jsonl",
     "adversarial_train_chat": "data/adversarial/prompt_adv500_seed161804_chat.jsonl",
-    "adversarial_combined_train_chat": "data/adversarial/train_5500_prompt_adv500_chat.jsonl"
+    "adversarial_combined_train_chat": "data/adversarial/train_5500_prompt_adv500_chat.jsonl",
+    "suite": "data/suite/gt_bench_suite.jsonl",
+    "suite_chat": "data/suite/gt_bench_suite_chat.jsonl"
   },
   "lora": {
     "rank": 16,

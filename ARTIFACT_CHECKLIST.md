@@ -51,6 +51,16 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 .venv/bin/python make_repeated_seed_splits.py --seed 1009 --seed 2027
 ```
 
+- Regenerate the optional broader suite when changing suite generation/scoring:
+
+```bash
+.venv/bin/python generate_benchmark_suite.py \
+  --per-family 50 \
+  --seed 20260511 \
+  --out data/suite/gt_bench_suite.jsonl \
+  --chat-out data/suite/gt_bench_suite_chat.jsonl
+```
+
 - Regenerate the public summary after scoring:
 
 ```bash
@@ -109,4 +119,4 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 - Confirm `reports/adversarial_results.md` accurately says whether the adversarial run is pending or complete.
 - Confirm `reports/figures/*.svg` renders on GitHub.
 - Confirm `paper/figures/*.png` match the current public SVG figures before rebuilding the paper.
-- Confirm the headline claim remains narrow: targeted fine-tuning improves one fully verifiable 2x2 pure-equilibrium task.
+- Confirm the headline model-result claim remains narrow: targeted fine-tuning improves one fully verifiable 2x2 pure-equilibrium task. The broader suite is code/evaluation infrastructure until it has separate model runs.
