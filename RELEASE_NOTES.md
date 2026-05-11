@@ -4,8 +4,8 @@
 
 - Adds a broader exactly scored GT-Bench suite with `mixed_2x2`, `dominance`, `large_normal_form`, `extensive_form`, `natural_language`, and `repeated_interaction` task families.
 - Adds split generation, v1 suite schema metadata, difficulty buckets, `generate_benchmark_suite.py`, `score_suite.py`, `run_suite_baselines.py`, suite solver tests, and small tracked suite samples under `examples/`.
-- Adds local deterministic suite smoke baselines in `reports/suite_results.*` and `reports/figures/suite_smoke_accuracy.svg`, while marking Tinker model evaluations as pending.
-- Updates documentation to separate the canonical 2x2 pure-equilibrium model result from the broader suite infrastructure.
+- Adds local deterministic suite smoke baselines, completed Tinker suite model rows, canonical-retention reporting, and `reports/figures/suite_smoke_accuracy.svg`.
+- Documents that the suite SFT checkpoint improves broader-suite accuracy to 68.00% but has poor canonical 2x2 retention at 53.60%, keeping the headline claim narrow.
 - Expands `paper/gt_bench_paper.tex` into an arXiv-ready draft focused on 2x2 pure-equilibrium reasoning.
 - Adds related work, leakage controls, simple baselines, training-time notes, parser details, a concrete failure example, exact adversarial supplement mix, reproducibility appendix, and code/data/ethics notes.
 - Adds arXiv-safe PNG paper figures under `paper/figures/`.

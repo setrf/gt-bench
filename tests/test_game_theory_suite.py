@@ -277,7 +277,7 @@ def test_split_suite_examples_balances_every_family_by_split() -> None:
         assert set(counts.values()) == {expected_count}
 
 
-def test_suite_baseline_summary_marks_model_runs_pending(tmp_path) -> None:
+def test_suite_baseline_summary_skips_public_model_reports_for_custom_splits(tmp_path) -> None:
     splits = split_suite_examples(
         train_per_family=1,
         val_per_family=0,
@@ -302,7 +302,7 @@ def test_suite_baseline_summary_marks_model_runs_pending(tmp_path) -> None:
         pred_dir=tmp_path / "predictions",
     )
 
-    assert summary["status"] == "pending_model_evaluations"
+    assert summary["status"] == "baseline_only"
     assert summary["baselines"]["oracle"]["exact_match_accuracy"] == 1.0
-    assert summary["model_evaluations"]["suite_sft"]["status"] == "pending"
+    assert summary["model_evaluations"] == {}
     assert (tmp_path / "predictions" / "oracle.jsonl").exists()

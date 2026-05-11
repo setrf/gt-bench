@@ -100,7 +100,7 @@ ffc6c26df85c78df702d4eef910b835025a5b2a8344a9ef1d14e1ab7e78405e8  data/robust/ro
 
 ## Broader Suite Data
 
-The reported Qwen3.6-27B fine-tuning result is still the canonical 2x2 pure-equilibrium experiment. The repository also includes a broader suite with exact solvers, task-family scoring, local smoke baselines, and pending Tinker model-evaluation slots.
+The headline Qwen3.6-27B fine-tuning result is still the canonical 2x2 pure-equilibrium experiment. The repository also includes a broader suite with exact solvers, task-family scoring, local smoke baselines, completed Tinker model rows for the public split, and a canonical-retention check for the suite-specific checkpoint.
 
 Generate one suite file:
 
@@ -118,21 +118,21 @@ Generate the public train/validation/test suite splits:
 
 ```bash
 .venv/bin/python generate_benchmark_suite.py \
-  --train-per-family 50 \
+  --train-per-family 200 \
   --val-per-family 10 \
   --test-per-family 50 \
   --seed 20260511 \
   --out-dir data/suite
 ```
 
-This creates 300 train examples, 60 validation examples, and 300 test examples.
+This creates 1200 train examples, 60 validation examples, and 300 test examples.
 
 Suite split hashes:
 
 ```text
-adfdec4694b561a4fedc219c8dc3f1e973ce94f7e5ac23ba3e29ead79d41a2b0  data/suite/train.jsonl
-ee432e1be7aa20c678eb4f809d038488a85787c4daac1012a64b5f729369d0d9  data/suite/val.jsonl
-8f7ea7c9df92d02efdf2258ec8b1c5cd83e005b6c75bb351b1397803a301cd03  data/suite/test.jsonl
+6b59d21ee17ab33eed9f0c14cb266953fbeb7dea65e48a1baae116bd63166067  data/suite/train.jsonl
+e87e71a870e90fc6b7f6ec74c38a49d14614a33243e01eb3f621dfc60f6e3628  data/suite/val.jsonl
+653aa5e1fd7bbcb2ff57e98c04cfc745a602f274c86dc8284bf875e650d1deee  data/suite/test.jsonl
 ```
 
 Score suite predictions with:
@@ -158,7 +158,47 @@ Regenerate local suite smoke baselines and the public summary:
   --figure reports/figures/suite_smoke_accuracy.svg
 ```
 
-The public suite summary intentionally marks Tinker model evaluations as pending until actual prediction and score files exist.
+The public suite summary includes the completed model rows for the exact public suite hash above. If raw suite report files are absent, `run_suite_baselines.py` preserves the tracked model rows instead of requiring a Tinker key for local artifact checks.
+
+The suite-specific SFT run used the generated suite chat split:
+
+```bash
+.venv/bin/python run_tinker_sft.py \
+  --config bench_config.json \
+  --train-chat data/suite/train_chat.jsonl \
+  --val-chat data/suite/val_chat.jsonl \
+  --run-name qwen36_27b_suite_sft_1200 \
+  --out-manifest runs/qwen36_27b_suite_sft_1200.json
+```
+
+Evaluate suite checkpoints with `run_tinker_predict.py` and score with `score_suite.py`. For fine-tuned checkpoints, pass the `sampler_path` recorded in the relevant manifest as `--model-path`:
+
+```bash
+.venv/bin/python run_tinker_predict.py \
+  --config bench_config.json \
+  --gold data/suite/test.jsonl \
+  --out predictions/suite_base_qwen36_27b.jsonl \
+  --max-tokens 512 \
+  --concurrency 16
+
+.venv/bin/python score_suite.py \
+  --gold data/suite/test.jsonl \
+  --pred predictions/suite_base_qwen36_27b.jsonl \
+  --out reports/suite_base_qwen36_27b_report.json
+```
+
+Canonical retention for the suite checkpoint is scored with `score_predictions.py` on `data/test.jsonl`.
+
+The public suite pilot results on `data/suite/test.jsonl` are:
+
+| Run | Accuracy | Correct | Incorrect |
+| --- | ---: | ---: | ---: |
+| base `Qwen/Qwen3.6-27B` | 20.00% | 60 | 240 |
+| 2x2 SFT transfer | 48.33% | 145 | 155 |
+| 2x2 + prompt-adversarial SFT transfer | 51.67% | 155 | 145 |
+| suite SFT | 68.00% | 204 | 96 |
+
+The suite SFT checkpoint scored 53.60% on the canonical 500-example 2x2 test set, so it should be treated as a suite adaptation run with poor canonical retention.
 
 ## Adversarial Prompt Data
 

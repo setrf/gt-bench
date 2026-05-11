@@ -24,7 +24,7 @@ figures:
 
 suite-data:
 	$(PYTHON) generate_benchmark_suite.py \
-		--train-per-family 50 \
+		--train-per-family 200 \
 		--val-per-family 10 \
 		--test-per-family 50 \
 		--seed 20260511 \

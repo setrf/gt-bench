@@ -42,7 +42,7 @@ The Qwen3.6-27B Tinker result reported in this repo is limited to this canonical
 
 ## Broader suite
 
-The broader suite is deterministic and exactly scored. It has local smoke baselines and an oracle check, but it is not part of the reported Tinker fine-tuning result yet. It adds six task families:
+The broader suite is deterministic and exactly scored. It has local smoke baselines, an oracle check, and a separate Tinker pilot evaluation that remains distinct from the canonical 2x2 result. It adds six task families:
 
 - `mixed_2x2`: fully mixed equilibria for 2x2 games with no pure equilibrium.
 - `dominance`: iterated elimination of strictly dominated pure strategies.
@@ -99,14 +99,14 @@ Generate train/validation/test broader-suite splits:
 
 ```bash
 .venv/bin/python generate_benchmark_suite.py \
-  --train-per-family 50 \
+  --train-per-family 200 \
   --val-per-family 10 \
   --test-per-family 50 \
   --seed 20260511 \
   --out-dir data/suite
 ```
 
-This writes `train`, `val`, and `test` JSONL/chat files under `data/suite/`.
+This writes 1200 train, 60 validation, and 300 test examples under `data/suite/`.
 
 Generate a balanced stress set with equal numbers of 0-, 1-, 2-, 3-, and 4-equilibrium games:
 
@@ -245,7 +245,7 @@ Run deterministic local suite baselines and regenerate the public suite summary:
   --figure reports/figures/suite_smoke_accuracy.svg
 ```
 
-The public suite summary is a local smoke baseline report, not a model evaluation.
+The public suite summary includes deterministic baselines plus completed Tinker model rows when the matching raw reports are present. It also preserves the published model rows for this exact public suite split so `make check` does not require a Tinker key.
 
 For the Qwen3.6-27B sweep, score each prediction file:
 
@@ -303,7 +303,7 @@ Generate static SVG figures from the public summary:
 
 ## Expected result
 
-The demonstrated model result is an increase in exact-match accuracy on held-out 2x2 pure-equilibrium problems after fine-tuning. The broader suite has deterministic generation, exact scoring, local baselines, and an oracle check; Tinker model evaluations for that suite are still pending.
+The demonstrated headline result is still the canonical 2x2 pure-equilibrium improvement after fine-tuning. The broader suite is now evaluated separately: base `Qwen/Qwen3.6-27B` scored 20.00%, the canonical 2x2 SFT checkpoint transferred to 48.33%, the prompt-adversarial 2x2 checkpoint transferred to 51.67%, and a suite-specific 1200-example SFT checkpoint reached 68.00%. That suite-specific checkpoint retained only 53.60% canonical 2x2 accuracy, so it is a diagnostic suite model rather than a replacement for the canonical checkpoint.
 
 ## Current Qwen3.6-27B result
 
@@ -325,6 +325,8 @@ The full report is in `reports/gt_bench_results.md`. For the research narrative 
 On a 250-example prompt-robustness set, the same checkpoint improved from 64.00% baseline accuracy to 88.40%. See `ROBUSTNESS.md` for the prompt-variant breakdown.
 
 Across a three-seed repeated training-data sweep on the fixed canonical test set, the 5000-example SFT condition was stable: 99.60% mean accuracy with 0.40 percentage-point seed SD. The 1000-example condition was volatile, with one seed dropping to 70.20%, while the 250-example condition consistently underperformed baseline. See `reports/seed_sweep_results.md`.
+
+The broader-suite pilot is tracked in `reports/suite_results.md`. The suite-specific SFT checkpoint improved broader-suite accuracy from 20.00% to 68.00%, but the canonical-retention check fell to 53.60%, which keeps the main scientific claim narrow.
 
 ## Adversarial robustness follow-up
 
@@ -377,6 +379,8 @@ The public repeated-seed summary is `reports/seed_sweep_results.md`, with machin
 ![Robustness accuracy by prompt variant](reports/figures/robustness_by_variant.svg)
 
 ![Adversarial SFT comparison](reports/figures/adversarial_comparison.svg)
+
+![Broader suite accuracy](reports/figures/suite_smoke_accuracy.svg)
 
 ![Repeated-seed learning curve](reports/figures/seed_sweep_learning_curve.svg)
 

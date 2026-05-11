@@ -1,52 +1,84 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="980" height="430" viewBox="0 0 980 430">
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="500" viewBox="0 0 1280 500">
 <rect width="100%" height="100%" fill="white"/>
-<text x="20" y="32" font-family="Arial" font-size="20" font-weight="700">Suite Smoke Baselines By Task Family</text>
-<line x1="130" y1="330.0" x2="950" y2="330.0" stroke="#e0e0e0"/>
-<text x="118" y="334.0" text-anchor="end" font-family="Arial" font-size="11">0%</text>
-<line x1="130" y1="262.5" x2="950" y2="262.5" stroke="#e0e0e0"/>
-<text x="118" y="266.5" text-anchor="end" font-family="Arial" font-size="11">25%</text>
-<line x1="130" y1="195.0" x2="950" y2="195.0" stroke="#e0e0e0"/>
-<text x="118" y="199.0" text-anchor="end" font-family="Arial" font-size="11">50%</text>
-<line x1="130" y1="127.5" x2="950" y2="127.5" stroke="#e0e0e0"/>
-<text x="118" y="131.5" text-anchor="end" font-family="Arial" font-size="11">75%</text>
-<line x1="130" y1="60.0" x2="950" y2="60.0" stroke="#e0e0e0"/>
+<text x="20" y="32" font-family="Arial" font-size="20" font-weight="700">GT-Bench Suite Accuracy By Task Family</text>
+<line x1="130" y1="350.0" x2="1250" y2="350.0" stroke="#e0e0e0"/>
+<text x="118" y="354.0" text-anchor="end" font-family="Arial" font-size="11">0%</text>
+<line x1="130" y1="277.5" x2="1250" y2="277.5" stroke="#e0e0e0"/>
+<text x="118" y="281.5" text-anchor="end" font-family="Arial" font-size="11">25%</text>
+<line x1="130" y1="205.0" x2="1250" y2="205.0" stroke="#e0e0e0"/>
+<text x="118" y="209.0" text-anchor="end" font-family="Arial" font-size="11">50%</text>
+<line x1="130" y1="132.5" x2="1250" y2="132.5" stroke="#e0e0e0"/>
+<text x="118" y="136.5" text-anchor="end" font-family="Arial" font-size="11">75%</text>
+<line x1="130" y1="60.0" x2="1250" y2="60.0" stroke="#e0e0e0"/>
 <text x="118" y="64.0" text-anchor="end" font-family="Arial" font-size="11">100%</text>
-<rect x="154.6" y="330.0" width="26.0" height="0.0" fill="#8c8c8c"/>
-<rect x="184.6" y="330.0" width="26.0" height="0.0" fill="#d55e00"/>
-<rect x="214.6" y="319.2" width="26.0" height="10.8" fill="#0072b2"/>
-<rect x="244.6" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
-<text x="198.3" y="392" text-anchor="middle" font-family="Arial" font-size="11">mixed 2x2</text>
-<rect x="291.3" y="319.2" width="26.0" height="10.8" fill="#8c8c8c"/>
-<rect x="321.3" y="313.8" width="26.0" height="16.2" fill="#d55e00"/>
-<rect x="351.3" y="324.6" width="26.0" height="5.4" fill="#0072b2"/>
-<rect x="381.3" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
-<text x="335.0" y="392" text-anchor="middle" font-family="Arial" font-size="11">dominance</text>
-<rect x="427.9" y="292.2" width="26.0" height="37.8" fill="#8c8c8c"/>
-<rect x="457.9" y="313.8" width="26.0" height="16.2" fill="#d55e00"/>
-<rect x="487.9" y="297.6" width="26.0" height="32.4" fill="#0072b2"/>
-<rect x="517.9" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
-<text x="471.7" y="392" text-anchor="middle" font-family="Arial" font-size="11">large normal form</text>
-<rect x="564.6" y="303.0" width="26.0" height="27.0" fill="#8c8c8c"/>
-<rect x="594.6" y="297.6" width="26.0" height="32.4" fill="#d55e00"/>
-<rect x="624.6" y="303.0" width="26.0" height="27.0" fill="#0072b2"/>
-<rect x="654.6" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
-<text x="608.3" y="392" text-anchor="middle" font-family="Arial" font-size="11">extensive form</text>
-<rect x="701.3" y="308.4" width="26.0" height="21.6" fill="#8c8c8c"/>
-<rect x="731.3" y="303.0" width="26.0" height="27.0" fill="#d55e00"/>
-<rect x="761.3" y="297.6" width="26.0" height="32.4" fill="#0072b2"/>
-<rect x="791.3" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
-<text x="745.0" y="392" text-anchor="middle" font-family="Arial" font-size="11">natural language</text>
-<rect x="837.9" y="330.0" width="26.0" height="0.0" fill="#8c8c8c"/>
-<rect x="867.9" y="330.0" width="26.0" height="0.0" fill="#d55e00"/>
-<rect x="897.9" y="330.0" width="26.0" height="0.0" fill="#0072b2"/>
-<rect x="927.9" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
-<text x="881.7" y="392" text-anchor="middle" font-family="Arial" font-size="11">repeated interaction</text>
-<rect x="130" y="408" width="12" height="12" fill="#8c8c8c"/>
-<text x="148" y="418" font-family="Arial" font-size="12">always none</text>
-<rect x="320" y="408" width="12" height="12" fill="#d55e00"/>
-<text x="338" y="418" font-family="Arial" font-size="12">random</text>
-<rect x="510" y="408" width="12" height="12" fill="#0072b2"/>
-<text x="528" y="418" font-family="Arial" font-size="12">most common by family</text>
-<rect x="700" y="408" width="12" height="12" fill="#009e73"/>
-<text x="718" y="418" font-family="Arial" font-size="12">oracle</text>
+<rect x="163.4" y="350.0" width="20.0" height="0.0" fill="#8c8c8c"/>
+<rect x="187.4" y="350.0" width="20.0" height="0.0" fill="#d55e00"/>
+<rect x="211.4" y="350.0" width="20.0" height="0.0" fill="#0072b2"/>
+<rect x="235.4" y="350.0" width="20.0" height="0.0" fill="#cc79a7"/>
+<rect x="259.4" y="350.0" width="20.0" height="0.0" fill="#56b4e9"/>
+<rect x="283.4" y="350.0" width="20.0" height="0.0" fill="#f0e442"/>
+<rect x="307.4" y="123.8" width="20.0" height="226.2" fill="#009e73"/>
+<rect x="331.4" y="60.0" width="20.0" height="290.0" fill="#222222"/>
+<text x="222.9" y="408" text-anchor="middle" font-family="Arial" font-size="11">mixed 2x2</text>
+<rect x="349.3" y="321.0" width="20.0" height="29.0" fill="#8c8c8c"/>
+<rect x="373.3" y="344.2" width="20.0" height="5.8" fill="#d55e00"/>
+<rect x="397.3" y="321.0" width="20.0" height="29.0" fill="#0072b2"/>
+<rect x="421.3" y="350.0" width="20.0" height="0.0" fill="#cc79a7"/>
+<rect x="445.3" y="257.2" width="20.0" height="92.8" fill="#56b4e9"/>
+<rect x="469.3" y="257.2" width="20.0" height="92.8" fill="#f0e442"/>
+<rect x="493.3" y="222.4" width="20.0" height="127.6" fill="#009e73"/>
+<rect x="517.3" y="60.0" width="20.0" height="290.0" fill="#222222"/>
+<text x="408.8" y="408" text-anchor="middle" font-family="Arial" font-size="11">dominance</text>
+<rect x="535.1" y="338.4" width="20.0" height="11.6" fill="#8c8c8c"/>
+<rect x="559.1" y="338.4" width="20.0" height="11.6" fill="#d55e00"/>
+<rect x="583.1" y="338.4" width="20.0" height="11.6" fill="#0072b2"/>
+<rect x="607.1" y="303.6" width="20.0" height="46.4" fill="#cc79a7"/>
+<rect x="631.1" y="141.2" width="20.0" height="208.8" fill="#56b4e9"/>
+<rect x="655.1" y="147.0" width="20.0" height="203.0" fill="#f0e442"/>
+<rect x="679.1" y="193.4" width="20.0" height="156.6" fill="#009e73"/>
+<rect x="703.1" y="60.0" width="20.0" height="290.0" fill="#222222"/>
+<text x="594.6" y="408" text-anchor="middle" font-family="Arial" font-size="11">large normal form</text>
+<rect x="721.0" y="315.2" width="20.0" height="34.8" fill="#8c8c8c"/>
+<rect x="745.0" y="303.6" width="20.0" height="46.4" fill="#d55e00"/>
+<rect x="769.0" y="315.2" width="20.0" height="34.8" fill="#0072b2"/>
+<rect x="793.0" y="245.6" width="20.0" height="104.4" fill="#cc79a7"/>
+<rect x="817.0" y="158.6" width="20.0" height="191.4" fill="#56b4e9"/>
+<rect x="841.0" y="118.0" width="20.0" height="232.0" fill="#f0e442"/>
+<rect x="865.0" y="129.6" width="20.0" height="220.4" fill="#009e73"/>
+<rect x="889.0" y="60.0" width="20.0" height="290.0" fill="#222222"/>
+<text x="780.4" y="408" text-anchor="middle" font-family="Arial" font-size="11">extensive form</text>
+<rect x="906.8" y="321.0" width="20.0" height="29.0" fill="#8c8c8c"/>
+<rect x="930.8" y="292.0" width="20.0" height="58.0" fill="#d55e00"/>
+<rect x="954.8" y="309.4" width="20.0" height="40.6" fill="#0072b2"/>
+<rect x="978.8" y="274.6" width="20.0" height="75.4" fill="#cc79a7"/>
+<rect x="1002.8" y="193.4" width="20.0" height="156.6" fill="#56b4e9"/>
+<rect x="1026.8" y="176.0" width="20.0" height="174.0" fill="#f0e442"/>
+<rect x="1050.8" y="187.6" width="20.0" height="162.4" fill="#009e73"/>
+<rect x="1074.8" y="60.0" width="20.0" height="290.0" fill="#222222"/>
+<text x="966.2" y="408" text-anchor="middle" font-family="Arial" font-size="11">natural language</text>
+<rect x="1092.6" y="350.0" width="20.0" height="0.0" fill="#8c8c8c"/>
+<rect x="1116.6" y="350.0" width="20.0" height="0.0" fill="#d55e00"/>
+<rect x="1140.6" y="344.2" width="20.0" height="5.8" fill="#0072b2"/>
+<rect x="1164.6" y="228.2" width="20.0" height="121.8" fill="#cc79a7"/>
+<rect x="1188.6" y="158.6" width="20.0" height="191.4" fill="#56b4e9"/>
+<rect x="1212.6" y="152.8" width="20.0" height="197.2" fill="#f0e442"/>
+<rect x="1236.6" y="60.0" width="20.0" height="290.0" fill="#009e73"/>
+<rect x="1260.6" y="60.0" width="20.0" height="290.0" fill="#222222"/>
+<text x="1152.1" y="408" text-anchor="middle" font-family="Arial" font-size="11">repeated interaction</text>
+<rect x="130" y="442" width="12" height="12" fill="#8c8c8c"/>
+<text x="148" y="452" font-family="Arial" font-size="12">Always none</text>
+<rect x="410" y="442" width="12" height="12" fill="#d55e00"/>
+<text x="428" y="452" font-family="Arial" font-size="12">Random</text>
+<rect x="690" y="442" width="12" height="12" fill="#0072b2"/>
+<text x="708" y="452" font-family="Arial" font-size="12">Most common</text>
+<rect x="970" y="442" width="12" height="12" fill="#cc79a7"/>
+<text x="988" y="452" font-family="Arial" font-size="12">Base Qwen/Qwen3.6-27B</text>
+<rect x="130" y="464" width="12" height="12" fill="#56b4e9"/>
+<text x="148" y="474" font-family="Arial" font-size="12">2x2 SFT transfer</text>
+<rect x="410" y="464" width="12" height="12" fill="#f0e442"/>
+<text x="428" y="474" font-family="Arial" font-size="12">2x2 + prompt-adversarial SFT transfer</text>
+<rect x="690" y="464" width="12" height="12" fill="#009e73"/>
+<text x="708" y="474" font-family="Arial" font-size="12">Suite SFT</text>
+<rect x="970" y="464" width="12" height="12" fill="#222222"/>
+<text x="988" y="474" font-family="Arial" font-size="12">Oracle</text>
 </svg>

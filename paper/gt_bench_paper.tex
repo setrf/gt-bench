@@ -32,7 +32,7 @@
 \maketitle
 
 \begin{abstract}
-GT-Bench is a compact benchmark for measuring whether targeted fine-tuning improves a narrow, exactly verifiable formal reasoning task. Each canonical example gives a randomly generated 2x2 two-player normal-form payoff matrix and asks a model to identify all pure-strategy Nash equilibria. Because the task has an exact solver, data can be generated at scale and model outputs can be scored without subjective judgment. Using Thinking Machines Lab Tinker, LoRA supervised fine-tuning of \modelname{} on 5000 synthetic examples improved canonical exact-match accuracy from 87.60\% to 99.60\%. A three-seed learning curve found that the 5000-example condition was stable, with 99.60\% mean accuracy and 0.40 percentage-point seed standard deviation, while the 1000-example condition was volatile. A conservative 500-example adversarial prompt supplement further improved prompt-robustness accuracy from 88.40\% to 98.80\% relative to the original 5000-example checkpoint, without reducing canonical accuracy. The result supports a narrow claim: targeted fine-tuning can improve one controlled formal reasoning skill, and targeted adversarial data can improve robustness to equivalent prompt presentations. It does not demonstrate broad game-theory reasoning competence.
+GT-Bench is a compact benchmark for measuring whether targeted fine-tuning improves a narrow, exactly verifiable formal reasoning task. Each canonical example gives a randomly generated 2x2 two-player normal-form payoff matrix and asks a model to identify all pure-strategy Nash equilibria. Because the task has an exact solver, data can be generated at scale and model outputs can be scored without subjective judgment. Using Thinking Machines Lab Tinker, LoRA supervised fine-tuning of \modelname{} on 5000 synthetic examples improved canonical exact-match accuracy from 87.60\% to 99.60\%. A three-seed learning curve found that the 5000-example condition was stable, with 99.60\% mean accuracy and 0.40 percentage-point seed standard deviation, while the 1000-example condition was volatile. A conservative 500-example adversarial prompt supplement further improved prompt-robustness accuracy from 88.40\% to 98.80\% relative to the original 5000-example checkpoint, without reducing canonical accuracy. A separate six-family suite pilot improved broader-suite accuracy from 20.00\% to 68.00\%, but the suite-specific checkpoint retained only 53.60\% canonical accuracy. The result supports a narrow claim: targeted fine-tuning can improve one controlled formal reasoning skill, and targeted adversarial data can improve robustness to equivalent prompt presentations. It does not demonstrate broad game-theory reasoning competence.
 \end{abstract}
 
 \section{Introduction}
@@ -41,7 +41,7 @@ Large language models often appear capable of formal reasoning, but broad qualit
 
 The experimental question is practical: can targeted supervised fine-tuning measurably improve a model on a precisely specified formal game-theory skill? The project was developed as a public research artifact for a Thinking Machines Lab Tinker research grant. The canonical experiment's design goal is control: one task, one exact solver, deterministic data generation, exact-match scoring, and focused robustness checks.
 
-The main result is positive. On the canonical 500-example held-out test split, \modelname{} improved from 87.60\% exact-match accuracy at baseline to 99.60\% after LoRA supervised fine-tuning on 5000 synthetic examples. The improvement held on an independent confirmation set, became sharper on a balanced stress set, and remained stable in a three-seed training-data sweep. A follow-up adversarial prompt supplement then closed most of the remaining prompt-format robustness gap. The repository also includes a separate exactly scored suite for broader game-theory tasks; those suite tasks are artifact infrastructure and are not used for the model claims in this paper.
+The main result is positive. On the canonical 500-example held-out test split, \modelname{} improved from 87.60\% exact-match accuracy at baseline to 99.60\% after LoRA supervised fine-tuning on 5000 synthetic examples. The improvement held on an independent confirmation set, became sharper on a balanced stress set, and remained stable in a three-seed training-data sweep. A follow-up adversarial prompt supplement then closed most of the remaining prompt-format robustness gap. The repository also includes a separate exactly scored suite for broader game-theory tasks. The suite pilot is reported separately because its best suite-specific checkpoint improves the broader suite but forgets much of the canonical task.
 
 \section{Related Work}
 
@@ -61,7 +61,24 @@ The reported model experiment deliberately excludes mixed strategies, dominance,
 
 The public repository now also contains a broader suite generator and scorer. This suite covers six additional task families: fully mixed equilibria in 2x2 games with no pure equilibrium, iterated elimination of strictly dominated pure strategies, pure equilibria in 2x3 and 3x3 normal-form games, backward induction in perfect-information extensive-form games, natural-language game descriptions, and finite repeated prisoner's-dilemma simulations plus best-response selection among fixed policies. Each family has deterministic generation, exact solver metadata, difficulty buckets, train/validation/test split generation, task-family scoring, local smoke baselines, and an oracle check.
 
-These suite tasks are not included in the Tinker results reported below. The tracked suite summary reports only deterministic local baselines and marks Tinker model evaluations as pending. The suite is intended as the next evaluation layer while preserving the clean interpretation of the canonical 2x2 pure-equilibrium experiment.
+The suite test split contains 300 examples, 50 from each family. Table~\ref{tab:suite-pilot} reports the completed Tinker pilot. The suite-specific SFT checkpoint improves broad-suite accuracy, especially on mixed 2x2 and repeated-interaction tasks, but it does not preserve the canonical pure-equilibrium task. This keeps the main claim separate from the suite pilot.
+
+\begin{table}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrrrr}
+\toprule
+Checkpoint & Overall & Mixed & Dominance & Large NF & Extensive & NL & Repeated \\
+\midrule
+Base model & 20.00\% & 0.00\% & 0.00\% & 16.00\% & 36.00\% & 26.00\% & 42.00\% \\
+2x2 SFT transfer & 48.33\% & 0.00\% & 32.00\% & 72.00\% & 66.00\% & 54.00\% & 66.00\% \\
+2x2 prompt-adversarial transfer & 51.67\% & 0.00\% & 32.00\% & 70.00\% & 80.00\% & 60.00\% & 68.00\% \\
+Suite SFT & 68.00\% & 78.00\% & 44.00\% & 54.00\% & 76.00\% & 56.00\% & 100.00\% \\
+\bottomrule
+\end{tabular}}
+\caption{Broader-suite pilot accuracy by task family. The suite SFT checkpoint was trained on 1200 suite chat examples and scored 53.60\% on the canonical 2x2 pure-equilibrium test, so it is not a replacement for the canonical checkpoint.}
+\label{tab:suite-pilot}
+\end{table}
 
 \section{Data, Leakage Controls, and Scoring}
 
@@ -290,17 +307,17 @@ The robustness evaluation exposed a second failure mode: compact or structured p
 
 The code is available at \repo{} under the MIT License. The repository tracks the canonical generator, solver, scorer, broader suite generator/scorer/baselines, Tinker scripts, public summaries, figures, and this paper source. Generated JSONL data, raw predictions, raw reports, and Tinker run manifests are ignored by default because they are reproducible and can contain private sampler paths. Public summary JSON files, SVG figures, and small sample JSONL files are tracked.
 
-This work uses synthetic payoff matrices and does not involve human subjects or personal data. The main risk is interpretive: the result could be overstated as evidence of broad game-theory ability. The model-result claim supports only 2x2 pure-equilibrium identification under the tested Tinker setup. The broader suite is available for future evaluation but does not yet have associated model-result claims. Reproduction also depends on access to the same or comparable Tinker model, renderer, and pricing environment.
+This work uses synthetic payoff matrices and does not involve human subjects or personal data. The main risk is interpretive: the result could be overstated as evidence of broad game-theory ability. The headline model-result claim supports only 2x2 pure-equilibrium identification under the tested Tinker setup. The broader-suite pilot is diagnostic and shows that suite adaptation can come with substantial canonical forgetting. Reproduction also depends on access to the same or comparable Tinker model, renderer, and pricing environment.
 
 \section{Limitations}
 
-The reported GT-Bench experiment is not a general game-theory evaluation. It uses synthetic data, only 2x2 games, only integer payoffs, and only pure-strategy equilibria. The repository's broader suite adds exact artifact coverage for mixed strategies, dominance, larger normal-form games, sequential reasoning, natural-language descriptions, and repeated interaction, but these tasks have not yet been evaluated with the Tinker fine-tuning protocol. The result also does not prove that the model acquired a human-like concept of Nash equilibrium.
+The reported GT-Bench experiment is not a general game-theory evaluation. It uses synthetic data, only 2x2 games, only integer payoffs, and only pure-strategy equilibria. The repository's broader suite adds exact artifact coverage for mixed strategies, dominance, larger normal-form games, sequential reasoning, natural-language descriptions, and repeated interaction, and the first suite-specific Tinker run improves that suite. However, its weak canonical retention shows that this is not yet a unified game-theory capability result. The result also does not prove that the model acquired a human-like concept of Nash equilibrium.
 
 The benchmark is useful precisely because it is constrained. The rule is exact, the data is reproducible, and failures can be inspected mechanically. The appropriate claim is narrow: targeted fine-tuning can improve this specific formal reasoning behavior under the tested conditions.
 
 \section{Conclusion}
 
-GT-Bench demonstrates that a compact, reproducible Tinker fine-tuning artifact can produce measurable gains on a fully verifiable formal reasoning task. The strongest non-adversarial checkpoint improved canonical accuracy from 87.60\% to 99.60\%, the three-seed sweep showed that the 5000-example condition was stable, and an adversarial prompt supplement improved robustness from 88.40\% to 98.80\% relative to the original 5000-example checkpoint. The conclusion is deliberately narrow but useful: targeted fine-tuning can improve a specific formal skill, and targeted data can close prompt-format robustness gaps for that same skill. The broader suite now makes the next evaluation step concrete without broadening the claims made here.
+GT-Bench demonstrates that a compact, reproducible Tinker fine-tuning artifact can produce measurable gains on a fully verifiable formal reasoning task. The strongest non-adversarial checkpoint improved canonical accuracy from 87.60\% to 99.60\%, the three-seed sweep showed that the 5000-example condition was stable, and an adversarial prompt supplement improved robustness from 88.40\% to 98.80\% relative to the original 5000-example checkpoint. The conclusion is deliberately narrow but useful: targeted fine-tuning can improve a specific formal skill, and targeted data can close prompt-format robustness gaps for that same skill. The broader-suite pilot makes the next evaluation layer concrete, while its poor canonical retention shows why broader claims require a multitask or retention-aware follow-up.
 
 \appendix
 
@@ -321,7 +338,7 @@ python3 -m venv .venv
   --out data/robust/robust_seed271828.jsonl \
   --chat-out data/robust/robust_seed271828_chat.jsonl
 .venv/bin/python generate_adversarial_training.py
-.venv/bin/python generate_benchmark_suite.py --train-per-family 50 \
+.venv/bin/python generate_benchmark_suite.py --train-per-family 200 \
   --val-per-family 10 --test-per-family 50 --seed 20260511 \
   --out-dir data/suite
 .venv/bin/python run_suite_baselines.py --gold data/suite/test.jsonl \

@@ -716,7 +716,7 @@ def maybe_generate_family_example(
         return build_natural_language_example(game, f"natural_language_{index:04d}")
 
     if family == "repeated_interaction":
-        if index % 2:
+        if index % 4 == 1:
             spec = RepeatedBestResponseSpec(
                 horizon=rng.randint(3, 20),
                 opponent_strategy=rng.choice(REPEATED_STRATEGIES),

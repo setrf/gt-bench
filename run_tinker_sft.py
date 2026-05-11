@@ -58,6 +58,7 @@ def loss_value(result: Any) -> float | None:
 def run_sft(
     config: dict[str, Any],
     train_chat: Path,
+    val_chat: Path | None,
     run_name: str,
     out_manifest: Path,
     max_steps: int | None,
@@ -121,7 +122,7 @@ def run_sft(
         "renderer_name": renderer_name,
         "train_chat": str(train_chat),
         "train_chat_sha256": sha256_file(train_chat),
-        "val_chat": config["data"]["val_chat"],
+        "val_chat": str(val_chat or config["data"]["val_chat"]),
         "lora": lora,
         "steps_completed": step,
         "losses": losses,
@@ -141,6 +142,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run GT-Bench LoRA SFT through Tinker.")
     parser.add_argument("--config", type=Path, default=CONFIG_PATH)
     parser.add_argument("--train-chat", type=Path, required=True)
+    parser.add_argument("--val-chat", type=Path, default=None)
     parser.add_argument("--run-name", required=True)
     parser.add_argument("--out-manifest", type=Path, required=True)
     parser.add_argument("--max-steps", type=int, default=None, help="Optional cheap smoke-test cap.")
@@ -150,7 +152,14 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     try:
-        run_sft(load_config(args.config), args.train_chat, args.run_name, args.out_manifest, args.max_steps)
+        run_sft(
+            load_config(args.config),
+            args.train_chat,
+            args.val_chat,
+            args.run_name,
+            args.out_manifest,
+            args.max_steps,
+        )
     except (TinkerSetupError, ImportError) as exc:
         return fail(str(exc))
     return 0

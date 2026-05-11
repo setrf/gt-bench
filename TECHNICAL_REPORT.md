@@ -4,7 +4,7 @@
 
 GT-Bench is a compact Tinker fine-tuning experiment for one formal reasoning task: given a 2x2 two-player normal-form payoff matrix, identify all pure-strategy Nash equilibria.
 
-The repository also includes a broader task suite with exact solvers for mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form backward induction, natural-language game descriptions, and repeated interaction, including fixed-policy simulation and best-response selection among policies. Those suite tasks are code-complete, exactly scored, split into deterministic train/validation/test files, and covered by local smoke baselines. The model results below are only for the canonical 2x2 pure-equilibrium task.
+The repository also includes a broader task suite with exact solvers for mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form backward induction, natural-language game descriptions, and repeated interaction, including fixed-policy simulation and best-response selection among policies. Those suite tasks are code-complete, exactly scored, split into deterministic train/validation/test files, covered by local smoke baselines, and now have a separate Tinker pilot evaluation. The headline model result remains the canonical 2x2 pure-equilibrium task.
 
 The project was built by Mert Gulsun, a UC Berkeley master's student and Thinking Machines Lab Tinker research grant recipient. The goal is to show whether targeted fine-tuning can measurably improve a model on a narrow, exactly verifiable game-theory task.
 
@@ -120,6 +120,19 @@ I repeated the training-size sweep across three independently generated training
 
 The result sharpens the original story. The 5000-example condition is stable across seeds, with individual accuracies of 99.60%, 99.20%, and 100.00%. The 1000-example condition is volatile: two seeds improve over baseline, but seed `2027` falls to 70.20%. The 250-example condition consistently underperforms baseline.
 
+## Broader Suite Pilot
+
+The broader suite test split has 300 examples, 50 from each task family. The first Tinker pilot gives a useful but clearly separate result:
+
+| Run | Suite accuracy | Correct | Incorrect |
+| --- | ---: | ---: | ---: |
+| base `Qwen/Qwen3.6-27B` | 20.00% | 60 | 240 |
+| 2x2 SFT transfer | 48.33% | 145 | 155 |
+| 2x2 + prompt-adversarial SFT transfer | 51.67% | 155 | 145 |
+| suite SFT | 68.00% | 204 | 96 |
+
+The suite-specific checkpoint was trained on 1200 suite chat examples. It reached 78.00% on mixed 2x2, 44.00% on dominance, 54.00% on larger normal-form games, 76.00% on extensive form, 56.00% on natural-language games, and 100.00% on repeated interaction. The same checkpoint scored only 53.60% on the canonical 2x2 pure-equilibrium test, so the result shows suite adaptation with substantial canonical forgetting.
+
 ## Most Important Failure Mode
 
 The base model often wants every 2x2 game to have at least one pure equilibrium. This creates many false positives on zero-equilibrium games, where the correct answer is the empty set.
@@ -130,7 +143,7 @@ After fine-tuning, this failure mode is mostly removed. The remaining canonical 
 
 GT-Bench supports a narrow claim: targeted Tinker fine-tuning can substantially improve `Qwen/Qwen3.6-27B` on a synthetic, fully verifiable 2x2 pure-strategy Nash equilibrium task.
 
-It does not show broad game-theory reasoning competence. The broader suite now tests mixed strategies, dominance, larger normal-form games, sequential games, natural-language descriptions, and repeated interaction at the artifact level, but those tasks do not yet have model evaluations or fine-tuning claims.
+It does not show broad game-theory reasoning competence. The broader suite now tests mixed strategies, dominance, larger normal-form games, sequential games, natural-language descriptions, and repeated interaction, and the first suite-specific SFT run improves suite accuracy. However, poor canonical retention means this is not yet a unified game-theory model result.
 
 The value of the benchmark is control: the task is simple, exactly solvable, cheap to generate, and scored without subjective judgment.
 
@@ -148,4 +161,4 @@ The full reproducibility recipe, including the complete summary command with all
 
 ## Next Steps
 
-The next scientific step is to evaluate the broader suite with the same Tinker baseline and fine-tuning protocol, while keeping results separated by task family. The local suite baselines and oracle check are already tracked in `reports/suite_results.md`; the pending work is actual model prediction, scoring, and suite-specific SFT. For the canonical task, the remaining useful follow-up is to diagnose the unstable 1000-example regime by inspecting the seed `2027` failures and training distribution.
+The next scientific step is a joint curriculum or multitask SFT run that improves the broader suite without erasing canonical 2x2 pure-equilibrium performance. For the canonical task, the remaining useful follow-up is to diagnose the unstable 1000-example regime by inspecting the seed `2027` failures and training distribution.

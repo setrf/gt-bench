@@ -72,6 +72,21 @@ The key result is that 5000-example SFT is stable across seeds: 99.60%, 99.20%, 
 
 The public repeated-seed summary is `reports/seed_sweep_results.md`.
 
+## Broader Suite Pilot
+
+The broader suite is a separate exactly scored evaluation layer with six task families: mixed 2x2 equilibria, dominance, larger normal-form games, extensive form, natural-language descriptions, and repeated interaction. On the 300-example public suite test split:
+
+| Run | Accuracy | Correct | Incorrect |
+| --- | ---: | ---: | ---: |
+| base `Qwen/Qwen3.6-27B` | 20.00% | 60 | 240 |
+| 2x2 SFT transfer | 48.33% | 145 | 155 |
+| 2x2 + prompt-adversarial SFT transfer | 51.67% | 155 | 145 |
+| suite SFT | 68.00% | 204 | 96 |
+
+The suite-specific checkpoint was trained on 1200 suite chat examples. It improved the broader suite substantially, but it did not preserve the canonical task: on the canonical 500-example 2x2 pure-equilibrium test set, it scored 53.60%. This is useful as a diagnostic suite result, not as a replacement for the canonical 5000-example checkpoint.
+
+The public suite summary is `reports/suite_results.md`.
+
 ## Interpretation
 
 The strongest improvement is on zero-equilibrium cases. On the canonical split, the baseline solved only 9 of 45 zero-equilibrium games under the exact prediction parser, while the 1000-example and 5000-example fine-tunes solved all 45.
@@ -82,4 +97,4 @@ The canonical and confirmation failures in the best run are tie-heavy cases wher
 
 This shows that targeted Tinker SFT can measurably improve a model on a narrow, fully verifiable formal reasoning task.
 
-It does not show broad game-theory competence. These results cover only 2x2 normal-form games, pure equilibria, integer payoffs, and synthetic prompts. The repository now includes a broader exactly scored suite for mixed strategies, dominance, larger normal-form games, extensive form, natural-language descriptions, and repeated interaction. `reports/suite_results.md` contains local smoke baselines and an oracle check, but no Tinker model-result claim is attached to that suite yet.
+It does not show broad game-theory competence. The headline results cover only 2x2 normal-form games, pure equilibria, integer payoffs, and synthetic prompts. The repository now includes a broader exactly scored suite and a first Tinker pilot on that suite, but the suite-specific SFT checkpoint has poor canonical retention, so the broader result should be read as a separate diagnostic rather than a general game-theory capability claim.

@@ -55,7 +55,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 
 ```bash
 .venv/bin/python generate_benchmark_suite.py \
-  --train-per-family 50 \
+  --train-per-family 200 \
   --val-per-family 10 \
   --test-per-family 50 \
   --seed 20260511 \
@@ -126,7 +126,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 
 - Confirm `README.md` links to `TECHNICAL_REPORT.md`, `RESULTS.md`, `REPRODUCIBILITY.md`, `FAILURE_ANALYSIS.md`, `ROBUSTNESS.md`, and `paper/gt_bench_paper.tex`.
 - Confirm `reports/adversarial_results.md` accurately says whether the adversarial run is pending or complete.
-- Confirm `reports/suite_results.md` accurately says broader-suite Tinker model evaluations are pending unless actual model reports exist.
+- Confirm `reports/suite_results.md` accurately reports completed broader-suite model rows and canonical-retention status for the exact public suite hash.
 - Confirm `reports/figures/*.svg` renders on GitHub.
 - Confirm `paper/figures/*.png` match the current public SVG figures before rebuilding the paper.
-- Confirm the headline model-result claim remains narrow: targeted fine-tuning improves one fully verifiable 2x2 pure-equilibrium task. The broader suite is code/evaluation infrastructure until it has separate model runs.
+- Confirm the headline model-result claim remains narrow: targeted fine-tuning improves one fully verifiable 2x2 pure-equilibrium task. The broader suite has a separate pilot result, but the suite SFT checkpoint is not a replacement for the canonical checkpoint because canonical retention is poor.

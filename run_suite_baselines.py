@@ -14,6 +14,38 @@ from score_suite import score_suite
 from tinker_common import sha256_file
 
 
+DEFAULT_MODEL_REPORTS = [
+    (
+        "base_qwen36_27b",
+        "Base Qwen/Qwen3.6-27B",
+        Path("reports/suite_base_qwen36_27b_report.json"),
+    ),
+    (
+        "pure_2x2_sft_5000",
+        "2x2 SFT transfer",
+        Path("reports/suite_qwen36_27b_sft_5000_report.json"),
+    ),
+    (
+        "pure_2x2_prompt_adv500",
+        "2x2 + prompt-adversarial SFT transfer",
+        Path("reports/suite_qwen36_27b_sft_5000_plus_prompt_adv500_report.json"),
+    ),
+    (
+        "suite_sft_1200",
+        "Suite SFT",
+        Path("reports/suite_qwen36_27b_suite_sft_1200_report.json"),
+    ),
+]
+
+DEFAULT_RETENTION_REPORTS = [
+    (
+        "suite_sft_1200_on_canonical",
+        "Suite SFT on canonical 2x2",
+        Path("reports/qwen36_27b_suite_sft_1200_on_canonical_report.json"),
+    ),
+]
+
+
 def pct(value: float) -> str:
     return f"{value * 100:.2f}%"
 
@@ -133,42 +165,121 @@ def most_common_answers(train_rows: list[dict[str, object]]) -> dict[str, str]:
 
 
 def summarize_report(report: dict[str, Any], prediction_path: Path | None = None) -> dict[str, Any]:
-    summary = {
+    return {
         "total_examples": report["total_examples"],
         "exact_match_accuracy": report["exact_match_accuracy"],
         "num_correct": report["num_correct"],
         "num_incorrect": report["num_incorrect"],
         "accuracy_by_task_family": report["accuracy_by_task_family"],
-        "accuracy_by_difficulty": report.get("accuracy_by_difficulty", {}),
-        "failed_examples_preview": report.get("failed_examples", [])[:10],
     }
-    if prediction_path is not None:
-        summary["prediction_path"] = str(prediction_path)
+
+
+def summarize_model_report(label: str, report: dict[str, Any], source_report: Path) -> dict[str, Any]:
+    summary = summarize_report(report)
+    summary["label"] = label
+    summary["source_report"] = str(source_report)
     return summary
+
+
+def summarize_retention_report(label: str, report: dict[str, Any], source_report: Path) -> dict[str, Any]:
+    return {
+        "label": label,
+        "source_report": str(source_report),
+        "total_examples": report["total_examples"],
+        "exact_match_accuracy": report["exact_match_accuracy"],
+        "num_correct": report["num_correct"],
+        "num_incorrect": report["num_incorrect"],
+        "accuracy_by_number_of_equilibria": report.get("accuracy_by_number_of_equilibria", {}),
+    }
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_named_reports(
+    default_reports: Sequence[tuple[str, str, Path]],
+    previous: dict[str, Any] | None,
+    suite_sha256: str | None,
+) -> dict[str, Any]:
+    reports: dict[str, Any] = {}
+    for name, label, path in default_reports:
+        if path.exists():
+            reports[name] = summarize_model_report(label, load_json(path), path)
+            continue
+        if previous and previous.get("suite_sha256") == suite_sha256:
+            previous_reports = previous.get("model_evaluations")
+            if isinstance(previous_reports, dict) and name in previous_reports:
+                reports[name] = previous_reports[name]
+    return reports
+
+
+def load_retention_reports(
+    default_reports: Sequence[tuple[str, str, Path]],
+    previous: dict[str, Any] | None,
+    suite_sha256: str | None,
+) -> dict[str, Any]:
+    reports: dict[str, Any] = {}
+    for name, label, path in default_reports:
+        if path.exists():
+            reports[name] = summarize_retention_report(label, load_json(path), path)
+            continue
+        if previous and previous.get("suite_sha256") == suite_sha256:
+            previous_reports = previous.get("canonical_retention")
+            if isinstance(previous_reports, dict) and name in previous_reports:
+                reports[name] = previous_reports[name]
+    return reports
+
+
+def is_public_suite_split(gold_path: Path) -> bool:
+    public_path = Path("data/suite/test.jsonl")
+    if gold_path == public_path:
+        return True
+    try:
+        return gold_path.resolve() == public_path.resolve()
+    except OSError:
+        return False
 
 
 def write_suite_figure(path: Path, summary: dict[str, Any]) -> None:
     baselines = summary["baselines"]
+    models = summary.get("model_evaluations", {})
     families = list(DEFAULT_SUITE_FAMILIES)
-    names = [name for name in ("always_none", "random", "most_common_by_family", "oracle") if name in baselines]
-    width = 980
-    height = 430
+    series: list[tuple[str, str, dict[str, Any]]] = []
+    for name, label in (
+        ("always_none", "Always none"),
+        ("random", "Random"),
+        ("most_common_by_family", "Most common"),
+    ):
+        if name in baselines:
+            series.append((name, label, baselines[name]))
+    for name in ("base_qwen36_27b", "pure_2x2_sft_5000", "pure_2x2_prompt_adv500", "suite_sft_1200"):
+        if name in models:
+            series.append((name, str(models[name].get("label", name)), models[name]))
+    if "oracle" in baselines:
+        series.append(("oracle", "Oracle", baselines["oracle"]))
+    width = 1280
+    height = 500
     margin_left = 130
-    margin_bottom = 80
-    chart_width = width - margin_left - 30
+    margin_bottom = 130
+    chart_width = width - margin_left - 35
     chart_height = height - 80 - margin_bottom
     group_width = chart_width / len(families)
-    bar_width = min(26, group_width / max(len(names), 1) - 4)
+    bar_width = min(20, group_width / max(len(series), 1) - 3)
     colors = {
         "always_none": "#8c8c8c",
         "random": "#d55e00",
         "most_common_by_family": "#0072b2",
-        "oracle": "#009e73",
+        "base_qwen36_27b": "#cc79a7",
+        "pure_2x2_sft_5000": "#56b4e9",
+        "suite_sft_1200": "#009e73",
+        "pure_2x2_prompt_adv500": "#f0e442",
+        "oracle": "#222222",
     }
     lines = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<rect width="100%" height="100%" fill="white"/>',
-        '<text x="20" y="32" font-family="Arial" font-size="20" font-weight="700">Suite Smoke Baselines By Task Family</text>',
+        '<text x="20" y="32" font-family="Arial" font-size="20" font-weight="700">GT-Bench Suite Accuracy By Task Family</text>',
     ]
     for tick in range(0, 101, 25):
         y = 60 + chart_height * (1 - tick / 100)
@@ -176,8 +287,8 @@ def write_suite_figure(path: Path, summary: dict[str, Any]) -> None:
         lines.append(f'<text x="{margin_left - 12}" y="{y + 4:.1f}" text-anchor="end" font-family="Arial" font-size="11">{tick}%</text>')
     for family_index, task_family in enumerate(families):
         x0 = margin_left + family_index * group_width + group_width * 0.18
-        for name_index, name in enumerate(names):
-            family_stats = baselines[name]["accuracy_by_task_family"].get(task_family, {})
+        for name_index, (name, _label, row) in enumerate(series):
+            family_stats = row["accuracy_by_task_family"].get(task_family, {})
             acc = float(family_stats.get("accuracy", 0.0))
             bar_height = chart_height * acc
             x = x0 + name_index * (bar_width + 4)
@@ -188,15 +299,16 @@ def write_suite_figure(path: Path, summary: dict[str, Any]) -> None:
             )
         label = task_family.replace("_", " ")
         lines.append(
-            f'<text x="{margin_left + family_index * group_width + group_width / 2:.1f}" y="{height - 38}" '
+            f'<text x="{margin_left + family_index * group_width + group_width / 2:.1f}" y="{height - 92}" '
             f'text-anchor="middle" font-family="Arial" font-size="11">{label}</text>'
         )
     legend_x = margin_left
-    for index, name in enumerate(names):
-        x = legend_x + index * 190
-        lines.append(f'<rect x="{x}" y="{height - 22}" width="12" height="12" fill="{colors.get(name, "#555")}"/>')
+    for index, (name, label, _row) in enumerate(series):
+        x = legend_x + (index % 4) * 280
+        y = height - 58 + (index // 4) * 22
+        lines.append(f'<rect x="{x}" y="{y}" width="12" height="12" fill="{colors.get(name, "#555")}"/>')
         lines.append(
-            f'<text x="{x + 18}" y="{height - 12}" font-family="Arial" font-size="12">{name.replace("_", " ")}</text>'
+            f'<text x="{x + 18}" y="{y + 10}" font-family="Arial" font-size="12">{label}</text>'
         )
     lines.append("</svg>")
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -207,7 +319,12 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
     lines = [
         "# GT-Bench Suite Results",
         "",
-        "Status: local deterministic suite smoke baselines are complete; Tinker model evaluations are pending.",
+        (
+            "Status: deterministic baselines and Tinker model evaluations are complete for "
+            "the listed checkpoints."
+            if summary.get("model_evaluations")
+            else "Status: deterministic suite smoke baselines are complete; no model reports are attached."
+        ),
         "",
         f"Suite file: `{summary['suite_path']}`",
     ]
@@ -221,6 +338,24 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
             f"| `{name}` | {pct(float(row['exact_match_accuracy']))} | "
             f"{row['num_correct']} | {row['num_incorrect']} |"
         )
+    if summary.get("model_evaluations"):
+        lines.extend(["", "## Model Evaluations", ""])
+        lines.append("| Checkpoint | Accuracy | Correct | Incorrect |")
+        lines.append("| --- | ---: | ---: | ---: |")
+        for row in summary["model_evaluations"].values():
+            lines.append(
+                f"| {row['label']} | {pct(float(row['exact_match_accuracy']))} | "
+                f"{row['num_correct']} | {row['num_incorrect']} |"
+            )
+    if summary.get("canonical_retention"):
+        lines.extend(["", "## Canonical 2x2 Retention", ""])
+        lines.append("| Checkpoint | Accuracy | Correct | Incorrect |")
+        lines.append("| --- | ---: | ---: | ---: |")
+        for row in summary["canonical_retention"].values():
+            lines.append(
+                f"| {row['label']} | {pct(float(row['exact_match_accuracy']))} | "
+                f"{row['num_correct']} | {row['num_incorrect']} |"
+            )
     lines.extend(["", "## Accuracy By Task Family", ""])
     for name, row in summary["baselines"].items():
         lines.append(f"### {name}")
@@ -233,19 +368,17 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
                 f"{stats['correct']} | {stats['total']} |"
             )
         lines.append("")
-    lines.extend(
-        [
-            "## Pending Model Evaluations",
-            "",
-            "- base `Qwen/Qwen3.6-27B` on the suite test split",
-            "- current 2x2 pure-equilibrium SFT checkpoint on the suite test split",
-            "- full-suite SFT checkpoint",
-            "- optional adversarial full-suite checkpoint",
-            "",
-            "No model-result claim should be made for the broader suite until these reports exist.",
-            "",
-        ]
-    )
+    if summary.get("model_evaluations"):
+        lines.extend(["## Model Accuracy By Task Family", ""])
+        lines.append("| Checkpoint | " + " | ".join(f"`{task_family}`" for task_family in DEFAULT_SUITE_FAMILIES) + " |")
+        lines.append("| --- | " + " | ".join("---:" for _ in DEFAULT_SUITE_FAMILIES) + " |")
+        for row in summary["model_evaluations"].values():
+            cells = [
+                pct(float(row["accuracy_by_task_family"].get(task_family, {}).get("accuracy", 0.0)))
+                for task_family in DEFAULT_SUITE_FAMILIES
+            ]
+            lines.append(f"| {row['label']} | " + " | ".join(cells) + " |")
+        lines.append("")
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -254,9 +387,11 @@ def build_suite_summary(
     train_path: Path | None,
     seed: int,
     pred_dir: Path | None,
+    previous_summary: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     gold_rows = read_jsonl(gold_path)
     train_rows = read_jsonl(train_path) if train_path and train_path.exists() else []
+    suite_sha256 = sha256_file(gold_path) if gold_path.exists() else None
     common = most_common_answers(train_rows) if train_rows else None
     baseline_names = ["always_none", "random", "oracle"]
     if common:
@@ -281,19 +416,22 @@ def build_suite_summary(
         report = score_suite(gold_rows, predictions)
         baselines[name] = summarize_report(report, prediction_path)
 
+    if is_public_suite_split(gold_path):
+        model_evaluations = load_named_reports(DEFAULT_MODEL_REPORTS, previous_summary, suite_sha256)
+        canonical_retention = load_retention_reports(DEFAULT_RETENTION_REPORTS, previous_summary, suite_sha256)
+    else:
+        model_evaluations = {}
+        canonical_retention = {}
+
     return {
-        "status": "pending_model_evaluations",
+        "status": "model_evaluations_complete" if model_evaluations else "baseline_only",
         "suite_path": str(gold_path),
-        "suite_sha256": sha256_file(gold_path) if gold_path.exists() else None,
+        "suite_sha256": suite_sha256,
         "train_path": str(train_path) if train_path else None,
         "train_sha256": sha256_file(train_path) if train_path and train_path.exists() else None,
         "baselines": baselines,
-        "model_evaluations": {
-            "base_model": {"status": "pending"},
-            "pure_2x2_sft": {"status": "pending"},
-            "suite_sft": {"status": "pending"},
-            "suite_adversarial_sft": {"status": "pending"},
-        },
+        "model_evaluations": model_evaluations,
+        "canonical_retention": canonical_retention,
     }
 
 
@@ -311,7 +449,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
-    summary = build_suite_summary(args.gold, args.train, args.seed, args.pred_dir)
+    previous_summary = load_json(args.out_json) if args.out_json.exists() else None
+    summary = build_suite_summary(args.gold, args.train, args.seed, args.pred_dir, previous_summary)
     args.out_json.parent.mkdir(parents=True, exist_ok=True)
     args.out_json.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     write_markdown(args.out_md, summary)
