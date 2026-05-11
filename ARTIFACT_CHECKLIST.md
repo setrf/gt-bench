@@ -7,6 +7,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 - Run `.venv/bin/python -m pytest -q`.
 - Run `.venv/bin/python check_no_secrets.py`.
 - Run `make public-artifacts` or the individual summary scripts plus `.venv/bin/python plot_results.py`.
+- Compile `paper/gt_bench_paper.tex` and, if preparing arXiv, test the source zip from a clean temporary directory.
 - Run `git diff --check`.
 - Confirm `git status -sb` contains only intended tracked changes.
 
@@ -94,6 +95,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 ## Public-Release Safety
 
 - Do not commit `.env`, `predictions/`, `runs/`, raw scorer reports, or generated JSONL data.
+- Do not commit `paper/build/`, generated PDFs, or arXiv zip files.
 - Do not commit private Tinker sampler paths in public prose.
 - Confirm no tracked file contains Tinker secret markers:
 
@@ -106,4 +108,5 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 - Confirm `README.md` links to `TECHNICAL_REPORT.md`, `RESULTS.md`, `REPRODUCIBILITY.md`, `FAILURE_ANALYSIS.md`, `ROBUSTNESS.md`, and `paper/gt_bench_paper.tex`.
 - Confirm `reports/adversarial_results.md` accurately says whether the adversarial run is pending or complete.
 - Confirm `reports/figures/*.svg` renders on GitHub.
+- Confirm `paper/figures/*.png` match the current public SVG figures before rebuilding the paper.
 - Confirm the headline claim remains narrow: targeted fine-tuning improves one fully verifiable 2x2 pure-equilibrium task.

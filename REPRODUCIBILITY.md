@@ -116,6 +116,18 @@ data/adversarial/train_5500_prompt_adv500_chat.jsonl
 
 The supplement avoids matrices already present in `data/train.jsonl`, emphasizes `compact_pairs` and `json_payoffs`, and balances every prompt variant across 0, 1, 2, 3, and 4 equilibria.
 
+Default supplement mix:
+
+| Prompt variant | Examples | Examples per equilibrium-count bucket |
+| --- | ---: | ---: |
+| `compact_pairs` | 150 | 30 |
+| `json_payoffs` | 150 | 30 |
+| `standard_table` | 100 | 20 |
+| `minimal_matrix` | 50 | 10 |
+| `answer_only` | 50 | 10 |
+
+The paper draft records a matrix-overlap audit across public splits. The canonical train/validation/test files are jointly de-duplicated by construction. The adversarial supplement excludes canonical training matrices; one supplement matrix overlaps the balanced stress set, so the adversarial robustness set is the primary adversarial follow-up evidence.
+
 ## Training
 
 The main sweep used:
@@ -255,6 +267,7 @@ Generate the public figures:
 .venv/bin/python plot_results.py \
   --summary reports/gt_bench_results.json \
   --robustness reports/robustness_results.json \
+  --adversarial reports/adversarial_results.json \
   --seed-sweep reports/seed_sweep_results.json \
   --out-dir reports/figures
 ```
@@ -305,3 +318,25 @@ After scoring the adversarial checkpoint on the canonical, confirmation, stress,
   --seed-sweep reports/seed_sweep_results.json \
   --out-dir reports/figures
 ```
+
+## Paper Build
+
+The arXiv-ready paper source is `paper/gt_bench_paper.tex`. It uses PNG figures under `paper/figures/` and an inline bibliography, so no BibTeX step is required.
+
+Compile with Tectonic from the repository root:
+
+```bash
+mkdir -p paper/build
+/path/to/tectonic --outdir paper/build paper/gt_bench_paper.tex
+```
+
+Create a minimal source archive from the paper directory:
+
+```bash
+cd paper
+rm -f build/gt_bench_arxiv_source.zip
+zip -j build/gt_bench_arxiv_source.zip gt_bench_paper.tex
+zip -r build/gt_bench_arxiv_source.zip figures
+```
+
+`paper/build/` is ignored by git. Commit the paper source and `paper/figures/*.png`, not generated PDFs or zip files.

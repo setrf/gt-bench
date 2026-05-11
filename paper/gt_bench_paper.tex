@@ -1,167 +1,415 @@
 \documentclass[11pt]{article}
 
 \usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{microtype}
 
-\title{GT-Bench: Targeted Fine-Tuning for a Minimal Game-Theory Reasoning Task}
-\author{Mert Gulsun\\UC Berkeley}
-\date{}
+\setlength{\emergencystretch}{2em}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue,
+  pdftitle={GT-Bench: Targeted Fine-Tuning for 2x2 Pure-Equilibrium Reasoning},
+  pdfauthor={Mert Gulsun}
+}
+
+\newcommand{\modelname}{\texttt{Qwen/\allowbreak Qwen3.6-27B}}
+\newcommand{\repo}{\url{https://github.com/setrf/gt-bench}}
+
+\title{GT-Bench: Targeted Fine-Tuning for 2x2 Pure-Equilibrium Reasoning}
+\author{
+  Mert Gulsun\\
+  University of California, Berkeley\\
+  \texttt{mert\_gulsun@berkeley.edu}
+}
+\date{Draft: May 11, 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-GT-Bench is a minimal, exactly verifiable benchmark for studying targeted fine-tuning on a narrow formal reasoning task. Each example gives a randomly generated 2x2 two-player normal-form payoff matrix and asks a model to identify all pure-strategy Nash equilibria. Because the task has an exact solver, synthetic data can be generated at scale and model outputs can be scored without subjective judgment. Using Thinking Machines Lab Tinker, LoRA supervised fine-tuning of Qwen/Qwen3.6-27B on 5000 synthetic examples improved canonical exact-match accuracy from 87.60\% to 99.60\%. A three-seed learning curve found that the 5000-example condition was stable, with 99.60\% mean accuracy and 0.40 percentage-point seed standard deviation, while the 1000-example condition was volatile. A conservative 500-example adversarial prompt supplement further improved prompt robustness from 88.40\% to 98.80\% relative to the original 5000-example fine-tuned checkpoint, without canonical regression. The result supports a narrow claim: targeted fine-tuning can improve one controlled formal reasoning skill and targeted adversarial fine-tuning can improve robustness to equivalent prompt presentations. It does not demonstrate broad game-theory reasoning competence.
+GT-Bench is a compact benchmark for measuring whether targeted fine-tuning improves a narrow, exactly verifiable formal reasoning task. Each example gives a randomly generated 2x2 two-player normal-form payoff matrix and asks a model to identify all pure-strategy Nash equilibria. Because the task has an exact solver, data can be generated at scale and model outputs can be scored without subjective judgment. Using Thinking Machines Lab Tinker, LoRA supervised fine-tuning of \modelname{} on 5000 synthetic examples improved canonical exact-match accuracy from 87.60\% to 99.60\%. A three-seed learning curve found that the 5000-example condition was stable, with 99.60\% mean accuracy and 0.40 percentage-point seed standard deviation, while the 1000-example condition was volatile. A conservative 500-example adversarial prompt supplement further improved prompt-robustness accuracy from 88.40\% to 98.80\% relative to the original 5000-example checkpoint, without reducing canonical accuracy. The result supports a narrow claim: targeted fine-tuning can improve one controlled formal reasoning skill, and targeted adversarial data can improve robustness to equivalent prompt presentations. It does not demonstrate broad game-theory reasoning competence.
 \end{abstract}
 
 \section{Introduction}
 
-Large language models often appear capable of formal reasoning, but broad qualitative examples make it difficult to separate genuine rule acquisition from prompt familiarity or surface pattern matching. GT-Bench isolates one small mathematical task: given a 2x2 normal-form game, return exactly the set of pure-strategy Nash equilibria. The benchmark is intentionally narrow, synthetic, and mechanically verifiable.
+Large language models often appear capable of formal reasoning, but broad qualitative examples make it difficult to separate rule acquisition from prompt familiarity, memorized patterns, or forgiving evaluation. GT-Bench isolates one small mathematical task: given a 2x2 normal-form game, return exactly the set of pure-strategy Nash equilibria. The benchmark is intentionally narrow, synthetic, and mechanically verifiable. It is a benchmark instance for one equilibrium-finding rule, not a broad game-theory suite.
 
-This project was developed in the context of a Thinking Machines Lab Tinker research grant. The experimental goal was practical rather than expansive: build a clean public artifact showing whether targeted supervised fine-tuning can measurably improve a model on a precisely specified formal game-theory skill.
+The experimental question is practical: can targeted supervised fine-tuning measurably improve a model on a precisely specified formal game-theory skill? The project was developed as a public research artifact for a Thinking Machines Lab Tinker research grant. Its design goal is control: one task, one exact solver, deterministic data generation, exact-match scoring, and focused robustness checks.
+
+The main result is positive. On the canonical 500-example held-out test split, \modelname{} improved from 87.60\% exact-match accuracy at baseline to 99.60\% after LoRA supervised fine-tuning on 5000 synthetic examples. The improvement held on an independent confirmation set, became sharper on a balanced stress set, and remained stable in a three-seed training-data sweep. A follow-up adversarial prompt supplement then closed most of the remaining prompt-format robustness gap.
+
+\section{Related Work}
+
+GT-Bench sits at the intersection of formal reasoning evaluation, synthetic verifiable tasks, parameter-efficient fine-tuning, and LLM game-theory evaluation. Mathematical reasoning benchmarks such as GSM8K and MATH evaluate models on natural-language math problems with exact or semi-exact final answers \cite{cobbe2021gsm8k,hendrycks2021math}. Code benchmarks such as HumanEval and LiveCodeBench use executable tests or live contamination-limited problem streams to reduce subjective grading and benchmark leakage \cite{chen2021codex,jain2024livecodebench}. Recent arithmetic benchmark work also emphasizes the need to distinguish generalization from memorization when benchmark items may appear in pretraining data \cite{zhang2024gsm1k}. GT-Bench follows this verifiable-evaluation direction but uses a fully synthetic, regenerable task with an exact solver.
+
+The fine-tuning intervention uses LoRA \cite{hu2022lora}, a parameter-efficient adaptation method. The base model is \modelname{}, a 27B open-weight Qwen3.6 model distributed by the Qwen team under Apache 2.0 \cite{qwen36modelcard}; its broader model family is described in the Qwen3 technical report \cite{yang2025qwen3}. Training was run with Tinker, a managed fine-tuning API that exposes LoRA training and sampling while handling distributed infrastructure \cite{tinker2025}.
+
+There is also a growing body of work on LLMs and strategic reasoning. Surveys frame this area as including game-based evaluation, game-theoretic alignment, and LLM-assisted game analysis \cite{sun2025gametheorysurvey}. Existing game-theory-oriented LLM benchmarks such as GTBench evaluate broader strategic behavior in game environments \cite{duan2024gtbench}. This paper is deliberately narrower: it does not evaluate play, negotiation, mixed strategies, or strategic interaction. It tests whether a model can learn one explicit equilibrium-identification rule for 2x2 normal-form games.
 
 \section{Task Definition}
 
-Each game has two players. Player 1 chooses $U$ or $D$, and Player 2 chooses $L$ or $R$. Each cell contains a pair of integer payoffs in the range 0 through 9. A pure-strategy Nash equilibrium is a strategy profile in which both players are best responding. Ties are handled exactly, so a game may have zero, one, two, three, or four pure equilibria.
+Each example is a two-player normal-form game. Player 1 chooses $U$ or $D$, and Player 2 chooses $L$ or $R$. Each cell contains an ordered pair of integer payoffs in the range 0 through 9. A pure-strategy Nash equilibrium is a strategy profile in which both players are best responding to the other player's strategy \cite{nash1950equilibrium,nash1951noncooperative}. Ties are handled exactly, so a game may have zero, one, two, three, or four pure equilibria.
 
-The benchmark excludes mixed strategies, dominance, welfare analysis, sequential games, auctions, public goods games, Nim, and story problems. This restriction is deliberate: the goal is to test one rule under controlled conditions, not to build a general game-theory benchmark.
+The benchmark deliberately excludes mixed strategies, dominance, welfare analysis, sequential games, auctions, public goods games, Nim, and natural-language story problems. This restriction is central to the artifact. The goal is to evaluate one rule under controlled conditions, not to build a broad game-theory benchmark.
 
-\section{Dataset and Scoring}
+\section{Data, Leakage Controls, and Scoring}
 
-The canonical dataset is generated with seed 42 and contains 5000 training examples, 500 validation examples, and 500 held-out test examples. The generator avoids duplicate payoff matrices and exports both standard JSONL and chat-format JSONL. The chat-format examples provide the matrix prompt and an assistant answer containing the final equilibrium set plus concise best-response reasoning.
+The canonical dataset uses random seed 42 and contains 5000 training examples, 500 validation examples, and 500 held-out test examples. The generator samples eight integer payoffs independently from 0 through 9, rejects duplicate payoff matrices, and then slices one jointly generated sequence into train, validation, and test splits. This makes the canonical train/validation/test matrices disjoint by construction.
 
-The scorer parses common answer forms such as \texttt{(U, L)}, \texttt{U,L}, and natural-language empty-set statements such as \texttt{none} or \texttt{no pure Nash equilibrium}. Predictions are converted into equilibrium sets and compared to the solver output while ignoring order. Accuracy is exact-match accuracy; a prediction is correct only if it names exactly the gold set.
+Additional evaluation sets were generated from separate seeds: a 1000-example confirmation set, a 250-example balanced stress set, and a 250-example prompt-robustness set. A signature audit over payoff matrices found no overlap between the canonical training split and the validation, canonical test, confirmation, stress, robustness, or adversarial supplement files. The adversarial supplement also avoids canonical training matrices by construction. It has one payoff-matrix overlap with the balanced stress set; the stress result is therefore reported mainly as a sanity check for the adversarial run, not as its primary evidence. The prompt-robustness result is the central adversarial follow-up.
 
-\section{Tinker Fine-Tuning Setup}
+\begin{table}[t]
+\centering
+\begin{tabular}{lrrrrrr}
+\toprule
+Split & Total & 0 eq. & 1 eq. & 2 eq. & 3 eq. & 4 eq. \\
+\midrule
+Train & 5000 & 412 & 3234 & 1287 & 65 & 2 \\
+Validation & 500 & 38 & 326 & 128 & 8 & 0 \\
+Canonical test & 500 & 45 & 308 & 141 & 6 & 0 \\
+Confirmation & 1000 & 94 & 642 & 255 & 9 & 0 \\
+Stress & 250 & 50 & 50 & 50 & 50 & 50 \\
+Robustness & 250 & 50 & 50 & 50 & 50 & 50 \\
+\bottomrule
+\end{tabular}
+\caption{Dataset sizes and equilibrium-count distributions. ``0 eq.'' means no pure-strategy Nash equilibrium.}
+\label{tab:data-distribution}
+\end{table}
 
-The model was \texttt{Qwen/Qwen3.6-27B}. Experiments used the Tinker \texttt{qwen3\_disable\_thinking} renderer and LoRA supervised fine-tuning with rank 16, 3 epochs, effective batch size 32, and learning rate $10^{-4}$. Decoding used temperature 0 and one sample. Three training sizes were tested: 250, 1000, and 5000 examples.
+The exact solver computes each player's best responses by column and row, then returns exactly those cells in which both players are best responding. The scorer parses common answer forms such as \texttt{(U, L)}, \texttt{U,L}, and natural-language empty-set statements such as \texttt{none} or \texttt{no pure Nash equilibrium}. Predictions are converted into sets and compared to the solver output while ignoring order. Accuracy is exact-match accuracy: a prediction is correct only if it names exactly the gold equilibrium set. Unparseable predictions are scored incorrect. In the audited canonical baseline, canonical 5000-example SFT, adversarial canonical, and adversarial robustness prediction files, the parser found a prediction set for every example.
+
+\section{Fine-Tuning Setup and Baselines}
+
+The base model was \modelname{}. Experiments used the Tinker \texttt{qwen3\_disable\_thinking} renderer and LoRA supervised fine-tuning \cite{hu2022lora} with rank 16, 3 epochs, effective batch size 32, maximum length 4096, and learning rate $10^{-4}$. Decoding used temperature 0, one sample, and a 768-token maximum. Three canonical training sizes were evaluated: 250, 1000, and 5000 examples.
+
+The local run manifests record 21 training steps for the 250-example runs, 93 steps for the 1000-example runs, 468 steps for the 5000-example runs, and 513 steps for the 5500-example adversarial run. Observed wall-clock training time was approximately 1--2 minutes for 250 examples, 6--7 minutes for 1000 examples, 31--32 minutes for 5000 examples, and 34 minutes for the adversarial 5500-example run. Exact token-billing and credit consumption were not committed to the public artifact; raw run manifests are intentionally ignored because they contain private Tinker sampler and state paths.
+
+The main learned baseline is the unmodified base model evaluated with the same deterministic decoding. Simple non-learned baselines are much weaker on the canonical test set: always predicting no pure equilibrium gets 45/500 examples correct (9.00\%); always predicting the most frequent single equilibrium set, either $(U,L)$ or $(D,R)$ on this split, gets 83/500 correct (16.60\%); uniformly guessing one of the 16 possible profile subsets has expected exact-match accuracy 6.25\%. The exact solver is used only to generate labels and score predictions, not as a learned baseline.
 
 \section{Canonical Results}
 
 Table~\ref{tab:canonical} shows exact-match accuracy on the 500-example canonical held-out test set. The 250-example run reduced performance, the 1000-example run improved modestly, and the 5000-example run nearly solved the split.
 
-\begin{table}[h]
+\begin{table}[t]
 \centering
-\begin{tabular}{lrrrr}
-\hline
-Run & Accuracy & Correct & Incorrect & Delta vs. baseline \\
-\hline
-Baseline & 87.60\% & 438 & 62 & 0.00 pp \\
-250-example SFT & 53.40\% & 267 & 233 & -34.20 pp \\
-1000-example SFT & 91.60\% & 458 & 42 & +4.00 pp \\
-5000-example SFT & 99.60\% & 498 & 2 & +12.00 pp \\
-\hline
+\begin{tabular}{lrrrrr}
+\toprule
+Run & Accuracy & 95\% CI & Correct & Incorrect & Delta \\
+\midrule
+Base model & 87.60\% & 84.39--90.36\% & 438 & 62 & 0.00 pp \\
+250-example SFT & 53.40\% & 48.92--57.84\% & 267 & 233 & -34.20 pp \\
+1000-example SFT & 91.60\% & 88.82--93.88\% & 458 & 42 & +4.00 pp \\
+5000-example SFT & 99.60\% & 98.56--99.95\% & 498 & 2 & +12.00 pp \\
+\bottomrule
 \end{tabular}
-\caption{Canonical exact-match accuracy on 500 held-out examples.}
+\caption{Canonical exact-match accuracy on 500 held-out examples. Confidence intervals are exact binomial intervals.}
 \label{tab:canonical}
 \end{table}
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
-\fbox{\parbox{0.85\linewidth}{\centering Public SVG figure: \href{../reports/figures/accuracy_main.svg}{\texttt{reports/figures/accuracy\_main.svg}}}}
-\caption{Canonical accuracy across baseline and SFT training sizes.}
+\includegraphics[width=0.92\linewidth]{figures/accuracy_main.png}
+\caption{Canonical exact-match accuracy for the base model and three SFT training sizes.}
+\label{fig:main}
 \end{figure}
+
+The negative 250-example result is informative. Too little narrow training data can distort the learned behavior, even when the task is simple and exactly scored. The 1000-example run improves over baseline but remains far below the 5000-example condition.
 
 \section{Repeated-Seed Learning Curve}
 
-To test whether the learning curve was sensitive to the synthetic training-data seed, the SFT sweep was repeated across three training-data seeds while keeping the canonical 500-example test set fixed. Seed 42 is the original public sweep; seeds 1009 and 2027 were newly generated for this comparison.
+To test whether the learning curve was sensitive to the synthetic training-data seed, the SFT sweep was repeated across three independent training-data seeds while keeping the canonical 500-example test set fixed. Seed 42 is the original sweep; seeds 1009 and 2027 were generated for this comparison.
 
-\begin{table}[h]
+\begin{table}[t]
 \centering
 \begin{tabular}{lrrr}
-\hline
+\toprule
 Train size & Mean accuracy & Seed SD & Mean delta vs. baseline \\
-\hline
+\midrule
 250 & 50.60\% & 3.86 pp & -37.00 pp \\
 1000 & 84.67\% & 12.53 pp & -2.93 pp \\
 5000 & 99.60\% & 0.40 pp & +12.00 pp \\
-\hline
+\bottomrule
 \end{tabular}
 \caption{Repeated-seed learning curve on the fixed canonical test set.}
 \label{tab:seed-sweep}
 \end{table}
 
-The 5000-example condition was stable across all three seeds, with individual accuracies of 99.60\%, 99.20\%, and 100.00\%. The 1000-example condition was volatile: two seeds improved over baseline, but seed 2027 fell to 70.20\%. The 250-example condition consistently underperformed baseline.
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/seed_sweep_learning_curve.png}
+\caption{Accuracy across three training-data seeds for each training size. The 5000-example condition is stable; the 1000-example condition is seed-sensitive.}
+\label{fig:seed-sweep}
+\end{figure}
+
+The 5000-example condition was stable across all three seeds, with individual accuracies of 99.60\%, 99.20\%, and 100.00\%. The 1000-example condition was volatile: two seeds improved over baseline, but seed 2027 fell to 70.20\%. Because this is a three-seed comparison, the seed-level intervals should be read descriptively rather than as a strong hypothesis test.
 
 \section{Confirmation and Stress Evaluation}
 
-To check whether the result was specific to the canonical test split, a fresh 1000-example confirmation set was generated with seed 20260505. The baseline achieved 89.20\%, while the 5000-example checkpoint achieved 99.70\%.
+To check whether the result was specific to the canonical split, a fresh 1000-example confirmation set was generated with seed 20260505. The baseline achieved 89.20\%, while the 5000-example checkpoint achieved 99.70\%.
 
-A balanced 250-example stress set was also generated, with exactly 50 examples in each equilibrium-count bucket from zero through four. This set probes tie-heavy and zero-equilibrium cases more directly. The baseline achieved 81.60\%; the 5000-example checkpoint achieved 100.00\%.
+A balanced 250-example stress set was also generated, with exactly 50 examples in each equilibrium-count bucket from zero through four. This set probes tie-heavy cases and games with no pure equilibrium more directly. The baseline achieved 81.60\%; the 5000-example checkpoint achieved 100.00\%.
 
-\begin{table}[h]
+\begin{table}[t]
 \centering
-\begin{tabular}{lrrr}
-\hline
-Evaluation & Baseline & 5000-example SFT & Delta \\
-\hline
-Confirmation & 89.20\% & 99.70\% & +10.50 pp \\
-Stress & 81.60\% & 100.00\% & +18.40 pp \\
-\hline
+\begin{tabular}{lrrrr}
+\toprule
+Evaluation & Base model & 5000-example SFT & 95\% CI, SFT & Delta \\
+\midrule
+Confirmation & 89.20\% & 99.70\% & 99.13--99.94\% & +10.50 pp \\
+Stress & 81.60\% & 100.00\% & 98.54--100.00\% & +18.40 pp \\
+\bottomrule
 \end{tabular}
 \caption{Generalization checks beyond the canonical split.}
 \label{tab:confirm-stress}
 \end{table}
 
-The most important baseline failure mode was zero-equilibrium overprediction. On the balanced stress set, the baseline solved only 16 of 50 zero-equilibrium examples, while the 5000-example checkpoint solved all 50.
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/accuracy_confirm_stress.png}
+\caption{Confirmation and balanced-stress accuracy for the base model and original 5000-example SFT checkpoint.}
+\label{fig:confirm-stress}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/accuracy_by_equilibria.png}
+\caption{Balanced-stress accuracy by number of pure equilibria. The largest base-model weakness is the no-pure-equilibrium bucket.}
+\label{fig:by-equilibria}
+\end{figure}
+
+The most important base-model failure mode was overprediction on games with no pure equilibrium. On the balanced stress set, the base model solved only 16 of 50 such examples, while the 5000-example checkpoint solved all 50. This suggests that the base model often expects every 2x2 game to have at least one pure equilibrium, even though the pure-equilibrium set can be empty.
 
 \section{Prompt Robustness}
 
-A 250-example robustness set tested five semantically equivalent prompt surfaces: the original table, compact payoff pairs, JSON-like payoff objects, a minimal matrix, and an answer-only instruction. The baseline achieved 64.00\%, while the original 5000-example checkpoint achieved 88.40\%. This improved robustness substantially, but \texttt{compact\_pairs} and \texttt{json\_payoffs} remained weak at 78.00\% and 68.00\%, respectively.
+A 250-example robustness set tested five semantically equivalent prompt surfaces: the original table, compact payoff pairs, JSON-like payoff objects, a minimal matrix, and an answer-only instruction. The base model achieved 64.00\% exact-match accuracy (95\% CI: 57.71--69.95\%), while the original 5000-example checkpoint achieved 88.40\% (95\% CI: 83.77--92.09\%). This improved robustness substantially, but \texttt{compact\_pairs} and \texttt{json\_payoffs} remained weak at 78.00\% and 68.00\%, respectively.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/robustness_by_variant.png}
+\caption{Prompt-robustness accuracy by prompt variant for the base model and original 5000-example SFT checkpoint.}
+\label{fig:robustness}
+\end{figure}
+
+The robustness result strengthens the main finding while also showing its boundary. The original fine-tuned checkpoint learned more than the canonical prompt template, but it was not fully invariant to equivalent payoff presentations.
 
 \section{Adversarial Prompt Fine-Tuning}
 
 The final follow-up added a conservative 500-example adversarial prompt supplement to the original 5000-example training set. The supplement emphasized compact payoff pairs and JSON-like payoff objects while balancing examples across the five equilibrium-count buckets. No new mathematical task types were introduced.
 
+\begin{table}[t]
+\centering
+\begin{tabular}{lrr}
+\toprule
+Prompt variant & Supplement examples & Examples per eq. count \\
+\midrule
+\texttt{compact\_pairs} & 150 & 30 \\
+\texttt{json\_payoffs} & 150 & 30 \\
+\texttt{standard\_table} & 100 & 20 \\
+\texttt{minimal\_matrix} & 50 & 10 \\
+\texttt{answer\_only} & 50 & 10 \\
+\bottomrule
+\end{tabular}
+\caption{Adversarial prompt supplement mix. Each variant is balanced across 0-, 1-, 2-, 3-, and 4-equilibrium games.}
+\label{tab:adv-mix}
+\end{table}
+
 Table~\ref{tab:adversarial} compares the original 5000-example checkpoint with the adversarially supplemented checkpoint. The adversarial checkpoint improved robustness to 98.80\%, while canonical accuracy increased slightly to 99.80\%.
 
-\begin{table}[h]
+\begin{table}[t]
 \centering
-\begin{tabular}{lrrr}
-\hline
-Evaluation & Original 5000 SFT & Adversarial SFT & Delta \\
-\hline
-Canonical & 99.60\% & 99.80\% & +0.20 pp \\
-Confirmation & 99.70\% & 99.90\% & +0.20 pp \\
-Stress & 100.00\% & 100.00\% & +0.00 pp \\
-Robustness & 88.40\% & 98.80\% & +10.40 pp \\
-\hline
+\begin{tabular}{lrrrr}
+\toprule
+Evaluation & Original 5000 SFT & Adversarial SFT & 95\% CI, adv. & Delta \\
+\midrule
+Canonical & 99.60\% & 99.80\% & 98.89--99.99\% & +0.20 pp \\
+Confirmation & 99.70\% & 99.90\% & 99.44--100.00\% & +0.20 pp \\
+Stress & 100.00\% & 100.00\% & 98.54--100.00\% & +0.00 pp \\
+Robustness & 88.40\% & 98.80\% & 96.53--99.75\% & +10.40 pp \\
+\bottomrule
 \end{tabular}
 \caption{Adversarial prompt SFT results.}
 \label{tab:adversarial}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[t]
 \centering
 \begin{tabular}{lrrr}
-\hline
+\toprule
 Prompt variant & Original 5000 SFT & Adversarial SFT & Delta \\
-\hline
+\midrule
 \texttt{answer\_only} & 100.00\% & 100.00\% & +0.00 pp \\
 \texttt{compact\_pairs} & 78.00\% & 100.00\% & +22.00 pp \\
 \texttt{json\_payoffs} & 68.00\% & 94.00\% & +26.00 pp \\
 \texttt{minimal\_matrix} & 96.00\% & 100.00\% & +4.00 pp \\
 \texttt{standard\_table} & 100.00\% & 100.00\% & +0.00 pp \\
-\hline
+\bottomrule
 \end{tabular}
 \caption{Prompt-variant robustness after adversarial SFT.}
 \label{tab:variants}
 \end{table}
 
-\section{Discussion}
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/adversarial_comparison.png}
+\caption{Original 5000-example SFT compared with adversarial prompt SFT across canonical, confirmation, stress, and robustness evaluations.}
+\label{fig:adversarial}
+\end{figure}
 
-The results support two controlled claims. First, targeted SFT improved Qwen/Qwen3.6-27B on a narrow formal task with exact verification. Second, targeted adversarial SFT improved robustness to equivalent prompt presentations without degrading canonical accuracy.
+\section{Failure Modes}
 
-The negative 250-example result is also informative. A small amount of narrow training data can hurt performance, suggesting that this benchmark is sensitive enough to detect not only improvement but also poor fine-tuning regimes.
+Before fine-tuning, the dominant failure mode was false positives on games with no pure equilibrium. The model frequently selected at least one cell even when no cell was a mutual best response. After 5000-example fine-tuning, this failure mode was mostly removed. The remaining canonical and confirmation failures in the best non-adversarial checkpoint are tie-heavy games where the model identifies true equilibria but over-predicts one extra cell.
+
+\begin{table}[t]
+\centering
+\begin{tabular}{lcc}
+\toprule
+ & $L$ & $R$ \\
+\midrule
+$U$ & $(1,7)$ & $(9,7)$ \\
+$D$ & $(5,1)$ & $(9,3)$ \\
+\bottomrule
+\end{tabular}
+\caption{Canonical failure example \texttt{example\_005625}. Gold equilibria are $(U,R)$ and $(D,R)$. The original 5000-example checkpoint also predicted $(D,L)$, but at row $D$, Player 2 strictly prefers $R$ to $L$ because $3>1$, so $(D,L)$ is not a mutual best response.}
+\label{tab:failure-example}
+\end{table}
+
+The robustness evaluation exposed a second failure mode: compact or structured payoff presentations can reduce accuracy even when the underlying mathematical task is unchanged. The adversarial prompt supplement substantially reduced this weakness, with the remaining robustness errors concentrated in the JSON-like payoff format.
+
+\section{Code, Data Availability, and Ethics}
+
+The code is available at \repo{} under the MIT License. The repository tracks the generator, solver, scorer, Tinker scripts, public summaries, figures, and this paper source. Generated JSONL data, raw predictions, raw reports, and Tinker run manifests are ignored by default because they are reproducible and can contain private sampler paths. Public summary JSON files and SVG figures are tracked.
+
+This work uses synthetic payoff matrices and does not involve human subjects or personal data. The main risk is interpretive: the result could be overstated as evidence of broad game-theory ability. The benchmark supports only a narrow claim about 2x2 pure-equilibrium identification under the tested Tinker setup. Reproduction also depends on access to the same or comparable Tinker model, renderer, and pricing environment.
 
 \section{Limitations}
 
 GT-Bench is not a general game-theory evaluation. It uses synthetic data, only 2x2 games, only integer payoffs, and only pure-strategy equilibria. It does not test mixed strategies, dominance, welfare comparisons, sequential reasoning, auctions, public goods games, or natural-language story problems. It also does not prove that the model acquired a human-like concept of Nash equilibrium.
 
-The benchmark is useful precisely because it is constrained. The rule is exact, the data is reproducible, and failures can be inspected mechanically.
+The benchmark is useful precisely because it is constrained. The rule is exact, the data is reproducible, and failures can be inspected mechanically. The appropriate claim is narrow: targeted fine-tuning can improve this specific formal reasoning behavior under the tested conditions.
 
 \section{Conclusion}
 
-GT-Bench demonstrates that a compact, reproducible Tinker fine-tuning artifact can produce measurable gains on a fully verifiable formal reasoning task. The strongest checkpoint improved canonical accuracy from 87.60\% to 99.60\%, the three-seed sweep showed that the 5000-example condition was stable, and an adversarial prompt supplement improved robustness from 88.40\% to 98.80\% relative to the original 5000-example checkpoint. The appropriate conclusion is narrow but useful: targeted fine-tuning can improve a specific formal skill, and targeted data can close prompt-format robustness gaps for that same skill.
+GT-Bench demonstrates that a compact, reproducible Tinker fine-tuning artifact can produce measurable gains on a fully verifiable formal reasoning task. The strongest non-adversarial checkpoint improved canonical accuracy from 87.60\% to 99.60\%, the three-seed sweep showed that the 5000-example condition was stable, and an adversarial prompt supplement improved robustness from 88.40\% to 98.80\% relative to the original 5000-example checkpoint. The conclusion is deliberately narrow but useful: targeted fine-tuning can improve a specific formal skill, and targeted data can close prompt-format robustness gaps for that same skill.
+
+\appendix
+
+\section{Reproducibility Appendix}
+
+The public artifact records full reproduction commands and hashes in \texttt{REPRODUCIBILITY.md}. The minimal local workflow is:
+
+\begin{verbatim}
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python generate_dataset.py --train 5000 --val 500 --test 500 \
+  --seed 42 --out data/
+.venv/bin/python make_sweep_splits.py --config bench_config.json
+.venv/bin/python generate_stress_set.py --per-count 50 --seed 314159 \
+  --out data/stress/tie_stress_seed314159.jsonl \
+  --chat-out data/stress/tie_stress_seed314159_chat.jsonl
+.venv/bin/python generate_robustness_set.py --per-bucket 10 --seed 271828 \
+  --out data/robust/robust_seed271828.jsonl \
+  --chat-out data/robust/robust_seed271828_chat.jsonl
+.venv/bin/python generate_adversarial_training.py
+make check
+\end{verbatim}
+
+The canonical test hash is:
+
+\begin{verbatim}
+a9af74346a7b67cc13952fc858570dee6d03e4248b04e830c42f8c1bb935d219
+\end{verbatim}
+
+The Tinker environment used package versions \texttt{tinker==0.18.2} and \texttt{tinker-cookbook==0.3.0}. The model was \modelname{}, the renderer was \texttt{qwen3\_disable\_thinking}, and the main LoRA settings were rank 16, 3 epochs, effective batch size 32, learning rate $10^{-4}$, temperature 0, and one sample per example.
+
+\section{Scoring Details}
+
+The parser first prefers text after the last \texttt{Final answer:} or \texttt{Conclusion:} marker, then searches answer-like sentences, then falls back to the whole output. If an empty-set phrase appears before any profile mention in the candidate span, the prediction is parsed as the empty set. Otherwise, all profile mentions matching \texttt{U} or \texttt{D} paired with \texttt{L} or \texttt{R} are extracted into a set. Order and duplicate mentions do not matter. If no prediction can be parsed, the example is scored incorrect.
+
+The test suite covers solver behavior for one-equilibrium, two-equilibrium, no-pure-equilibrium, and tie-heavy games, as well as common parser formats. The scorer intentionally remains simple so failures are inspectable.
+
+\begin{thebibliography}{99}
+
+\bibitem{chen2021codex}
+Mark Chen, Jerry Tworek, Heewoo Jun, Qiming Yuan, Henrique Ponde de Oliveira Pinto, Jared Kaplan, Harri Edwards, Yuri Burda, Nicholas Joseph, Greg Brockman, Alex Ray, Raul Puri, Gretchen Krueger, Michael Petrov, Heidy Khlaaf, Girish Sastry, Pamela Mishkin, Brooke Chan, Scott Gray, Nick Ryder, Mikhail Pavlov, Alethea Power, Lukasz Kaiser, Mohammad Bavarian, Clemens Winter, Philippe Tillet, Felipe Petroski Such, Dave Cummings, Matthias Plappert, Fotios Chantzis, Elizabeth Barnes, Ariel Herbert-Voss, William Hebgen Guss, Alex Nichol, Alex Paino, Nikolas Tezak, Jie Tang, Igor Babuschkin, Suchir Balaji, Shantanu Jain, William Saunders, Christopher Hesse, Andrew N. Carr, Jan Leike, Josh Achiam, Vedant Misra, Evan Morikawa, Alec Radford, Matthew Knight, Miles Brundage, Mira Murati, Katie Mayer, Peter Welinder, Bob McGrew, Dario Amodei, Sam McCandlish, Ilya Sutskever, and Wojciech Zaremba.
+\newblock Evaluating Large Language Models Trained on Code.
+\newblock \emph{arXiv preprint arXiv:2107.03374}, 2021.
+\newblock \url{https://arxiv.org/abs/2107.03374}.
+
+\bibitem{cobbe2021gsm8k}
+Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano, Christopher Hesse, and John Schulman.
+\newblock Training Verifiers to Solve Math Word Problems.
+\newblock \emph{arXiv preprint arXiv:2110.14168}, 2021.
+\newblock \url{https://arxiv.org/abs/2110.14168}.
+
+\bibitem{duan2024gtbench}
+Jinhao Duan, Renming Zhang, James Diffenderfer, Bhavya Kailkhura, Lichao Sun, Elias Stengel-Eskin, Mohit Bansal, Tianlong Chen, and Kaidi Xu.
+\newblock GTBench: Uncovering the Strategic Reasoning Limitations of LLMs via Game-Theoretic Evaluations.
+\newblock \emph{arXiv preprint arXiv:2402.12348}, 2024.
+\newblock \url{https://arxiv.org/abs/2402.12348}.
+
+\bibitem{hendrycks2021math}
+Dan Hendrycks, Collin Burns, Saurav Kadavath, Akul Arora, Steven Basart, Eric Tang, Dawn Song, and Jacob Steinhardt.
+\newblock Measuring Mathematical Problem Solving With the MATH Dataset.
+\newblock In \emph{Advances in Neural Information Processing Systems}, 2021.
+\newblock \url{https://arxiv.org/abs/2103.03874}.
+
+\bibitem{hu2022lora}
+Edward J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen.
+\newblock LoRA: Low-Rank Adaptation of Large Language Models.
+\newblock In \emph{International Conference on Learning Representations}, 2022.
+\newblock \url{https://arxiv.org/abs/2106.09685}.
+
+\bibitem{jain2024livecodebench}
+Naman Jain, King Han, Alex Gu, Wen-Ding Li, Fanjia Yan, Tianjun Zhang, Sida Wang, Armando Solar-Lezama, Koushik Sen, and Ion Stoica.
+\newblock LiveCodeBench: Holistic and Contamination Free Evaluation of Large Language Models for Code.
+\newblock \emph{arXiv preprint arXiv:2403.07974}, 2024.
+\newblock \url{https://arxiv.org/abs/2403.07974}.
+
+\bibitem{nash1950equilibrium}
+John F. Nash.
+\newblock Equilibrium points in n-person games.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 36(1):48--49, 1950.
+
+\bibitem{nash1951noncooperative}
+John F. Nash.
+\newblock Non-cooperative games.
+\newblock \emph{Annals of Mathematics}, 54(2):286--295, 1951.
+
+\bibitem{qwen36modelcard}
+Qwen Team.
+\newblock Qwen/Qwen3.6-27B Model Card.
+\newblock Hugging Face, 2026.
+\newblock \url{https://huggingface.co/Qwen/Qwen3.6-27B}.
+
+\bibitem{sun2025gametheorysurvey}
+Haoran Sun, Yusen Wu, Peng Wang, Wei Chen, Yukun Cheng, Xiaotie Deng, and Xu Chu.
+\newblock Game Theory Meets Large Language Models: A Systematic Survey with Taxonomy and New Frontiers.
+\newblock \emph{arXiv preprint arXiv:2502.09053}, 2025.
+\newblock \url{https://arxiv.org/abs/2502.09053}.
+
+\bibitem{tinker2025}
+Thinking Machines Lab.
+\newblock Announcing Tinker.
+\newblock 2025.
+\newblock \url{https://thinkingmachines.ai/news/announcing-tinker/}.
+
+\bibitem{yang2025qwen3}
+An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, Chujie Zheng, Dayiheng Liu, Fan Zhou, Fei Huang, Feng Hu, Hao Ge, Haoran Wei, Huan Lin, Jialong Tang, Jian Yang, Jianhong Tu, Jianwei Zhang, Jianxin Yang, Jiaxi Yang, Jing Zhou, Jingren Zhou, Junyang Lin, Kai Dang, Keqin Bao, Kexin Yang, Le Yu, Lianghao Deng, Mei Li, Mingfeng Xue, Mingze Li, Pei Zhang, Peng Wang, Qin Zhu, Rui Men, Ruize Gao, Shixuan Liu, Shuang Luo, Tianhao Li, Tianyi Tang, Wenbiao Yin, Xingzhang Ren, Xinyu Wang, Xinyu Zhang, Xuancheng Ren, Yang Fan, Yang Su, Yichang Zhang, Yinger Zhang, Yu Wan, Yuqiong Liu, Zekun Wang, Zeyu Cui, Zhenru Zhang, Zhipeng Zhou, and Zihan Qiu.
+\newblock Qwen3 Technical Report.
+\newblock \emph{arXiv preprint arXiv:2505.09388}, 2025.
+\newblock \url{https://arxiv.org/abs/2505.09388}.
+
+\bibitem{zhang2024gsm1k}
+Hugh Zhang, Jeff Da, Dean Lee, Vaughn Robinson, Catherine Wu, Will Song, Tiffany Zhao, Pranav Raja, Charlotte Zhuang, Dylan Slack, Qin Lyu, Sean Hendryx, Russell Kaplan, Michele Lunati, and Summer Yue.
+\newblock A Careful Examination of Large Language Model Performance on Grade School Arithmetic.
+\newblock In \emph{Advances in Neural Information Processing Systems}, 2024.
+\newblock \url{https://arxiv.org/abs/2405.00332}.
+
+\end{thebibliography}
 
 \end{document}

@@ -74,7 +74,7 @@ The public repeated-seed summary is `reports/seed_sweep_results.md`.
 
 ## Interpretation
 
-The strongest improvement is on zero-equilibrium cases. On the canonical split, the baseline solved only 9 of 45 zero-equilibrium games after parser correction, while the 1000-example and 5000-example fine-tunes solved all 45.
+The strongest improvement is on zero-equilibrium cases. On the canonical split, the baseline solved only 9 of 45 zero-equilibrium games under the exact prediction parser, while the 1000-example and 5000-example fine-tunes solved all 45.
 
 The canonical and confirmation failures in the best run are tie-heavy cases where the model over-predicts an extra equilibrium. The balanced stress result suggests that this residual weakness is rare, but still worth tracking because it is exactly the kind of edge case a narrow formal benchmark can expose. The robustness result adds one more useful finding: prompt format matters, so targeted data should include compact and structured payoff presentations. The repeated-seed result adds a second caveat: 1000 examples can be enough, but that regime is seed-sensitive; 5000 examples is the stable setting in this experiment.
 

@@ -1,4 +1,4 @@
-# GT-Bench: A Minimal Game-Theory Fine-Tuning Benchmark
+# GT-Bench: Targeted Fine-Tuning for 2x2 Pure-Equilibrium Reasoning
 
 ## Project overview
 
@@ -6,13 +6,24 @@ GT-Bench is a minimal Tinker fine-tuning benchmark for strategic reasoning. It g
 
 The repository is intentionally compact: one task, one exact solver, one dataset generator, one scorer, and focused tests.
 
-For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`. The repeated-seed learning curve is tracked in `reports/seed_sweep_results.md`. A paper-style writeup is available at `paper/gt_bench_paper.tex`.
+For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`. The repeated-seed learning curve is tracked in `reports/seed_sweep_results.md`. An arXiv-ready paper draft is available at `paper/gt_bench_paper.tex`.
 
 ## My context
 
 This project is by Mert Gulsun, a UC Berkeley master's student and Thinking Machines Lab Tinker research grant recipient.
 
 The goal is to demonstrate measurable improvement from targeted fine-tuning on formal game-theory reasoning using a 12-month, $5,000 Tinker research credit allocation.
+
+## Paper draft
+
+The paper source is intentionally arXiv-friendly: one LaTeX file, PNG figures under `paper/figures/`, and an inline bibliography. Build it with the bundled Tectonic engine or any LaTeX distribution that supports the packages in the source.
+
+```bash
+mkdir -p paper/build
+/path/to/tectonic --outdir paper/build paper/gt_bench_paper.tex
+```
+
+The local build output and arXiv source zip live under `paper/build/`, which is ignored by git.
 
 ## Task
 

@@ -1,5 +1,12 @@
 # Release Notes
 
+## Unreleased
+
+- Expands `paper/gt_bench_paper.tex` into an arXiv-ready draft focused on 2x2 pure-equilibrium reasoning.
+- Adds related work, leakage controls, simple baselines, training-time notes, parser details, a concrete failure example, exact adversarial supplement mix, reproducibility appendix, and code/data/ethics notes.
+- Adds arXiv-safe PNG paper figures under `paper/figures/`.
+- Documents the paper build and source-zip workflow while keeping generated paper outputs ignored under `paper/build/`.
+
 ## v0.3-repeated-seed-learning-curve
 
 - Adds a repeated-seed SFT learning curve across training-data seeds `42`, `1009`, and `2027`.
