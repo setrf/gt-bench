@@ -18,6 +18,14 @@ MIXED_COLS = ("L", "R")
 DOMINANCE_ROWS = ("A", "B", "C")
 DOMINANCE_COLS = ("X", "Y", "Z")
 REPEATED_STRATEGIES = ("AlwaysC", "AlwaysD", "TitForTat", "GrimTrigger")
+DEFAULT_SUITE_FAMILIES = (
+    "mixed_2x2",
+    "dominance",
+    "large_normal_form",
+    "extensive_form",
+    "natural_language",
+    "repeated_interaction",
+)
 
 
 @dataclass(frozen=True)
@@ -37,6 +45,12 @@ class RepeatedGameSpec:
     horizon: int
     p1_strategy: str
     p2_strategy: str
+
+
+@dataclass(frozen=True)
+class RepeatedBestResponseSpec:
+    horizon: int
+    opponent_strategy: str
 
 
 def ordered_profiles(rows: Sequence[str], cols: Sequence[str]) -> list[Profile]:
@@ -99,7 +113,13 @@ def format_normal_form_prompt(game: NormalFormGame, question: str) -> str:
 
 def normal_form_metadata(game: NormalFormGame, task_family: str) -> dict[str, object]:
     return {
+        "schema_version": "gt_bench_suite_v1",
         "task_family": task_family,
+        "players": ["Player 1", "Player 2"],
+        "actions": {
+            "Player 1": list(game.rows),
+            "Player 2": list(game.cols),
+        },
         "rows": list(game.rows),
         "cols": list(game.cols),
         "payoffs": {
@@ -114,6 +134,12 @@ def build_large_normal_form_example(game: NormalFormGame, example_id: str) -> di
     answer = f"The pure-strategy Nash equilibria are {format_profiles(equilibria)}."
     metadata = normal_form_metadata(game, "large_normal_form")
     metadata["pure_nash_equilibria"] = [[row, col] for row, col in equilibria]
+    metadata["gold"] = {"pure_nash_equilibria": metadata["pure_nash_equilibria"]}
+    metadata["difficulty"] = {
+        "bucket": f"{len(game.rows)}x{len(game.cols)}_eq{len(equilibria)}",
+        "shape": f"{len(game.rows)}x{len(game.cols)}",
+        "equilibrium_count": len(equilibria),
+    }
     return {
         "id": example_id,
         "prompt": format_normal_form_prompt(
@@ -183,6 +209,16 @@ def build_mixed_2x2_example(game: NormalFormGame, example_id: str) -> dict[str, 
     metadata["mixed_nash_equilibrium"] = {
         player: {strategy: fraction_text(probability) for strategy, probability in strategies.items()}
         for player, strategies in equilibrium.items()
+    }
+    denominators = [
+        probability.denominator
+        for strategies in equilibrium.values()
+        for probability in strategies.values()
+    ]
+    metadata["gold"] = {"mixed_nash_equilibrium": metadata["mixed_nash_equilibrium"]}
+    metadata["difficulty"] = {
+        "bucket": f"max_denominator_{max(denominators)}",
+        "max_denominator": max(denominators),
     }
     answer = (
         "P1: U={u}, D={d}; P2: L={l}, R={r}.".format(
@@ -272,6 +308,19 @@ def build_dominance_example(game: NormalFormGame, example_id: str) -> dict[str, 
     remaining_cols = [str(col) for col in elimination["remaining_cols"]]
     metadata = normal_form_metadata(game, "dominance")
     metadata["iterated_elimination"] = elimination
+    eliminated = sum(
+        len(round_info["rows"]) + len(round_info["cols"])
+        for round_info in elimination["rounds"]  # type: ignore[index]
+    )
+    metadata["gold"] = {
+        "remaining_rows": elimination["remaining_rows"],
+        "remaining_cols": elimination["remaining_cols"],
+    }
+    metadata["difficulty"] = {
+        "bucket": f"rounds_{len(elimination['rounds'])}_eliminated_{eliminated}",
+        "rounds": len(elimination["rounds"]),  # type: ignore[arg-type]
+        "eliminated_strategies": eliminated,
+    }
     answer = (
         f"Remaining P1 strategies: {', '.join(remaining_rows)}; "
         f"Remaining P2 strategies: {', '.join(remaining_cols)}."
@@ -352,13 +401,24 @@ def build_extensive_form_example(game: ExtensiveFormGame, example_id: str) -> di
             f"initial branch. {answer}"
         ),
         "metadata": {
+            "schema_version": "gt_bench_suite_v1",
             "task_family": "extensive_form",
+            "players": ["Player 1", "Player 2"],
+            "actions": {
+                "Player 1": ["Left", "Right"],
+                "Player 2": ["A", "B"],
+            },
             "payoffs": {
                 f"{p1},{p2}": [game.payoffs[(p1, p2)][0], game.payoffs[(p1, p2)][1]]
                 for p1 in ("Left", "Right")
                 for p2 in ("A", "B")
             },
             "subgame_perfect_equilibrium": solution,
+            "gold": {"subgame_perfect_equilibrium": solution},
+            "difficulty": {
+                "bucket": f"path_{solution['p1'].lower()}",
+                "path_branch": solution["p1"],
+            },
         },
     }
 
@@ -392,6 +452,11 @@ def build_natural_language_example(game: NormalFormGame, example_id: str) -> dic
     ]
     metadata = normal_form_metadata(game, "natural_language")
     metadata["pure_nash_equilibria"] = [[row, col] for row, col in equilibria]
+    metadata["gold"] = {"pure_nash_equilibria": metadata["pure_nash_equilibria"]}
+    metadata["difficulty"] = {
+        "bucket": f"story_eq{len(equilibria)}",
+        "equilibrium_count": len(equilibria),
+    }
     return {
         "id": example_id,
         "prompt": (
@@ -453,6 +518,25 @@ def solve_repeated_simulation(spec: RepeatedGameSpec) -> dict[str, int]:
     }
 
 
+def solve_repeated_best_response(spec: RepeatedBestResponseSpec) -> dict[str, object]:
+    totals = {
+        strategy: simulate_repeated_pd(strategy, spec.opponent_strategy, spec.horizon)[0]
+        for strategy in REPEATED_STRATEGIES
+    }
+    best_strategy = max(
+        REPEATED_STRATEGIES,
+        key=lambda strategy: (
+            totals[strategy],
+            -REPEATED_STRATEGIES.index(strategy),
+        ),
+    )
+    return {
+        "best_strategy": best_strategy,
+        "best_payoff": totals[best_strategy],
+        "totals": totals,
+    }
+
+
 def build_repeated_example(spec: RepeatedGameSpec, example_id: str) -> dict[str, object]:
     result = solve_repeated_simulation(spec)
     answer = f"P1 payoff: {result['p1_payoff']}; P2 payoff: {result['p2_payoff']}."
@@ -468,11 +552,63 @@ def build_repeated_example(spec: RepeatedGameSpec, example_id: str) -> dict[str,
         "answer": answer,
         "solution": f"Simulating the repeated interaction gives {answer}",
         "metadata": {
+            "schema_version": "gt_bench_suite_v1",
             "task_family": "repeated_interaction",
+            "repeated_task": "simulation",
+            "players": ["Player 1", "Player 2"],
+            "actions": {"both": ["C", "D"]},
             "horizon": spec.horizon,
             "p1_strategy": spec.p1_strategy,
             "p2_strategy": spec.p2_strategy,
             "simulation": result,
+            "gold": {"simulation": result},
+            "difficulty": {
+                "bucket": f"horizon_{spec.horizon}",
+                "horizon": spec.horizon,
+                "strategy_pair": f"{spec.p1_strategy}_vs_{spec.p2_strategy}",
+            },
+        },
+    }
+
+
+def build_repeated_best_response_example(
+    spec: RepeatedBestResponseSpec,
+    example_id: str,
+) -> dict[str, object]:
+    result = solve_repeated_best_response(spec)
+    totals = result["totals"]
+    if not isinstance(totals, dict):
+        raise ValueError("best-response totals are malformed")
+    answer = f"Best P1 strategy: {result['best_strategy']}; P1 payoff: {result['best_payoff']}."
+    total_text = ", ".join(f"{strategy}={totals[strategy]}" for strategy in REPEATED_STRATEGIES)
+    return {
+        "id": example_id,
+        "prompt": (
+            "Finite repeated prisoner's dilemma. Stage payoffs are CC=(3,3), CD=(0,5), "
+            "DC=(5,0), DD=(1,1), where the first letter is P1's action. "
+            f"The game lasts {spec.horizon} rounds. P2 uses {spec.opponent_strategy}. "
+            "P1 must choose one policy from AlwaysC, AlwaysD, TitForTat, GrimTrigger. "
+            "Which P1 policy gives the highest total P1 payoff? "
+            "Final answer format: Best P1 strategy: ...; P1 payoff: ...."
+        ),
+        "answer": answer,
+        "solution": f"Simulating each candidate gives {total_text}. {answer}",
+        "metadata": {
+            "schema_version": "gt_bench_suite_v1",
+            "task_family": "repeated_interaction",
+            "repeated_task": "best_response",
+            "players": ["Player 1", "Player 2"],
+            "actions": {"both": ["C", "D"]},
+            "horizon": spec.horizon,
+            "opponent_strategy": spec.opponent_strategy,
+            "candidate_strategies": list(REPEATED_STRATEGIES),
+            "best_response": result,
+            "gold": {"best_response": result},
+            "difficulty": {
+                "bucket": f"best_response_horizon_{spec.horizon}",
+                "horizon": spec.horizon,
+                "opponent_strategy": spec.opponent_strategy,
+            },
         },
     }
 
@@ -580,8 +716,14 @@ def maybe_generate_family_example(
         return build_natural_language_example(game, f"natural_language_{index:04d}")
 
     if family == "repeated_interaction":
+        if index % 2:
+            spec = RepeatedBestResponseSpec(
+                horizon=rng.randint(3, 20),
+                opponent_strategy=rng.choice(REPEATED_STRATEGIES),
+            )
+            return build_repeated_best_response_example(spec, f"repeated_interaction_{index:04d}")
         spec = RepeatedGameSpec(
-            horizon=rng.randint(3, 8),
+            horizon=rng.randint(3, 20),
             p1_strategy=rng.choice(REPEATED_STRATEGIES),
             p2_strategy=rng.choice(REPEATED_STRATEGIES),
         )
@@ -609,3 +751,48 @@ def generate_suite_examples(
 
 def to_suite_chat_row(example: dict[str, object]) -> dict[str, object]:
     return to_chat_row(example)
+
+
+def add_split_metadata(example: dict[str, object], split: str) -> dict[str, object]:
+    row = dict(example)
+    metadata = dict(row["metadata"])  # type: ignore[arg-type]
+    metadata["split"] = split
+    row["metadata"] = metadata
+    return row
+
+
+def split_suite_examples(
+    train_per_family: int,
+    val_per_family: int,
+    test_per_family: int,
+    seed: int,
+    families: Sequence[str] = DEFAULT_SUITE_FAMILIES,
+    max_attempts: int = 5_000_000,
+) -> dict[str, list[dict[str, object]]]:
+    total_per_family = train_per_family + val_per_family + test_per_family
+    if total_per_family <= 0:
+        raise ValueError("at least one split size must be positive")
+    rows = generate_suite_examples(
+        per_family=total_per_family,
+        seed=seed,
+        families=families,
+        max_attempts=max_attempts,
+    )
+    splits = {"train": [], "val": [], "test": []}
+    by_family: dict[str, list[dict[str, object]]] = {family: [] for family in families}
+    for row in rows:
+        metadata = row.get("metadata")
+        if not isinstance(metadata, dict):
+            raise ValueError(f"row {row.get('id')} is missing metadata")
+        by_family[str(metadata["task_family"])].append(row)
+
+    for family in families:
+        family_rows = by_family[family]
+        split_points = {
+            "train": family_rows[:train_per_family],
+            "val": family_rows[train_per_family : train_per_family + val_per_family],
+            "test": family_rows[train_per_family + val_per_family :],
+        }
+        for split_name, split_rows in split_points.items():
+            splits[split_name].extend(add_split_metadata(row, split_name) for row in split_rows)
+    return splits

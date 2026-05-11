@@ -12,8 +12,12 @@
     "adversarial_train": "data/adversarial/prompt_adv500_seed161804.jsonl",
     "adversarial_train_chat": "data/adversarial/prompt_adv500_seed161804_chat.jsonl",
     "adversarial_combined_train_chat": "data/adversarial/train_5500_prompt_adv500_chat.jsonl",
-    "suite": "data/suite/gt_bench_suite.jsonl",
-    "suite_chat": "data/suite/gt_bench_suite_chat.jsonl"
+    "suite_train": "data/suite/train.jsonl",
+    "suite_train_chat": "data/suite/train_chat.jsonl",
+    "suite_val": "data/suite/val.jsonl",
+    "suite_val_chat": "data/suite/val_chat.jsonl",
+    "suite_test": "data/suite/test.jsonl",
+    "suite_test_chat": "data/suite/test_chat.jsonl"
   },
   "lora": {
     "rank": 16,

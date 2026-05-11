@@ -59,9 +59,9 @@ The reported model experiment deliberately excludes mixed strategies, dominance,
 
 \section{Broader Suite Infrastructure}
 
-The public repository now also contains an optional broader suite generator and scorer. This suite covers six additional task families: fully mixed equilibria in 2x2 games with no pure equilibrium, iterated elimination of strictly dominated pure strategies, pure equilibria in 2x3 and 3x3 normal-form games, backward induction in perfect-information extensive-form games, natural-language game descriptions, and finite repeated prisoner's-dilemma simulations for fixed policies. Each family has deterministic generation, exact solver metadata, and task-family scoring.
+The public repository now also contains a broader suite generator and scorer. This suite covers six additional task families: fully mixed equilibria in 2x2 games with no pure equilibrium, iterated elimination of strictly dominated pure strategies, pure equilibria in 2x3 and 3x3 normal-form games, backward induction in perfect-information extensive-form games, natural-language game descriptions, and finite repeated prisoner's-dilemma simulations plus best-response selection among fixed policies. Each family has deterministic generation, exact solver metadata, difficulty buckets, train/validation/test split generation, task-family scoring, local smoke baselines, and an oracle check.
 
-These suite tasks are not included in the Tinker results reported below. They are intended as the next evaluation layer while preserving the clean interpretation of the canonical 2x2 pure-equilibrium experiment.
+These suite tasks are not included in the Tinker results reported below. The tracked suite summary reports only deterministic local baselines and marks Tinker model evaluations as pending. The suite is intended as the next evaluation layer while preserving the clean interpretation of the canonical 2x2 pure-equilibrium experiment.
 
 \section{Data, Leakage Controls, and Scoring}
 
@@ -288,7 +288,7 @@ The robustness evaluation exposed a second failure mode: compact or structured p
 
 \section{Code, Data Availability, and Ethics}
 
-The code is available at \repo{} under the MIT License. The repository tracks the canonical generator, solver, scorer, broader suite generator and scorer, Tinker scripts, public summaries, figures, and this paper source. Generated JSONL data, raw predictions, raw reports, and Tinker run manifests are ignored by default because they are reproducible and can contain private sampler paths. Public summary JSON files, SVG figures, and small sample JSONL files are tracked.
+The code is available at \repo{} under the MIT License. The repository tracks the canonical generator, solver, scorer, broader suite generator/scorer/baselines, Tinker scripts, public summaries, figures, and this paper source. Generated JSONL data, raw predictions, raw reports, and Tinker run manifests are ignored by default because they are reproducible and can contain private sampler paths. Public summary JSON files, SVG figures, and small sample JSONL files are tracked.
 
 This work uses synthetic payoff matrices and does not involve human subjects or personal data. The main risk is interpretive: the result could be overstated as evidence of broad game-theory ability. The model-result claim supports only 2x2 pure-equilibrium identification under the tested Tinker setup. The broader suite is available for future evaluation but does not yet have associated model-result claims. Reproduction also depends on access to the same or comparable Tinker model, renderer, and pricing environment.
 
@@ -321,16 +321,20 @@ python3 -m venv .venv
   --out data/robust/robust_seed271828.jsonl \
   --chat-out data/robust/robust_seed271828_chat.jsonl
 .venv/bin/python generate_adversarial_training.py
-.venv/bin/python generate_benchmark_suite.py --per-family 50 --seed 20260511 \
-  --out data/suite/gt_bench_suite.jsonl \
-  --chat-out data/suite/gt_bench_suite_chat.jsonl
+.venv/bin/python generate_benchmark_suite.py --train-per-family 50 \
+  --val-per-family 10 --test-per-family 50 --seed 20260511 \
+  --out-dir data/suite
+.venv/bin/python run_suite_baselines.py --gold data/suite/test.jsonl \
+  --train data/suite/train.jsonl --pred-dir predictions/suite_baselines \
+  --out-json reports/suite_results.json --out-md reports/suite_results.md \
+  --figure reports/figures/suite_smoke_accuracy.svg
 make check
 \end{verbatim}
 
 The broader suite can be scored separately with:
 
 \begin{verbatim}
-.venv/bin/python score_suite.py --gold data/suite/gt_bench_suite.jsonl \
+.venv/bin/python score_suite.py --gold data/suite/test.jsonl \
   --pred predictions/suite_predictions.jsonl --out reports/suite_report.json
 \end{verbatim}
 

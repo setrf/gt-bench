@@ -1,0 +1,1854 @@
+{
+  "status": "pending_model_evaluations",
+  "suite_path": "data/suite/test.jsonl",
+  "suite_sha256": "8f7ea7c9df92d02efdf2258ec8b1c5cd83e005b6c75bb351b1397803a301cd03",
+  "train_path": "data/suite/train.jsonl",
+  "train_sha256": "adfdec4694b561a4fedc219c8dc3f1e973ce94f7e5ac23ba3e29ead79d41a2b0",
+  "baselines": {
+    "always_none": {
+      "total_examples": 300,
+      "exact_match_accuracy": 0.06,
+      "num_correct": 18,
+      "num_incorrect": 282,
+      "accuracy_by_task_family": {
+        "mixed_2x2": {
+          "total": 50,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "dominance": {
+          "total": 50,
+          "correct": 2,
+          "accuracy": 0.04
+        },
+        "large_normal_form": {
+          "total": 50,
+          "correct": 7,
+          "accuracy": 0.14
+        },
+        "extensive_form": {
+          "total": 50,
+          "correct": 5,
+          "accuracy": 0.1
+        },
+        "natural_language": {
+          "total": 50,
+          "correct": 4,
+          "accuracy": 0.08
+        },
+        "repeated_interaction": {
+          "total": 50,
+          "correct": 0,
+          "accuracy": 0.0
+        }
+      },
+      "accuracy_by_difficulty": {
+        "max_denominator_5": {
+          "total": 6,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_9": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_3": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_4": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_11": {
+          "total": 5,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_8": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_7": {
+          "total": 5,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_12": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_13": {
+          "total": 5,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_10": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_6": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_14": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_16": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_2_eliminated_2": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_1_eliminated_1": {
+          "total": 15,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_3_eliminated_4": {
+          "total": 11,
+          "correct": 2,
+          "accuracy": 0.18181818181818182
+        },
+        "rounds_2_eliminated_4": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_4_eliminated_4": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_1_eliminated_3": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_1_eliminated_2": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_2_eliminated_3": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "2x3_eq2": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "3x3_eq0": {
+          "total": 5,
+          "correct": 5,
+          "accuracy": 1.0
+        },
+        "2x3_eq1": {
+          "total": 18,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "3x3_eq2": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "3x3_eq1": {
+          "total": 11,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "2x3_eq0": {
+          "total": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "3x3_eq3": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "2x3_eq4": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "path_left": {
+          "total": 20,
+          "correct": 5,
+          "accuracy": 0.25
+        },
+        "path_right": {
+          "total": 30,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "story_eq1": {
+          "total": 29,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "story_eq2": {
+          "total": 17,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "story_eq0": {
+          "total": 4,
+          "correct": 4,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_8": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_18": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_17": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_9": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_13": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_3": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_11": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_16": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_16": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_10": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_15": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_9": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_7": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_4": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_8": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_19": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_14": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_6": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_10": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_3": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_11": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_7": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_4": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_13": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_12": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        }
+      },
+      "failed_examples_preview": [
+        {
+          "id": "mixed_2x2_0061",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (9,2)      (1,4)      \nD       (3,7)      (5,3)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "2/3",
+              "D": "1/3"
+            },
+            "P2": {
+              "L": "2/5",
+              "R": "3/5"
+            }
+          },
+          "prediction": "P1: U=1/2, D=1/2; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0062",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (5,5)      (0,9)      \nD       (3,1)      (4,0)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/5",
+              "D": "4/5"
+            },
+            "P2": {
+              "L": "2/3",
+              "R": "1/3"
+            }
+          },
+          "prediction": "P1: U=1/2, D=1/2; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0063",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (4,2)      (1,8)      \nD       (2,3)      (8,0)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/3",
+              "D": "2/3"
+            },
+            "P2": {
+              "L": "7/9",
+              "R": "2/9"
+            }
+          },
+          "prediction": "P1: U=1/2, D=1/2; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0064",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (2,8)      (7,5)      \nD       (5,4)      (1,7)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/2",
+              "D": "1/2"
+            },
+            "P2": {
+              "L": "2/3",
+              "R": "1/3"
+            }
+          },
+          "prediction": "P1: U=1/2, D=1/2; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0065",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (0,6)      (9,2)      \nD       (4,3)      (7,7)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/2",
+              "D": "1/2"
+            },
+            "P2": {
+              "L": "1/3",
+              "R": "2/3"
+            }
+          },
+          "prediction": "P1: U=1/2, D=1/2; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0066",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (4,3)      (0,7)      \nD       (1,4)      (9,0)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/2",
+              "D": "1/2"
+            },
+            "P2": {
+              "L": "3/4",
+              "R": "1/4"
+            }
+          },
+          "prediction": "P1: U=1/2, D=1/2; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0067",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (5,1)      (2,9)      \nD       (0,8)      (6,4)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/3",
+              "D": "2/3"
+            },
+            "P2": {
+              "L": "4/9",
+              "R": "5/9"
+            }
+          },
+          "prediction": "P1: U=1/2, D=1/2; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0068",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (7,9)      (7,5)      \nD       (9,5)      (3,7)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/3",
+              "D": "2/3"
+            },
+            "P2": {
+              "L": "2/3",
+              "R": "1/3"
+            }
+          },
+          "prediction": "P1: U=1/2, D=1/2; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0069",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (3,5)      (7,2)      \nD       (7,1)      (2,9)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "8/11",
+              "D": "3/11"
+            },
+            "P2": {
+              "L": "5/9",
+              "R": "4/9"
+            }
+          },
+          "prediction": "P1: U=1/2, D=1/2; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0070",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (2,8)      (8,2)      \nD       (3,0)      (1,8)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "4/7",
+              "D": "3/7"
+            },
+            "P2": {
+              "L": "7/8",
+              "R": "1/8"
+            }
+          },
+          "prediction": "P1: U=1/2, D=1/2; P2: L=1/2, R=1/2."
+        }
+      ],
+      "prediction_path": "predictions/suite_baselines/always_none.jsonl"
+    },
+    "random": {
+      "total_examples": 300,
+      "exact_match_accuracy": 0.056666666666666664,
+      "num_correct": 17,
+      "num_incorrect": 283,
+      "accuracy_by_task_family": {
+        "mixed_2x2": {
+          "total": 50,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "dominance": {
+          "total": 50,
+          "correct": 3,
+          "accuracy": 0.06
+        },
+        "large_normal_form": {
+          "total": 50,
+          "correct": 3,
+          "accuracy": 0.06
+        },
+        "extensive_form": {
+          "total": 50,
+          "correct": 6,
+          "accuracy": 0.12
+        },
+        "natural_language": {
+          "total": 50,
+          "correct": 5,
+          "accuracy": 0.1
+        },
+        "repeated_interaction": {
+          "total": 50,
+          "correct": 0,
+          "accuracy": 0.0
+        }
+      },
+      "accuracy_by_difficulty": {
+        "max_denominator_5": {
+          "total": 6,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_9": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_3": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_4": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_11": {
+          "total": 5,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_8": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_7": {
+          "total": 5,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_12": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_13": {
+          "total": 5,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_10": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_6": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_14": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_16": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_2_eliminated_2": {
+          "total": 8,
+          "correct": 1,
+          "accuracy": 0.125
+        },
+        "rounds_1_eliminated_1": {
+          "total": 15,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_3_eliminated_4": {
+          "total": 11,
+          "correct": 1,
+          "accuracy": 0.09090909090909091
+        },
+        "rounds_2_eliminated_4": {
+          "total": 8,
+          "correct": 1,
+          "accuracy": 0.125
+        },
+        "rounds_4_eliminated_4": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_1_eliminated_3": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_1_eliminated_2": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_2_eliminated_3": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "2x3_eq2": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "3x3_eq0": {
+          "total": 5,
+          "correct": 1,
+          "accuracy": 0.2
+        },
+        "2x3_eq1": {
+          "total": 18,
+          "correct": 1,
+          "accuracy": 0.05555555555555555
+        },
+        "3x3_eq2": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "3x3_eq1": {
+          "total": 11,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "2x3_eq0": {
+          "total": 2,
+          "correct": 1,
+          "accuracy": 0.5
+        },
+        "3x3_eq3": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "2x3_eq4": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "path_left": {
+          "total": 20,
+          "correct": 3,
+          "accuracy": 0.15
+        },
+        "path_right": {
+          "total": 30,
+          "correct": 3,
+          "accuracy": 0.1
+        },
+        "story_eq1": {
+          "total": 29,
+          "correct": 3,
+          "accuracy": 0.10344827586206896
+        },
+        "story_eq2": {
+          "total": 17,
+          "correct": 1,
+          "accuracy": 0.058823529411764705
+        },
+        "story_eq0": {
+          "total": 4,
+          "correct": 1,
+          "accuracy": 0.25
+        },
+        "best_response_horizon_8": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_18": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_17": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_9": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_13": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_3": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_11": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_16": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_16": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_10": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_15": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_9": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_7": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_4": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_8": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_19": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_14": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_6": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_10": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_3": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_11": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_7": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_4": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_13": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_12": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        }
+      },
+      "failed_examples_preview": [
+        {
+          "id": "mixed_2x2_0061",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (9,2)      (1,4)      \nD       (3,7)      (5,3)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "2/3",
+              "D": "1/3"
+            },
+            "P2": {
+              "L": "2/5",
+              "R": "3/5"
+            }
+          },
+          "prediction": "P1: U=0.75, D=0.25; P2: L=0.5, R=0.5."
+        },
+        {
+          "id": "mixed_2x2_0062",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (5,5)      (0,9)      \nD       (3,1)      (4,0)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/5",
+              "D": "4/5"
+            },
+            "P2": {
+              "L": "2/3",
+              "R": "1/3"
+            }
+          },
+          "prediction": "P1: U=0.25, D=0.75; P2: L=0.5, R=0.5."
+        },
+        {
+          "id": "mixed_2x2_0063",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (4,2)      (1,8)      \nD       (2,3)      (8,0)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/3",
+              "D": "2/3"
+            },
+            "P2": {
+              "L": "7/9",
+              "R": "2/9"
+            }
+          },
+          "prediction": "P1: U=0.75, D=0.25; P2: L=0.75, R=0.25."
+        },
+        {
+          "id": "mixed_2x2_0064",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (2,8)      (7,5)      \nD       (5,4)      (1,7)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/2",
+              "D": "1/2"
+            },
+            "P2": {
+              "L": "2/3",
+              "R": "1/3"
+            }
+          },
+          "prediction": "P1: U=0.25, D=0.75; P2: L=0.5, R=0.5."
+        },
+        {
+          "id": "mixed_2x2_0065",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (0,6)      (9,2)      \nD       (4,3)      (7,7)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/2",
+              "D": "1/2"
+            },
+            "P2": {
+              "L": "1/3",
+              "R": "2/3"
+            }
+          },
+          "prediction": "P1: U=0.5, D=0.5; P2: L=0.75, R=0.25."
+        },
+        {
+          "id": "mixed_2x2_0066",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (4,3)      (0,7)      \nD       (1,4)      (9,0)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/2",
+              "D": "1/2"
+            },
+            "P2": {
+              "L": "3/4",
+              "R": "1/4"
+            }
+          },
+          "prediction": "P1: U=0.5, D=0.5; P2: L=0.25, R=0.75."
+        },
+        {
+          "id": "mixed_2x2_0067",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (5,1)      (2,9)      \nD       (0,8)      (6,4)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/3",
+              "D": "2/3"
+            },
+            "P2": {
+              "L": "4/9",
+              "R": "5/9"
+            }
+          },
+          "prediction": "P1: U=0.25, D=0.75; P2: L=0.25, R=0.75."
+        },
+        {
+          "id": "mixed_2x2_0068",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (7,9)      (7,5)      \nD       (9,5)      (3,7)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/3",
+              "D": "2/3"
+            },
+            "P2": {
+              "L": "2/3",
+              "R": "1/3"
+            }
+          },
+          "prediction": "P1: U=0.5, D=0.5; P2: L=0.75, R=0.25."
+        },
+        {
+          "id": "mixed_2x2_0069",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (3,5)      (7,2)      \nD       (7,1)      (2,9)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "8/11",
+              "D": "3/11"
+            },
+            "P2": {
+              "L": "5/9",
+              "R": "4/9"
+            }
+          },
+          "prediction": "P1: U=0.25, D=0.75; P2: L=0.25, R=0.75."
+        },
+        {
+          "id": "mixed_2x2_0070",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (2,8)      (8,2)      \nD       (3,0)      (1,8)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "4/7",
+              "D": "3/7"
+            },
+            "P2": {
+              "L": "7/8",
+              "R": "1/8"
+            }
+          },
+          "prediction": "P1: U=0.75, D=0.25; P2: L=0.25, R=0.75."
+        }
+      ],
+      "prediction_path": "predictions/suite_baselines/random.jsonl"
+    },
+    "most_common_by_family": {
+      "total_examples": 300,
+      "exact_match_accuracy": 0.06666666666666667,
+      "num_correct": 20,
+      "num_incorrect": 280,
+      "accuracy_by_task_family": {
+        "mixed_2x2": {
+          "total": 50,
+          "correct": 2,
+          "accuracy": 0.04
+        },
+        "dominance": {
+          "total": 50,
+          "correct": 1,
+          "accuracy": 0.02
+        },
+        "large_normal_form": {
+          "total": 50,
+          "correct": 6,
+          "accuracy": 0.12
+        },
+        "extensive_form": {
+          "total": 50,
+          "correct": 5,
+          "accuracy": 0.1
+        },
+        "natural_language": {
+          "total": 50,
+          "correct": 6,
+          "accuracy": 0.12
+        },
+        "repeated_interaction": {
+          "total": 50,
+          "correct": 0,
+          "accuracy": 0.0
+        }
+      },
+      "accuracy_by_difficulty": {
+        "max_denominator_5": {
+          "total": 6,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_9": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_3": {
+          "total": 8,
+          "correct": 2,
+          "accuracy": 0.25
+        },
+        "max_denominator_4": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_11": {
+          "total": 5,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_8": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_7": {
+          "total": 5,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_12": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_13": {
+          "total": 5,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_10": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_6": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_14": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "max_denominator_16": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_2_eliminated_2": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_1_eliminated_1": {
+          "total": 15,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_3_eliminated_4": {
+          "total": 11,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_2_eliminated_4": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_4_eliminated_4": {
+          "total": 2,
+          "correct": 1,
+          "accuracy": 0.5
+        },
+        "rounds_1_eliminated_3": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_1_eliminated_2": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "rounds_2_eliminated_3": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "2x3_eq2": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "3x3_eq0": {
+          "total": 5,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "2x3_eq1": {
+          "total": 18,
+          "correct": 3,
+          "accuracy": 0.16666666666666666
+        },
+        "3x3_eq2": {
+          "total": 8,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "3x3_eq1": {
+          "total": 11,
+          "correct": 3,
+          "accuracy": 0.2727272727272727
+        },
+        "2x3_eq0": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "3x3_eq3": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "2x3_eq4": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "path_left": {
+          "total": 20,
+          "correct": 5,
+          "accuracy": 0.25
+        },
+        "path_right": {
+          "total": 30,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "story_eq1": {
+          "total": 29,
+          "correct": 6,
+          "accuracy": 0.20689655172413793
+        },
+        "story_eq2": {
+          "total": 17,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "story_eq0": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_8": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_18": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_17": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_9": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_13": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_3": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_11": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_16": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_16": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_10": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_15": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_9": {
+          "total": 3,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_7": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_4": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_8": {
+          "total": 4,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_19": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_14": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_6": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_10": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_3": {
+          "total": 2,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_11": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_7": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_4": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "horizon_13": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        },
+        "best_response_horizon_12": {
+          "total": 1,
+          "correct": 0,
+          "accuracy": 0.0
+        }
+      },
+      "failed_examples_preview": [
+        {
+          "id": "mixed_2x2_0061",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (9,2)      (1,4)      \nD       (3,7)      (5,3)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "2/3",
+              "D": "1/3"
+            },
+            "P2": {
+              "L": "2/5",
+              "R": "3/5"
+            }
+          },
+          "prediction": "P1: U=2/3, D=1/3; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0062",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (5,5)      (0,9)      \nD       (3,1)      (4,0)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/5",
+              "D": "4/5"
+            },
+            "P2": {
+              "L": "2/3",
+              "R": "1/3"
+            }
+          },
+          "prediction": "P1: U=2/3, D=1/3; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0063",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (4,2)      (1,8)      \nD       (2,3)      (8,0)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/3",
+              "D": "2/3"
+            },
+            "P2": {
+              "L": "7/9",
+              "R": "2/9"
+            }
+          },
+          "prediction": "P1: U=2/3, D=1/3; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0064",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (2,8)      (7,5)      \nD       (5,4)      (1,7)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/2",
+              "D": "1/2"
+            },
+            "P2": {
+              "L": "2/3",
+              "R": "1/3"
+            }
+          },
+          "prediction": "P1: U=2/3, D=1/3; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0065",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (0,6)      (9,2)      \nD       (4,3)      (7,7)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/2",
+              "D": "1/2"
+            },
+            "P2": {
+              "L": "1/3",
+              "R": "2/3"
+            }
+          },
+          "prediction": "P1: U=2/3, D=1/3; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0066",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (4,3)      (0,7)      \nD       (1,4)      (9,0)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/2",
+              "D": "1/2"
+            },
+            "P2": {
+              "L": "3/4",
+              "R": "1/4"
+            }
+          },
+          "prediction": "P1: U=2/3, D=1/3; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0067",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (5,1)      (2,9)      \nD       (0,8)      (6,4)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/3",
+              "D": "2/3"
+            },
+            "P2": {
+              "L": "4/9",
+              "R": "5/9"
+            }
+          },
+          "prediction": "P1: U=2/3, D=1/3; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0068",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (7,9)      (7,5)      \nD       (9,5)      (3,7)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "1/3",
+              "D": "2/3"
+            },
+            "P2": {
+              "L": "2/3",
+              "R": "1/3"
+            }
+          },
+          "prediction": "P1: U=2/3, D=1/3; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0069",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (3,5)      (7,2)      \nD       (7,1)      (2,9)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "8/11",
+              "D": "3/11"
+            },
+            "P2": {
+              "L": "5/9",
+              "R": "4/9"
+            }
+          },
+          "prediction": "P1: U=2/3, D=1/3; P2: L=1/2, R=1/2."
+        },
+        {
+          "id": "mixed_2x2_0070",
+          "task_family": "mixed_2x2",
+          "prompt": "Player 1 row strategies: U, D. Player 2 column strategies: L, R. Entries are (Player 1 payoff, Player 2 payoff).\n\n        L          R          \nU       (2,8)      (8,2)      \nD       (3,0)      (1,8)      \n\nThis game has no pure-strategy Nash equilibrium. Find the mixed-strategy Nash equilibrium. Final answer format: P1: U=..., D=...; P2: L=..., R=....",
+          "gold": {
+            "P1": {
+              "U": "4/7",
+              "D": "3/7"
+            },
+            "P2": {
+              "L": "7/8",
+              "R": "1/8"
+            }
+          },
+          "prediction": "P1: U=2/3, D=1/3; P2: L=1/2, R=1/2."
+        }
+      ],
+      "prediction_path": "predictions/suite_baselines/most_common_by_family.jsonl"
+    },
+    "oracle": {
+      "total_examples": 300,
+      "exact_match_accuracy": 1.0,
+      "num_correct": 300,
+      "num_incorrect": 0,
+      "accuracy_by_task_family": {
+        "mixed_2x2": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        },
+        "dominance": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        },
+        "large_normal_form": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        },
+        "extensive_form": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        },
+        "natural_language": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        },
+        "repeated_interaction": {
+          "total": 50,
+          "correct": 50,
+          "accuracy": 1.0
+        }
+      },
+      "accuracy_by_difficulty": {
+        "max_denominator_5": {
+          "total": 6,
+          "correct": 6,
+          "accuracy": 1.0
+        },
+        "max_denominator_9": {
+          "total": 8,
+          "correct": 8,
+          "accuracy": 1.0
+        },
+        "max_denominator_3": {
+          "total": 8,
+          "correct": 8,
+          "accuracy": 1.0
+        },
+        "max_denominator_4": {
+          "total": 3,
+          "correct": 3,
+          "accuracy": 1.0
+        },
+        "max_denominator_11": {
+          "total": 5,
+          "correct": 5,
+          "accuracy": 1.0
+        },
+        "max_denominator_8": {
+          "total": 4,
+          "correct": 4,
+          "accuracy": 1.0
+        },
+        "max_denominator_7": {
+          "total": 5,
+          "correct": 5,
+          "accuracy": 1.0
+        },
+        "max_denominator_12": {
+          "total": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "max_denominator_13": {
+          "total": 5,
+          "correct": 5,
+          "accuracy": 1.0
+        },
+        "max_denominator_10": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "max_denominator_6": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "max_denominator_14": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "max_denominator_16": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "rounds_2_eliminated_2": {
+          "total": 8,
+          "correct": 8,
+          "accuracy": 1.0
+        },
+        "rounds_1_eliminated_1": {
+          "total": 15,
+          "correct": 15,
+          "accuracy": 1.0
+        },
+        "rounds_3_eliminated_4": {
+          "total": 11,
+          "correct": 11,
+          "accuracy": 1.0
+        },
+        "rounds_2_eliminated_4": {
+          "total": 8,
+          "correct": 8,
+          "accuracy": 1.0
+        },
+        "rounds_4_eliminated_4": {
+          "total": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "rounds_1_eliminated_3": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "rounds_1_eliminated_2": {
+          "total": 4,
+          "correct": 4,
+          "accuracy": 1.0
+        },
+        "rounds_2_eliminated_3": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "2x3_eq2": {
+          "total": 4,
+          "correct": 4,
+          "accuracy": 1.0
+        },
+        "3x3_eq0": {
+          "total": 5,
+          "correct": 5,
+          "accuracy": 1.0
+        },
+        "2x3_eq1": {
+          "total": 18,
+          "correct": 18,
+          "accuracy": 1.0
+        },
+        "3x3_eq2": {
+          "total": 8,
+          "correct": 8,
+          "accuracy": 1.0
+        },
+        "3x3_eq1": {
+          "total": 11,
+          "correct": 11,
+          "accuracy": 1.0
+        },
+        "2x3_eq0": {
+          "total": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "3x3_eq3": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "2x3_eq4": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "path_left": {
+          "total": 20,
+          "correct": 20,
+          "accuracy": 1.0
+        },
+        "path_right": {
+          "total": 30,
+          "correct": 30,
+          "accuracy": 1.0
+        },
+        "story_eq1": {
+          "total": 29,
+          "correct": 29,
+          "accuracy": 1.0
+        },
+        "story_eq2": {
+          "total": 17,
+          "correct": 17,
+          "accuracy": 1.0
+        },
+        "story_eq0": {
+          "total": 4,
+          "correct": 4,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_8": {
+          "total": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "horizon_18": {
+          "total": 3,
+          "correct": 3,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_17": {
+          "total": 3,
+          "correct": 3,
+          "accuracy": 1.0
+        },
+        "horizon_9": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_13": {
+          "total": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "horizon_3": {
+          "total": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "horizon_11": {
+          "total": 4,
+          "correct": 4,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_16": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "horizon_16": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_10": {
+          "total": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "horizon_15": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_9": {
+          "total": 3,
+          "correct": 3,
+          "accuracy": 1.0
+        },
+        "horizon_7": {
+          "total": 4,
+          "correct": 4,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_4": {
+          "total": 4,
+          "correct": 4,
+          "accuracy": 1.0
+        },
+        "horizon_8": {
+          "total": 4,
+          "correct": 4,
+          "accuracy": 1.0
+        },
+        "horizon_19": {
+          "total": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_14": {
+          "total": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_6": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "horizon_10": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_3": {
+          "total": 2,
+          "correct": 2,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_11": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_7": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "horizon_4": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "horizon_13": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        },
+        "best_response_horizon_12": {
+          "total": 1,
+          "correct": 1,
+          "accuracy": 1.0
+        }
+      },
+      "failed_examples_preview": [],
+      "prediction_path": "predictions/suite_baselines/oracle.jsonl"
+    }
+  },
+  "model_evaluations": {
+    "base_model": {
+      "status": "pending"
+    },
+    "pure_2x2_sft": {
+      "status": "pending"
+    },
+    "suite_sft": {
+      "status": "pending"
+    },
+    "suite_adversarial_sft": {
+      "status": "pending"
+    }
+  }
+}

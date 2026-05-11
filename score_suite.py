@@ -45,6 +45,13 @@ def task_family(row: dict[str, object]) -> str:
     return family
 
 
+def difficulty_bucket(row: dict[str, object]) -> str:
+    difficulty = metadata(row).get("difficulty")
+    if isinstance(difficulty, dict) and isinstance(difficulty.get("bucket"), str):
+        return str(difficulty["bucket"])
+    return "unbucketed"
+
+
 def parse_number(value: str) -> Fraction | None:
     value = value.strip()
     if "/" in value:
@@ -200,7 +207,26 @@ def extensive_matches(text: str, row: dict[str, object]) -> bool:
 
 
 def repeated_matches(text: str, row: dict[str, object]) -> bool:
-    target = metadata(row).get("simulation")
+    meta = metadata(row)
+    repeated_task = str(meta.get("repeated_task", "simulation"))
+    if repeated_task == "best_response":
+        target = meta.get("best_response")
+        if not isinstance(target, dict):
+            raise ValueError(f"gold row {row.get('id')} is missing best_response")
+        strategy_pattern = re.compile(
+            r"\bBest\s+P1\s+strategy\s*(?:=|:)\s*(AlwaysC|AlwaysD|TitForTat|GrimTrigger)\b",
+            re.I,
+        )
+        payoff_pattern = re.compile(r"\bP1\s+payoff\s*(?:=|:)\s*(-?\d+)\b", re.I)
+        strategy = strategy_pattern.search(text)
+        payoff = payoff_pattern.search(text)
+        return (
+            strategy is not None
+            and payoff is not None
+            and strategy.group(1).lower() == str(target["best_strategy"]).lower()
+            and int(payoff.group(1)) == int(target["best_payoff"])
+        )
+    target = meta.get("simulation")
     if not isinstance(target, dict):
         raise ValueError(f"gold row {row.get('id')} is missing simulation")
     p1_pattern = re.compile(r"\bP1\s+payoff\s*(?:=|:)\s*(-?\d+)\b", re.I)
@@ -250,6 +276,8 @@ def gold_summary(row: dict[str, object]) -> object:
     if family == "extensive_form":
         return meta["subgame_perfect_equilibrium"]
     if family == "repeated_interaction":
+        if meta.get("repeated_task") == "best_response":
+            return meta["best_response"]
         return meta["simulation"]
     return None
 
@@ -261,14 +289,20 @@ def score_suite(gold_rows: list[dict[str, object]], pred_rows: list[dict[str, ob
     }
     correct = 0
     by_family: dict[str, dict[str, float | int]] = {}
+    by_difficulty: dict[str, dict[str, float | int]] = {}
+    by_family_and_difficulty: dict[str, dict[str, dict[str, float | int]]] = {}
     failed_examples: list[dict[str, object]] = []
 
     for gold_row in gold_rows:
         example_id = str(gold_row["id"])
         family = task_family(gold_row)
+        bucket = difficulty_bucket(gold_row)
         prediction = predictions.get(example_id, "")
         is_correct = prediction_correct(prediction, gold_row)
         update_stats(by_family.setdefault(family, empty_stats()), is_correct)
+        update_stats(by_difficulty.setdefault(bucket, empty_stats()), is_correct)
+        family_buckets = by_family_and_difficulty.setdefault(family, {})
+        update_stats(family_buckets.setdefault(bucket, empty_stats()), is_correct)
         if is_correct:
             correct += 1
         else:
@@ -283,6 +317,9 @@ def score_suite(gold_rows: list[dict[str, object]], pred_rows: list[dict[str, ob
             )
 
     finalize_stats(by_family)
+    finalize_stats(by_difficulty)
+    for family_buckets in by_family_and_difficulty.values():
+        finalize_stats(family_buckets)
     total = len(gold_rows)
     return {
         "total_examples": total,
@@ -290,6 +327,8 @@ def score_suite(gold_rows: list[dict[str, object]], pred_rows: list[dict[str, ob
         "num_correct": correct,
         "num_incorrect": total - correct,
         "accuracy_by_task_family": by_family,
+        "accuracy_by_difficulty": by_difficulty,
+        "accuracy_by_family_and_difficulty": by_family_and_difficulty,
         "failed_examples": failed_examples,
     }
 

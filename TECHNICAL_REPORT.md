@@ -4,7 +4,7 @@
 
 GT-Bench is a compact Tinker fine-tuning experiment for one formal reasoning task: given a 2x2 two-player normal-form payoff matrix, identify all pure-strategy Nash equilibria.
 
-The repository also includes an optional broader task suite with exact solvers for mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form backward induction, natural-language game descriptions, and repeated interaction. Those suite tasks are code-complete and exactly scored, but the model results below are only for the canonical 2x2 pure-equilibrium task.
+The repository also includes a broader task suite with exact solvers for mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form backward induction, natural-language game descriptions, and repeated interaction, including fixed-policy simulation and best-response selection among policies. Those suite tasks are code-complete, exactly scored, split into deterministic train/validation/test files, and covered by local smoke baselines. The model results below are only for the canonical 2x2 pure-equilibrium task.
 
 The project was built by Mert Gulsun, a UC Berkeley master's student and Thinking Machines Lab Tinker research grant recipient. The goal is to show whether targeted fine-tuning can measurably improve a model on a narrow, exactly verifiable game-theory task.
 
@@ -148,4 +148,4 @@ The full reproducibility recipe, including the complete summary command with all
 
 ## Next Steps
 
-The next scientific step is to evaluate the broader suite with the same baseline and fine-tuning protocol, while keeping results separated by task family. For the canonical task, the remaining useful follow-up is to diagnose the unstable 1000-example regime by inspecting the seed `2027` failures and training distribution.
+The next scientific step is to evaluate the broader suite with the same Tinker baseline and fine-tuning protocol, while keeping results separated by task family. The local suite baselines and oracle check are already tracked in `reports/suite_results.md`; the pending work is actual model prediction, scoring, and suite-specific SFT. For the canonical task, the remaining useful follow-up is to diagnose the unstable 1000-example regime by inspecting the seed `2027` failures and training distribution.

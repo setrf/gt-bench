@@ -1,4 +1,4 @@
-.PHONY: test secrets figures adversarial-summary seed-sweep-summary public-artifacts check
+.PHONY: test secrets figures adversarial-summary seed-sweep-summary suite-data suite-baselines public-artifacts check
 
 PYTHON ?= .venv/bin/python
 
@@ -22,7 +22,24 @@ figures:
 		--seed-sweep reports/seed_sweep_results.json \
 		--out-dir reports/figures
 
-public-artifacts: adversarial-summary seed-sweep-summary figures
+suite-data:
+	$(PYTHON) generate_benchmark_suite.py \
+		--train-per-family 50 \
+		--val-per-family 10 \
+		--test-per-family 50 \
+		--seed 20260511 \
+		--out-dir data/suite
+
+suite-baselines: suite-data
+	$(PYTHON) run_suite_baselines.py \
+		--gold data/suite/test.jsonl \
+		--train data/suite/train.jsonl \
+		--pred-dir predictions/suite_baselines \
+		--out-json reports/suite_results.json \
+		--out-md reports/suite_results.md \
+		--figure reports/figures/suite_smoke_accuracy.svg
+
+public-artifacts: adversarial-summary seed-sweep-summary figures suite-baselines
 
 check: test secrets public-artifacts
 	git diff --check

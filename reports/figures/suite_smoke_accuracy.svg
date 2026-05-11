@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="430" viewBox="0 0 980 430">
+<rect width="100%" height="100%" fill="white"/>
+<text x="20" y="32" font-family="Arial" font-size="20" font-weight="700">Suite Smoke Baselines By Task Family</text>
+<line x1="130" y1="330.0" x2="950" y2="330.0" stroke="#e0e0e0"/>
+<text x="118" y="334.0" text-anchor="end" font-family="Arial" font-size="11">0%</text>
+<line x1="130" y1="262.5" x2="950" y2="262.5" stroke="#e0e0e0"/>
+<text x="118" y="266.5" text-anchor="end" font-family="Arial" font-size="11">25%</text>
+<line x1="130" y1="195.0" x2="950" y2="195.0" stroke="#e0e0e0"/>
+<text x="118" y="199.0" text-anchor="end" font-family="Arial" font-size="11">50%</text>
+<line x1="130" y1="127.5" x2="950" y2="127.5" stroke="#e0e0e0"/>
+<text x="118" y="131.5" text-anchor="end" font-family="Arial" font-size="11">75%</text>
+<line x1="130" y1="60.0" x2="950" y2="60.0" stroke="#e0e0e0"/>
+<text x="118" y="64.0" text-anchor="end" font-family="Arial" font-size="11">100%</text>
+<rect x="154.6" y="330.0" width="26.0" height="0.0" fill="#8c8c8c"/>
+<rect x="184.6" y="330.0" width="26.0" height="0.0" fill="#d55e00"/>
+<rect x="214.6" y="319.2" width="26.0" height="10.8" fill="#0072b2"/>
+<rect x="244.6" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
+<text x="198.3" y="392" text-anchor="middle" font-family="Arial" font-size="11">mixed 2x2</text>
+<rect x="291.3" y="319.2" width="26.0" height="10.8" fill="#8c8c8c"/>
+<rect x="321.3" y="313.8" width="26.0" height="16.2" fill="#d55e00"/>
+<rect x="351.3" y="324.6" width="26.0" height="5.4" fill="#0072b2"/>
+<rect x="381.3" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
+<text x="335.0" y="392" text-anchor="middle" font-family="Arial" font-size="11">dominance</text>
+<rect x="427.9" y="292.2" width="26.0" height="37.8" fill="#8c8c8c"/>
+<rect x="457.9" y="313.8" width="26.0" height="16.2" fill="#d55e00"/>
+<rect x="487.9" y="297.6" width="26.0" height="32.4" fill="#0072b2"/>
+<rect x="517.9" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
+<text x="471.7" y="392" text-anchor="middle" font-family="Arial" font-size="11">large normal form</text>
+<rect x="564.6" y="303.0" width="26.0" height="27.0" fill="#8c8c8c"/>
+<rect x="594.6" y="297.6" width="26.0" height="32.4" fill="#d55e00"/>
+<rect x="624.6" y="303.0" width="26.0" height="27.0" fill="#0072b2"/>
+<rect x="654.6" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
+<text x="608.3" y="392" text-anchor="middle" font-family="Arial" font-size="11">extensive form</text>
+<rect x="701.3" y="308.4" width="26.0" height="21.6" fill="#8c8c8c"/>
+<rect x="731.3" y="303.0" width="26.0" height="27.0" fill="#d55e00"/>
+<rect x="761.3" y="297.6" width="26.0" height="32.4" fill="#0072b2"/>
+<rect x="791.3" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
+<text x="745.0" y="392" text-anchor="middle" font-family="Arial" font-size="11">natural language</text>
+<rect x="837.9" y="330.0" width="26.0" height="0.0" fill="#8c8c8c"/>
+<rect x="867.9" y="330.0" width="26.0" height="0.0" fill="#d55e00"/>
+<rect x="897.9" y="330.0" width="26.0" height="0.0" fill="#0072b2"/>
+<rect x="927.9" y="60.0" width="26.0" height="270.0" fill="#009e73"/>
+<text x="881.7" y="392" text-anchor="middle" font-family="Arial" font-size="11">repeated interaction</text>
+<rect x="130" y="408" width="12" height="12" fill="#8c8c8c"/>
+<text x="148" y="418" font-family="Arial" font-size="12">always none</text>
+<rect x="320" y="408" width="12" height="12" fill="#d55e00"/>
+<text x="338" y="418" font-family="Arial" font-size="12">random</text>
+<rect x="510" y="408" width="12" height="12" fill="#0072b2"/>
+<text x="528" y="418" font-family="Arial" font-size="12">most common by family</text>
+<rect x="700" y="408" width="12" height="12" fill="#009e73"/>
+<text x="718" y="418" font-family="Arial" font-size="12">oracle</text>
+</svg>

@@ -100,7 +100,9 @@ ffc6c26df85c78df702d4eef910b835025a5b2a8344a9ef1d14e1ab7e78405e8  data/robust/ro
 
 ## Broader Suite Data
 
-The reported Qwen3.6-27B fine-tuning result is still the canonical 2x2 pure-equilibrium experiment. The repository also includes an optional broader suite with exact solvers and task-family scoring:
+The reported Qwen3.6-27B fine-tuning result is still the canonical 2x2 pure-equilibrium experiment. The repository also includes a broader suite with exact solvers, task-family scoring, local smoke baselines, and pending Tinker model-evaluation slots.
+
+Generate one suite file:
 
 ```bash
 .venv/bin/python generate_benchmark_suite.py \
@@ -112,16 +114,51 @@ The reported Qwen3.6-27B fine-tuning result is still the canonical 2x2 pure-equi
 
 This creates 300 examples: 50 each for `mixed_2x2`, `dominance`, `large_normal_form`, `extensive_form`, `natural_language`, and `repeated_interaction`.
 
+Generate the public train/validation/test suite splits:
+
+```bash
+.venv/bin/python generate_benchmark_suite.py \
+  --train-per-family 50 \
+  --val-per-family 10 \
+  --test-per-family 50 \
+  --seed 20260511 \
+  --out-dir data/suite
+```
+
+This creates 300 train examples, 60 validation examples, and 300 test examples.
+
+Suite split hashes:
+
+```text
+adfdec4694b561a4fedc219c8dc3f1e973ce94f7e5ac23ba3e29ead79d41a2b0  data/suite/train.jsonl
+ee432e1be7aa20c678eb4f809d038488a85787c4daac1012a64b5f729369d0d9  data/suite/val.jsonl
+8f7ea7c9df92d02efdf2258ec8b1c5cd83e005b6c75bb351b1397803a301cd03  data/suite/test.jsonl
+```
+
 Score suite predictions with:
 
 ```bash
 .venv/bin/python score_suite.py \
-  --gold data/suite/gt_bench_suite.jsonl \
+  --gold data/suite/test.jsonl \
   --pred predictions/suite_predictions.jsonl \
   --out reports/suite_report.json
 ```
 
 Generated suite JSONL files and raw suite reports are ignored by git. The tracked sample files are `examples/sample_suite.jsonl` and `examples/sample_suite_chat.jsonl`.
+
+Regenerate local suite smoke baselines and the public summary:
+
+```bash
+.venv/bin/python run_suite_baselines.py \
+  --gold data/suite/test.jsonl \
+  --train data/suite/train.jsonl \
+  --pred-dir predictions/suite_baselines \
+  --out-json reports/suite_results.json \
+  --out-md reports/suite_results.md \
+  --figure reports/figures/suite_smoke_accuracy.svg
+```
+
+The public suite summary intentionally marks Tinker model evaluations as pending until actual prediction and score files exist.
 
 ## Adversarial Prompt Data
 

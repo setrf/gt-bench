@@ -51,14 +51,23 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 .venv/bin/python make_repeated_seed_splits.py --seed 1009 --seed 2027
 ```
 
-- Regenerate the optional broader suite when changing suite generation/scoring:
+- Regenerate the broader suite and local suite baselines when changing suite generation/scoring:
 
 ```bash
 .venv/bin/python generate_benchmark_suite.py \
-  --per-family 50 \
+  --train-per-family 50 \
+  --val-per-family 10 \
+  --test-per-family 50 \
   --seed 20260511 \
-  --out data/suite/gt_bench_suite.jsonl \
-  --chat-out data/suite/gt_bench_suite_chat.jsonl
+  --out-dir data/suite
+
+.venv/bin/python run_suite_baselines.py \
+  --gold data/suite/test.jsonl \
+  --train data/suite/train.jsonl \
+  --pred-dir predictions/suite_baselines \
+  --out-json reports/suite_results.json \
+  --out-md reports/suite_results.md \
+  --figure reports/figures/suite_smoke_accuracy.svg
 ```
 
 - Regenerate the public summary after scoring:
@@ -117,6 +126,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 
 - Confirm `README.md` links to `TECHNICAL_REPORT.md`, `RESULTS.md`, `REPRODUCIBILITY.md`, `FAILURE_ANALYSIS.md`, `ROBUSTNESS.md`, and `paper/gt_bench_paper.tex`.
 - Confirm `reports/adversarial_results.md` accurately says whether the adversarial run is pending or complete.
+- Confirm `reports/suite_results.md` accurately says broader-suite Tinker model evaluations are pending unless actual model reports exist.
 - Confirm `reports/figures/*.svg` renders on GitHub.
 - Confirm `paper/figures/*.png` match the current public SVG figures before rebuilding the paper.
 - Confirm the headline model-result claim remains narrow: targeted fine-tuning improves one fully verifiable 2x2 pure-equilibrium task. The broader suite is code/evaluation infrastructure until it has separate model runs.

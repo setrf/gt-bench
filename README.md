@@ -7,7 +7,7 @@ GT-Bench is a compact Tinker fine-tuning benchmark for strategic reasoning. The 
 The repository now has two layers:
 
 - `generate_dataset.py` and `score_predictions.py`: the canonical 2x2 pure-equilibrium experiment used for the published Qwen3.6-27B result.
-- `generate_benchmark_suite.py` and `score_suite.py`: an optional broader suite covering mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form games, natural-language game descriptions, and repeated interaction.
+- `generate_benchmark_suite.py` and `score_suite.py`: the broader suite covering mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form games, natural-language game descriptions, and repeated interaction.
 
 For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`. The repeated-seed learning curve is tracked in `reports/seed_sweep_results.md`. An arXiv-ready paper draft is available at `paper/gt_bench_paper.tex`.
 
@@ -42,14 +42,14 @@ The Qwen3.6-27B Tinker result reported in this repo is limited to this canonical
 
 ## Broader suite
 
-The broader suite is deterministic and exactly scored, but it is not part of the reported Tinker fine-tuning result yet. It adds six task families:
+The broader suite is deterministic and exactly scored. It has local smoke baselines and an oracle check, but it is not part of the reported Tinker fine-tuning result yet. It adds six task families:
 
 - `mixed_2x2`: fully mixed equilibria for 2x2 games with no pure equilibrium.
 - `dominance`: iterated elimination of strictly dominated pure strategies.
 - `large_normal_form`: pure equilibria in 2x3 and 3x3 normal-form games.
 - `extensive_form`: backward induction in perfect-information sequential games.
 - `natural_language`: story descriptions that must be mapped to payoff/action structure.
-- `repeated_interaction`: finite repeated prisoner's-dilemma simulations for fixed policies.
+- `repeated_interaction`: finite repeated prisoner's-dilemma simulations and best-response selection among fixed policies.
 
 ## Why this is useful
 
@@ -83,7 +83,7 @@ This writes:
 
 Small sample files are included in `examples/`.
 
-Generate the broader suite:
+Generate one broader-suite file:
 
 ```bash
 .venv/bin/python generate_benchmark_suite.py \
@@ -94,6 +94,19 @@ Generate the broader suite:
 ```
 
 Small suite samples are included in `examples/sample_suite.jsonl` and `examples/sample_suite_chat.jsonl`.
+
+Generate train/validation/test broader-suite splits:
+
+```bash
+.venv/bin/python generate_benchmark_suite.py \
+  --train-per-family 50 \
+  --val-per-family 10 \
+  --test-per-family 50 \
+  --seed 20260511 \
+  --out-dir data/suite
+```
+
+This writes `train`, `val`, and `test` JSONL/chat files under `data/suite/`.
 
 Generate a balanced stress set with equal numbers of 0-, 1-, 2-, 3-, and 4-equilibrium games:
 
@@ -213,12 +226,26 @@ Score broader-suite predictions with:
 
 ```bash
 .venv/bin/python score_suite.py \
-  --gold data/suite/gt_bench_suite.jsonl \
+  --gold data/suite/test.jsonl \
   --pred predictions/suite_predictions.jsonl \
   --out reports/suite_report.json
 ```
 
 The suite scorer reports exact-match accuracy overall and by task family.
+
+Run deterministic local suite baselines and regenerate the public suite summary:
+
+```bash
+.venv/bin/python run_suite_baselines.py \
+  --gold data/suite/test.jsonl \
+  --train data/suite/train.jsonl \
+  --pred-dir predictions/suite_baselines \
+  --out-json reports/suite_results.json \
+  --out-md reports/suite_results.md \
+  --figure reports/figures/suite_smoke_accuracy.svg
+```
+
+The public suite summary is a local smoke baseline report, not a model evaluation.
 
 For the Qwen3.6-27B sweep, score each prediction file:
 
@@ -276,7 +303,7 @@ Generate static SVG figures from the public summary:
 
 ## Expected result
 
-The demonstrated result is an increase in exact-match accuracy on held-out 2x2 pure-equilibrium problems after fine-tuning. The broader suite is ready for future evaluation but does not yet have Tinker training or model-result claims attached to it.
+The demonstrated model result is an increase in exact-match accuracy on held-out 2x2 pure-equilibrium problems after fine-tuning. The broader suite has deterministic generation, exact scoring, local baselines, and an oracle check; Tinker model evaluations for that suite are still pending.
 
 ## Current Qwen3.6-27B result
 
