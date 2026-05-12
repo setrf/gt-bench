@@ -1,4 +1,4 @@
-.PHONY: test secrets figures adversarial-summary seed-sweep-summary suite-data suite-baselines public-artifacts check
+.PHONY: test secrets figures adversarial-summary seed-sweep-summary suite-data suite-baselines multitask-data multitask-summary public-artifacts check
 
 PYTHON ?= .venv/bin/python
 
@@ -39,7 +39,13 @@ suite-baselines: suite-data
 		--out-md reports/suite_results.md \
 		--figure reports/figures/suite_smoke_accuracy.svg
 
-public-artifacts: adversarial-summary seed-sweep-summary figures suite-baselines
+multitask-data: suite-data
+	$(PYTHON) make_multitask_training.py
+
+multitask-summary:
+	$(PYTHON) summarize_multitask_results.py
+
+public-artifacts: adversarial-summary seed-sweep-summary figures suite-baselines multitask-data multitask-summary
 
 check: test secrets public-artifacts
 	git diff --check

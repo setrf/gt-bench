@@ -9,6 +9,7 @@ from generate_adversarial_training import (
     to_adversarial_chat_row,
 )
 from make_repeated_seed_splits import generate_seed_splits
+import make_multitask_training
 from generate_stress_set import generate_balanced_examples
 from generate_robustness_set import PROMPT_VARIANTS, generate_robustness_examples
 from make_sweep_splits import write_sweep_splits
@@ -21,6 +22,14 @@ from summarize_adversarial import (
 )
 from summarize_results import exact_binomial_ci
 from summarize_seed_sweep import build_summary as build_seed_sweep_summary
+from summarize_multitask_results import (
+    build_summary as build_multitask_summary,
+    canonical_failure_diagnostics,
+    suite_failure_diagnostics,
+)
+from select_tinker_models import choose_models
+from game_theory_suite import split_suite_examples, unique_signature
+from generate_dataset import generate_examples, to_chat_row
 
 
 def test_write_sweep_splits_uses_first_n_rows(tmp_path, monkeypatch) -> None:
@@ -695,3 +704,242 @@ def test_seed_sweep_summary_uses_public_baseline_and_seed_fallbacks(tmp_path) ->
     assert summary["status"] == "complete"
     assert summary["baseline"]["report_path"] == "reports/public_baseline.json"
     assert summary["runs"]["250"][0]["report_path"] == "reports/public_seed.json"
+
+
+def test_choose_models_uses_nearest_available_qwen_models() -> None:
+    selected = choose_models(
+        [
+            "Qwen/Qwen3-8B",
+            "Qwen/Qwen3.6-27B",
+            "Qwen/Qwen3.6-35B-A3B",
+            "meta-llama/Llama-3.1-8B",
+        ]
+    )
+
+    assert selected == [
+        {"model": "Qwen/Qwen3-8B", "reason": "nearest_available_qwen_below_27b"},
+        {"model": "Qwen/Qwen3.6-35B-A3B", "reason": "nearest_available_qwen_above_27b"},
+    ]
+
+
+def test_multitask_builder_writes_recipe_counts(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        make_multitask_training,
+        "TARGETED_SUITE_COUNTS",
+        {family: 1 for family in make_multitask_training.DEFAULT_SUITE_FAMILIES},
+    )
+    monkeypatch.setattr(
+        make_multitask_training,
+        "RECIPES",
+        {"tiny_joint": [("canonical_retention", 2), ("adversarial", None), ("targeted_suite", None)]},
+    )
+    (tmp_path / "data" / "adversarial").mkdir(parents=True)
+    (tmp_path / "data" / "suite").mkdir(parents=True)
+
+    canonical = generate_examples(6, seed=1)
+    adversarial = generate_examples(2, seed=2)
+    suite = split_suite_examples(train_per_family=1, val_per_family=0, test_per_family=0, seed=3)[
+        "train"
+    ]
+
+    def write_rows(path, rows):
+        path.write_text("\n".join(json.dumps(row) for row in rows) + "\n", encoding="utf-8")
+
+    def write_chat(path, rows):
+        path.write_text(
+            "\n".join(json.dumps(to_chat_row(row)) for row in rows) + "\n",
+            encoding="utf-8",
+        )
+
+    write_rows(tmp_path / "data" / "train.jsonl", canonical)
+    write_chat(tmp_path / "data" / "train_chat.jsonl", canonical)
+    write_rows(tmp_path / "data" / "adversarial" / "prompt_adv500_seed161804.jsonl", adversarial)
+    write_chat(
+        tmp_path / "data" / "adversarial" / "prompt_adv500_seed161804_chat.jsonl",
+        adversarial,
+    )
+    write_rows(tmp_path / "data" / "suite" / "train.jsonl", suite)
+    write_chat(tmp_path / "data" / "suite" / "train_chat.jsonl", suite)
+
+    manifest = make_multitask_training.build_for_seed(
+        seed=42,
+        out_root=tmp_path / "data" / "multitask",
+        targeted_seed=4,
+        max_attempts=100_000,
+    )
+
+    assert manifest["sources"]["targeted_suite"]["rows"] == 6
+    assert manifest["recipes"]["tiny_joint"]["rows"] == 10
+    assert manifest["recipes"]["tiny_joint"]["source_counts"] == {
+        "canonical_retention_2": 2,
+        "adversarial": 2,
+        "targeted_suite": 6,
+    }
+
+
+def test_multitask_builder_excludes_public_suite_test_signatures(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        make_multitask_training,
+        "TARGETED_SUITE_COUNTS",
+        {family: 1 for family in make_multitask_training.DEFAULT_SUITE_FAMILIES},
+    )
+    monkeypatch.setattr(make_multitask_training, "RECIPES", {"targeted_only": [("targeted_suite", None)]})
+    (tmp_path / "data" / "adversarial").mkdir(parents=True)
+    (tmp_path / "data" / "suite").mkdir(parents=True)
+
+    canonical = generate_examples(3, seed=1)
+    adversarial = generate_examples(2, seed=2)
+    suite = split_suite_examples(train_per_family=1, val_per_family=0, test_per_family=0, seed=3)[
+        "train"
+    ]
+    blocked_targeted = make_multitask_training.generate_targeted_suite(4, max_attempts=100_000)[0]
+
+    def write_rows(path, rows):
+        path.write_text("\n".join(json.dumps(row) for row in rows) + "\n", encoding="utf-8")
+
+    def write_chat(path, rows):
+        path.write_text(
+            "\n".join(json.dumps(to_chat_row(row)) for row in rows) + "\n",
+            encoding="utf-8",
+        )
+
+    write_rows(tmp_path / "data" / "train.jsonl", canonical)
+    write_chat(tmp_path / "data" / "train_chat.jsonl", canonical)
+    write_rows(tmp_path / "data" / "adversarial" / "prompt_adv500_seed161804.jsonl", adversarial)
+    write_chat(
+        tmp_path / "data" / "adversarial" / "prompt_adv500_seed161804_chat.jsonl",
+        adversarial,
+    )
+    write_rows(tmp_path / "data" / "suite" / "train.jsonl", suite)
+    write_chat(tmp_path / "data" / "suite" / "train_chat.jsonl", suite)
+    write_rows(tmp_path / "data" / "suite" / "test.jsonl", [blocked_targeted])
+
+    manifest = make_multitask_training.build_for_seed(
+        seed=42,
+        out_root=tmp_path / "data" / "multitask",
+        targeted_seed=4,
+        max_attempts=100_000,
+    )
+    targeted_rows = [
+        json.loads(line)
+        for line in (tmp_path / "data" / "multitask" / "seed_42" / "targeted_suite.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+
+    assert manifest["sources"]["targeted_suite"]["rows"] == 6
+    assert unique_signature(blocked_targeted) not in {
+        unique_signature(row) for row in targeted_rows
+    }
+
+
+def test_multitask_summary_selects_best_eligible_checkpoint(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    reports = tmp_path / "reports"
+    reports.mkdir()
+
+    def write_report(path, accuracy, suite=False):
+        row = {
+            "total_examples": 100,
+            "exact_match_accuracy": accuracy,
+            "num_correct": int(accuracy * 100),
+            "num_incorrect": 100 - int(accuracy * 100),
+            "failed_examples": [],
+        }
+        if suite:
+            row["accuracy_by_task_family"] = {
+                family: {"total": 1, "correct": 1, "accuracy": accuracy}
+                for family in make_multitask_training.DEFAULT_SUITE_FAMILIES
+            }
+            row["accuracy_by_difficulty"] = {}
+        path.write_text(json.dumps(row), encoding="utf-8")
+
+    write_report(reports / "joint_base_canon_adv_suite_canonical_report.json", 0.99)
+    write_report(reports / "joint_base_canon_adv_suite_robustness_report.json", 0.95)
+    write_report(reports / "suite_joint_base_canon_adv_suite_report.json", 0.65, suite=True)
+    write_report(reports / "joint_base_full_targeted_canonical_report.json", 0.98)
+    write_report(reports / "joint_base_full_targeted_robustness_report.json", 0.99)
+    write_report(reports / "suite_joint_base_full_targeted_report.json", 0.70, suite=True)
+
+    summary = build_multitask_summary()
+
+    assert summary["selection"]["run"] == "joint_base_canon_adv_suite"
+    assert summary["selection"]["rule"] == "canonical>=99.0 and robustness>=95.0"
+
+
+def test_multitask_summary_counts_base_recipe_as_seed42(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    reports = tmp_path / "reports"
+    reports.mkdir()
+
+    def write_report(path, accuracy, suite=False):
+        row = {
+            "total_examples": 100,
+            "exact_match_accuracy": accuracy,
+            "num_correct": int(accuracy * 100),
+            "num_incorrect": 100 - int(accuracy * 100),
+            "failed_examples": [],
+        }
+        if suite:
+            row["accuracy_by_task_family"] = {
+                "dominance": {"total": 1, "correct": int(accuracy), "accuracy": accuracy}
+            }
+            row["accuracy_by_difficulty"] = {}
+        path.write_text(json.dumps(row), encoding="utf-8")
+
+    for run, canonical, suite in [
+        ("joint_adv_targeted_retention", 0.998, 0.90),
+        ("joint_adv_targeted_retention_seed1009", 0.996, 0.92),
+        ("joint_adv_targeted_retention_seed2027", 1.0, 0.91),
+    ]:
+        write_report(reports / f"{run}_canonical_report.json", canonical)
+        write_report(reports / f"suite_{run}_report.json", suite, suite=True)
+        write_report(reports / f"{run}_robustness_report.json", 0.99)
+
+    summary = build_multitask_summary()
+
+    seed_summary = summary["seed_summary"]["joint_adv_targeted_retention"]
+    assert seed_summary["num_runs"] == 3
+    assert set(seed_summary["per_seed"]) == {"42", "1009", "2027"}
+    assert seed_summary["canonical_mean"] == pytest.approx(0.998)
+
+
+def test_failure_diagnostics_summarize_canonical_and_suite_errors(tmp_path) -> None:
+    gold_path = tmp_path / "gold.jsonl"
+    pred_path = tmp_path / "pred.jsonl"
+    gold_rows = [
+        {"id": "zero", "metadata": {"pure_nash_equilibria": []}},
+        {"id": "tie", "metadata": {"pure_nash_equilibria": [["U", "L"], ["D", "R"]]}},
+        {"id": "parse", "metadata": {"pure_nash_equilibria": [["U", "L"]]}},
+        {"id": "extra", "metadata": {"pure_nash_equilibria": [["U", "L"]]}},
+    ]
+    pred_rows = [
+        {"id": "zero", "prediction": "Final answer: (U,L)."},
+        {"id": "tie", "prediction": "Final answer: (U,L)."},
+        {"id": "parse", "prediction": "Final answer: see reasoning."},
+        {"id": "extra", "prediction": "Final answer: (U,L), (D,R)."},
+    ]
+    gold_path.write_text("\n".join(json.dumps(row) for row in gold_rows) + "\n", encoding="utf-8")
+    pred_path.write_text("\n".join(json.dumps(row) for row in pred_rows) + "\n", encoding="utf-8")
+
+    canonical = canonical_failure_diagnostics(gold_path, pred_path)
+    suite = suite_failure_diagnostics(
+        {
+            "failed_examples": [
+                {"id": "a", "task_family": "dominance", "gold": "x", "prediction": "y"},
+                {"id": "b", "task_family": "dominance", "gold": "x", "prediction": "y"},
+                {"id": "c", "task_family": "mixed_2x2", "gold": "x", "prediction": "y"},
+            ],
+            "accuracy_by_difficulty": {"hard": {"accuracy": 0.5}},
+        }
+    )
+
+    assert canonical["counts"]["zero_equilibrium_false_positive"] == 1
+    assert canonical["counts"]["false_negative_profile"] == 1
+    assert canonical["counts"]["false_positive_profile"] == 1
+    assert canonical["counts"]["parser_failure"] == 1
+    assert canonical["counts"]["tie_heavy_error"] == 1
+    assert suite["failed_by_family"] == {"dominance": 2, "mixed_2x2": 1}
+    assert suite["accuracy_by_difficulty"]["hard"]["accuracy"] == 0.5

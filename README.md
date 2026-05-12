@@ -9,7 +9,7 @@ The repository now has two layers:
 - `generate_dataset.py` and `score_predictions.py`: the canonical 2x2 pure-equilibrium experiment used for the published Qwen3.6-27B result.
 - `generate_benchmark_suite.py` and `score_suite.py`: the broader suite covering mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form games, natural-language game descriptions, and repeated interaction.
 
-For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`. The repeated-seed learning curve is tracked in `reports/seed_sweep_results.md`. An arXiv-ready paper draft is available at `paper/gt_bench_paper.tex`.
+For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`. The repeated-seed learning curve is tracked in `reports/seed_sweep_results.md`. The broader-suite and retention-aware multitask results are tracked in `reports/suite_results.md` and `reports/multitask_results.md`. An arXiv-ready paper draft is available at `paper/gt_bench_paper.tex`.
 
 ## My context
 
@@ -38,11 +38,11 @@ Each example is a 2x2 two-player normal-form payoff matrix.
 
 The model must find all pure-strategy Nash equilibria. A profile is a pure Nash equilibrium when both players are best responding at that cell. Ties are handled exactly, so a game may have zero, one, two, three, or four pure equilibria.
 
-The Qwen3.6-27B Tinker result reported in this repo is limited to this canonical task.
+The headline Qwen3.6-27B result is the canonical task. The repo also includes a selected retention-aware joint checkpoint for the broader suite, reported separately from the canonical-only claim.
 
 ## Broader suite
 
-The broader suite is deterministic and exactly scored. It has local smoke baselines, an oracle check, and a separate Tinker pilot evaluation that remains distinct from the canonical 2x2 result. It adds six task families:
+The broader suite is deterministic and exactly scored. It has local smoke baselines, an oracle check, a suite-only Tinker checkpoint, a retention-aware multitask sweep, a three-seed repeat of the selected joint recipe, and two base-model availability comparisons. It adds six task families:
 
 - `mixed_2x2`: fully mixed equilibria for 2x2 games with no pure equilibrium.
 - `dominance`: iterated elimination of strictly dominated pure strategies.
@@ -107,6 +107,12 @@ Generate train/validation/test broader-suite splits:
 ```
 
 This writes 1200 train, 60 validation, and 300 test examples under `data/suite/`.
+
+Generate deterministic retention-aware multitask training files and the public manifest:
+
+```bash
+.venv/bin/python make_multitask_training.py
+```
 
 Generate a balanced stress set with equal numbers of 0-, 1-, 2-, 3-, and 4-equilibrium games:
 
@@ -245,7 +251,13 @@ Run deterministic local suite baselines and regenerate the public suite summary:
   --figure reports/figures/suite_smoke_accuracy.svg
 ```
 
-The public suite summary includes deterministic baselines plus completed Tinker model rows when the matching raw reports are present. It also preserves the published model rows for this exact public suite split so `make check` does not require a Tinker key.
+The public suite summary includes deterministic baselines plus completed Tinker model rows when the matching raw reports are present. It preserves the published model rows for this exact public suite split so `make check` does not require a Tinker key.
+
+Regenerate the multitask summary after scoring joint checkpoints:
+
+```bash
+.venv/bin/python summarize_multitask_results.py
+```
 
 For the Qwen3.6-27B sweep, score each prediction file:
 
@@ -303,7 +315,7 @@ Generate static SVG figures from the public summary:
 
 ## Expected result
 
-The demonstrated headline result is still the canonical 2x2 pure-equilibrium improvement after fine-tuning. The broader suite is now evaluated separately: base `Qwen/Qwen3.6-27B` scored 20.00%, the canonical 2x2 SFT checkpoint transferred to 48.33%, the prompt-adversarial 2x2 checkpoint transferred to 51.67%, and a suite-specific 1200-example SFT checkpoint reached 68.00%. That suite-specific checkpoint retained only 53.60% canonical 2x2 accuracy, so it is a diagnostic suite model rather than a replacement for the canonical checkpoint.
+The demonstrated headline result is the canonical 2x2 pure-equilibrium improvement after fine-tuning. The broader suite is evaluated separately. Base `Qwen/Qwen3.6-27B` scored 20.00%, the suite-only SFT checkpoint reached 68.00% but retained only 53.60% canonical accuracy, and the selected retention-aware joint checkpoint reached 91.67% suite accuracy while retaining 99.80% canonical accuracy and 99.60% prompt-robustness accuracy. Across seeds 42, 1009, and 2027, the selected recipe averaged 92.56% suite accuracy and 99.93% canonical accuracy.
 
 ## Current Qwen3.6-27B result
 
@@ -326,7 +338,7 @@ On a 250-example prompt-robustness set, the same checkpoint improved from 64.00%
 
 Across a three-seed repeated training-data sweep on the fixed canonical test set, the 5000-example SFT condition was stable: 99.60% mean accuracy with 0.40 percentage-point seed SD. The 1000-example condition was volatile, with one seed dropping to 70.20%, while the 250-example condition consistently underperformed baseline. See `reports/seed_sweep_results.md`.
 
-The broader-suite pilot is tracked in `reports/suite_results.md`. The suite-specific SFT checkpoint improved broader-suite accuracy from 20.00% to 68.00%, but the canonical-retention check fell to 53.60%, which keeps the main scientific claim narrow.
+The broader-suite and multitask results are tracked in `reports/suite_results.md` and `reports/multitask_results.md`. The selected checkpoint is `joint_adv_targeted_retention`: it is the best suite performer among candidates that meet the canonical and prompt-robustness retention gates. `joint_base_full_targeted` reached 93.00% suite accuracy but was not selected because it fell to 97.20% canonical accuracy and 94.40% robustness.
 
 ## Adversarial robustness follow-up
 
@@ -382,13 +394,17 @@ The public repeated-seed summary is `reports/seed_sweep_results.md`, with machin
 
 ![Broader suite accuracy](reports/figures/suite_smoke_accuracy.svg)
 
+![Retention vs suite accuracy](reports/figures/multitask_pareto.svg)
+
+![External base-model baselines](reports/figures/external_model_baselines.svg)
+
 ![Repeated-seed learning curve](reports/figures/seed_sweep_learning_curve.svg)
 
 ## Limitations
 
-GT-Bench is deliberately narrow. It uses synthetic data, covers pure equilibria only, and does not prove broad game-theory reasoning improvement.
+GT-Bench is deliberately bounded. The canonical task uses synthetic 2x2 games and pure equilibria only. The broader suite adds mixed equilibria, dominance, larger normal-form games, extensive form, natural-language descriptions, and repeated interaction, but it still uses exact synthetic tasks and fixed answer formats.
 
-It is best understood as a controlled fine-tuning benchmark for one formal reasoning task, not as a general game-theory benchmark.
+It is best understood as a controlled fine-tuning benchmark with a broader exact diagnostic suite, not as evidence of general game-theory competence.
 
 ## Testing
 

@@ -70,6 +70,14 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
   --figure reports/figures/suite_smoke_accuracy.svg
 ```
 
+- Regenerate multitask training manifests and model-availability reports when changing retention-aware recipes or external comparison logic:
+
+```bash
+.venv/bin/python make_multitask_training.py
+.venv/bin/python select_tinker_models.py
+.venv/bin/python summarize_multitask_results.py
+```
+
 - Regenerate the public summary after scoring:
 
 ```bash
@@ -111,6 +119,8 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
   --out-dir reports/figures
 ```
 
+- Regenerate paper PNGs from updated public figures or chart data before compiling `paper/gt_bench_paper.tex`.
+
 ## Public-Release Safety
 
 - Do not commit `.env`, `predictions/`, `runs/`, raw scorer reports, or generated JSONL data.
@@ -127,6 +137,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 - Confirm `README.md` links to `TECHNICAL_REPORT.md`, `RESULTS.md`, `REPRODUCIBILITY.md`, `FAILURE_ANALYSIS.md`, `ROBUSTNESS.md`, and `paper/gt_bench_paper.tex`.
 - Confirm `reports/adversarial_results.md` accurately says whether the adversarial run is pending or complete.
 - Confirm `reports/suite_results.md` accurately reports completed broader-suite model rows and canonical-retention status for the exact public suite hash.
+- Confirm `reports/multitask_results.md` accurately reports selected-checkpoint rationale, three-seed statistics, external base comparisons, and failure diagnostics.
 - Confirm `reports/figures/*.svg` renders on GitHub.
 - Confirm `paper/figures/*.png` match the current public SVG figures before rebuilding the paper.
-- Confirm the headline model-result claim remains narrow: targeted fine-tuning improves one fully verifiable 2x2 pure-equilibrium task. The broader suite has a separate pilot result, but the suite SFT checkpoint is not a replacement for the canonical checkpoint because canonical retention is poor.
+- Confirm the headline claim remains bounded: targeted fine-tuning improves the canonical 2x2 pure-equilibrium task, and the selected retention-aware multitask checkpoint broadens exact suite coverage without claiming general game-theory competence.

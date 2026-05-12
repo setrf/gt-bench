@@ -35,6 +35,46 @@ DEFAULT_MODEL_REPORTS = [
         "Suite SFT",
         Path("reports/suite_qwen36_27b_suite_sft_1200_report.json"),
     ),
+    (
+        "joint_base_canon_adv_suite",
+        "Joint base canonical+adv+suite",
+        Path("reports/suite_joint_base_canon_adv_suite_report.json"),
+    ),
+    (
+        "joint_adv_suite_retention",
+        "Joint adv-state suite+retention",
+        Path("reports/suite_joint_adv_suite_retention_report.json"),
+    ),
+    (
+        "joint_adv_targeted_retention",
+        "Joint adv-state targeted+retention",
+        Path("reports/suite_joint_adv_targeted_retention_report.json"),
+    ),
+    (
+        "joint_base_full_targeted",
+        "Joint base full targeted",
+        Path("reports/suite_joint_base_full_targeted_report.json"),
+    ),
+    (
+        "joint_followup_retention",
+        "Joint follow-up retention",
+        Path("reports/suite_joint_followup_retention_report.json"),
+    ),
+    (
+        "joint_followup_suite",
+        "Joint follow-up suite",
+        Path("reports/suite_joint_followup_suite_report.json"),
+    ),
+    (
+        "base_qwen3_8b",
+        "Base Qwen/Qwen3-8B",
+        Path("reports/suite_base_qwen_qwen3_8b_report.json"),
+    ),
+    (
+        "base_qwen3_30b_a3b",
+        "Base Qwen/Qwen3-30B-A3B",
+        Path("reports/suite_base_qwen_qwen3_30b_a3b_report.json"),
+    ),
 ]
 
 DEFAULT_RETENTION_REPORTS = [
@@ -42,6 +82,36 @@ DEFAULT_RETENTION_REPORTS = [
         "suite_sft_1200_on_canonical",
         "Suite SFT on canonical 2x2",
         Path("reports/qwen36_27b_suite_sft_1200_on_canonical_report.json"),
+    ),
+    (
+        "joint_base_canon_adv_suite_on_canonical",
+        "Joint base canonical+adv+suite on canonical 2x2",
+        Path("reports/joint_base_canon_adv_suite_canonical_report.json"),
+    ),
+    (
+        "joint_adv_suite_retention_on_canonical",
+        "Joint adv-state suite+retention on canonical 2x2",
+        Path("reports/joint_adv_suite_retention_canonical_report.json"),
+    ),
+    (
+        "joint_adv_targeted_retention_on_canonical",
+        "Joint adv-state targeted+retention on canonical 2x2",
+        Path("reports/joint_adv_targeted_retention_canonical_report.json"),
+    ),
+    (
+        "joint_base_full_targeted_on_canonical",
+        "Joint base full targeted on canonical 2x2",
+        Path("reports/joint_base_full_targeted_canonical_report.json"),
+    ),
+    (
+        "joint_followup_retention_on_canonical",
+        "Joint follow-up retention on canonical 2x2",
+        Path("reports/joint_followup_retention_canonical_report.json"),
+    ),
+    (
+        "joint_followup_suite_on_canonical",
+        "Joint follow-up suite on canonical 2x2",
+        Path("reports/joint_followup_suite_canonical_report.json"),
     ),
 ]
 
@@ -253,15 +323,16 @@ def write_suite_figure(path: Path, summary: dict[str, Any]) -> None:
     ):
         if name in baselines:
             series.append((name, label, baselines[name]))
-    for name in ("base_qwen36_27b", "pure_2x2_sft_5000", "pure_2x2_prompt_adv500", "suite_sft_1200"):
+    for name, _label, _path in DEFAULT_MODEL_REPORTS:
         if name in models:
             series.append((name, str(models[name].get("label", name)), models[name]))
     if "oracle" in baselines:
         series.append(("oracle", "Oracle", baselines["oracle"]))
     width = 1280
-    height = 500
+    legend_rows = max(1, (len(series) + 3) // 4)
+    height = 440 + legend_rows * 28
     margin_left = 130
-    margin_bottom = 130
+    margin_bottom = 80 + legend_rows * 28
     chart_width = width - margin_left - 35
     chart_height = height - 80 - margin_bottom
     group_width = chart_width / len(families)
@@ -305,7 +376,7 @@ def write_suite_figure(path: Path, summary: dict[str, Any]) -> None:
     legend_x = margin_left
     for index, (name, label, _row) in enumerate(series):
         x = legend_x + (index % 4) * 280
-        y = height - 58 + (index // 4) * 22
+        y = height - (28 * legend_rows) + (index // 4) * 22
         lines.append(f'<rect x="{x}" y="{y}" width="12" height="12" fill="{colors.get(name, "#555")}"/>')
         lines.append(
             f'<text x="{x + 18}" y="{y + 10}" font-family="Arial" font-size="12">{label}</text>'

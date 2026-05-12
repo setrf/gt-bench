@@ -1,0 +1,425 @@
+{
+  "targeted_suite_counts": {
+    "dominance": 500,
+    "large_normal_form": 500,
+    "natural_language": 500,
+    "mixed_2x2": 200,
+    "extensive_form": 200,
+    "repeated_interaction": 200
+  },
+  "recipe_definitions": {
+    "joint_base_canon_adv_suite": [
+      [
+        "canonical_full",
+        null
+      ],
+      [
+        "adversarial",
+        null
+      ],
+      [
+        "suite_train",
+        null
+      ]
+    ],
+    "joint_adv_suite_retention": [
+      [
+        "suite_train",
+        null
+      ],
+      [
+        "canonical_retention",
+        1500
+      ],
+      [
+        "adversarial",
+        null
+      ]
+    ],
+    "joint_adv_targeted_retention": [
+      [
+        "suite_train",
+        null
+      ],
+      [
+        "targeted_suite",
+        null
+      ],
+      [
+        "canonical_retention",
+        2500
+      ],
+      [
+        "adversarial",
+        null
+      ]
+    ],
+    "joint_base_full_targeted": [
+      [
+        "canonical_full",
+        null
+      ],
+      [
+        "adversarial",
+        null
+      ],
+      [
+        "suite_train",
+        null
+      ],
+      [
+        "targeted_suite",
+        null
+      ]
+    ],
+    "joint_followup_retention": [
+      [
+        "canonical_retention",
+        3000
+      ],
+      [
+        "adversarial",
+        null
+      ]
+    ],
+    "joint_followup_suite": [
+      [
+        "targeted_suite",
+        null
+      ],
+      [
+        "canonical_retention",
+        1500
+      ]
+    ]
+  },
+  "seeds": [
+    {
+      "seed": 42,
+      "targeted_suite_seed": 20260512,
+      "sources": {
+        "targeted_suite": {
+          "rows": 2100,
+          "path": "data/multitask/seed_42/targeted_suite.jsonl",
+          "sha256": "3da49b239258328448e9612961d2cf11a58b3b05ac1c9704a7d78d817f975e35",
+          "chat_path": "data/multitask/seed_42/targeted_suite_chat.jsonl",
+          "chat_sha256": "e296f61782008a3816d518967cc8827977b93a107aeccd94ce117ba3716236a6",
+          "excluded_public_suite_signatures": 1560
+        },
+        "canonical_full": {
+          "rows": 5000,
+          "path": "data/train.jsonl",
+          "sha256": "c7d6c28ee443dbbb31f314763975261f6b3f7eeab5c27675c191b12085841742",
+          "chat_path": "data/train_chat.jsonl",
+          "chat_sha256": "8e2201a88022dfb6f37a71f41582d7c1053548149d3757205cf840bc053ac18b"
+        },
+        "adversarial": {
+          "rows": 500,
+          "path": "data/adversarial/prompt_adv500_seed161804.jsonl",
+          "sha256": "f97918324f402563746e5e163805a047de77a2f5ce88f55230d408754182cf1a",
+          "chat_path": "data/adversarial/prompt_adv500_seed161804_chat.jsonl",
+          "chat_sha256": "7790e5d1a127b1d43c9f696814f50545089f70e64160c2754989b458cdacdf1e"
+        },
+        "suite_train": {
+          "rows": 1200,
+          "path": "data/suite/train.jsonl",
+          "sha256": "6b59d21ee17ab33eed9f0c14cb266953fbeb7dea65e48a1baae116bd63166067",
+          "chat_path": "data/suite/train_chat.jsonl",
+          "chat_sha256": "5a737d950076bcf4fb935fd040fbab19e69c27825974697733f28df610992f2a"
+        }
+      },
+      "recipes": {
+        "joint_base_canon_adv_suite": {
+          "rows": 6700,
+          "path": "data/multitask/seed_42/joint_base_canon_adv_suite.jsonl",
+          "sha256": "70129b65e934088ae5a773145a2d284653c9cc3c00fd2c99ed249d56ad9d9bc3",
+          "chat_path": "data/multitask/seed_42/joint_base_canon_adv_suite_chat.jsonl",
+          "chat_sha256": "965f681da3733efb1849366db7de18f5dad224785f3a768093057d746a4b0dea",
+          "source_counts": {
+            "canonical_full": 5000,
+            "adversarial": 500,
+            "suite_train": 1200
+          }
+        },
+        "joint_adv_suite_retention": {
+          "rows": 3200,
+          "path": "data/multitask/seed_42/joint_adv_suite_retention.jsonl",
+          "sha256": "09ad046b99d2924c0cd679855dd09c5e8cb16cef4f64231d55de64a1a99d6a69",
+          "chat_path": "data/multitask/seed_42/joint_adv_suite_retention_chat.jsonl",
+          "chat_sha256": "5428abf05bb8e8860332e5a45effb1d20c9e0b414bc052dd94f9e814da471224",
+          "source_counts": {
+            "suite_train": 1200,
+            "canonical_retention_1500": 1500,
+            "adversarial": 500
+          }
+        },
+        "joint_adv_targeted_retention": {
+          "rows": 6300,
+          "path": "data/multitask/seed_42/joint_adv_targeted_retention.jsonl",
+          "sha256": "e924562154f0e833ac6485183eeafbfcc6cf1cbe40717b2d3fbd27896991ebb2",
+          "chat_path": "data/multitask/seed_42/joint_adv_targeted_retention_chat.jsonl",
+          "chat_sha256": "e4315b7cc0623b833f69101be54b8d7a8aa191e9f596ba7e434cf8dbed3f940a",
+          "source_counts": {
+            "suite_train": 1200,
+            "targeted_suite": 2100,
+            "canonical_retention_2500": 2500,
+            "adversarial": 500
+          }
+        },
+        "joint_base_full_targeted": {
+          "rows": 8800,
+          "path": "data/multitask/seed_42/joint_base_full_targeted.jsonl",
+          "sha256": "d6def99e26fe8ea40c313b34d47995fd6e6809dd29a336606076d25b0ac731dd",
+          "chat_path": "data/multitask/seed_42/joint_base_full_targeted_chat.jsonl",
+          "chat_sha256": "358914643cf7aed3ad74ed76e8cb98a901a3ee9e6118c8f59b98ef3a86a15ce0",
+          "source_counts": {
+            "canonical_full": 5000,
+            "adversarial": 500,
+            "suite_train": 1200,
+            "targeted_suite": 2100
+          }
+        },
+        "joint_followup_retention": {
+          "rows": 3500,
+          "path": "data/multitask/seed_42/joint_followup_retention.jsonl",
+          "sha256": "f02ea226df3eed924da43f40baca146b868ff240c12ea28b1d38b719c152b74c",
+          "chat_path": "data/multitask/seed_42/joint_followup_retention_chat.jsonl",
+          "chat_sha256": "ae7891caddfa0b4034ab2777f9c57a5b4def18497dea5b775785460c1da9cf3a",
+          "source_counts": {
+            "canonical_retention_3000": 3000,
+            "adversarial": 500
+          }
+        },
+        "joint_followup_suite": {
+          "rows": 3600,
+          "path": "data/multitask/seed_42/joint_followup_suite.jsonl",
+          "sha256": "447f368248efbcf59a0f824fb23d402f3d9fcb282fffb84f50040fe537eaa74a",
+          "chat_path": "data/multitask/seed_42/joint_followup_suite_chat.jsonl",
+          "chat_sha256": "d5c78f26e361fc614ed17210889ba496c1c9893b6e7db6ddbc6b3e3834896198",
+          "source_counts": {
+            "targeted_suite": 2100,
+            "canonical_retention_1500": 1500
+          }
+        }
+      }
+    },
+    {
+      "seed": 1009,
+      "targeted_suite_seed": 20260512,
+      "sources": {
+        "targeted_suite": {
+          "rows": 2100,
+          "path": "data/multitask/seed_1009/targeted_suite.jsonl",
+          "sha256": "3da49b239258328448e9612961d2cf11a58b3b05ac1c9704a7d78d817f975e35",
+          "chat_path": "data/multitask/seed_1009/targeted_suite_chat.jsonl",
+          "chat_sha256": "e296f61782008a3816d518967cc8827977b93a107aeccd94ce117ba3716236a6",
+          "excluded_public_suite_signatures": 1560
+        },
+        "canonical_full": {
+          "rows": 5000,
+          "path": "data/repeated_seeds/seed_1009/train.jsonl",
+          "sha256": "79a88f01cd6665579f5eda815fcb245369351652e2e3f2949b2f729bd45b064b",
+          "chat_path": "data/repeated_seeds/seed_1009/train_chat.jsonl",
+          "chat_sha256": "600e7ea5eab27856e1d8213e3261af4ae25126c3ed47b715ddd2f342a1b41167"
+        },
+        "adversarial": {
+          "rows": 500,
+          "path": "data/adversarial/prompt_adv500_seed161804.jsonl",
+          "sha256": "f97918324f402563746e5e163805a047de77a2f5ce88f55230d408754182cf1a",
+          "chat_path": "data/adversarial/prompt_adv500_seed161804_chat.jsonl",
+          "chat_sha256": "7790e5d1a127b1d43c9f696814f50545089f70e64160c2754989b458cdacdf1e"
+        },
+        "suite_train": {
+          "rows": 1200,
+          "path": "data/suite/train.jsonl",
+          "sha256": "6b59d21ee17ab33eed9f0c14cb266953fbeb7dea65e48a1baae116bd63166067",
+          "chat_path": "data/suite/train_chat.jsonl",
+          "chat_sha256": "5a737d950076bcf4fb935fd040fbab19e69c27825974697733f28df610992f2a"
+        }
+      },
+      "recipes": {
+        "joint_base_canon_adv_suite": {
+          "rows": 6700,
+          "path": "data/multitask/seed_1009/joint_base_canon_adv_suite.jsonl",
+          "sha256": "20ba7ce5bda894053621d204923abbdf2b93944f328f486f94374a3dea48306c",
+          "chat_path": "data/multitask/seed_1009/joint_base_canon_adv_suite_chat.jsonl",
+          "chat_sha256": "790e4c9f579e3878aa0eb4dbfb22f276a10e36bc5288f668c9ed98616abed25e",
+          "source_counts": {
+            "canonical_full": 5000,
+            "adversarial": 500,
+            "suite_train": 1200
+          }
+        },
+        "joint_adv_suite_retention": {
+          "rows": 3200,
+          "path": "data/multitask/seed_1009/joint_adv_suite_retention.jsonl",
+          "sha256": "3795ff212994523f8419c78f2752215f611a2f6f838a5eccc73cfedbf4105787",
+          "chat_path": "data/multitask/seed_1009/joint_adv_suite_retention_chat.jsonl",
+          "chat_sha256": "8a9412e4b61073c9b38e8da318383128c4159f868340cbe78ef006e951448f3c",
+          "source_counts": {
+            "suite_train": 1200,
+            "canonical_retention_1500": 1500,
+            "adversarial": 500
+          }
+        },
+        "joint_adv_targeted_retention": {
+          "rows": 6300,
+          "path": "data/multitask/seed_1009/joint_adv_targeted_retention.jsonl",
+          "sha256": "2f5df0378c1d1e01e2517513f6edd01e2cb7a99d6628cb86e06307341f590dcc",
+          "chat_path": "data/multitask/seed_1009/joint_adv_targeted_retention_chat.jsonl",
+          "chat_sha256": "a96e2bd50f716f327599cea487a4eb75e189992d833d042e6b319718a3b911c5",
+          "source_counts": {
+            "suite_train": 1200,
+            "targeted_suite": 2100,
+            "canonical_retention_2500": 2500,
+            "adversarial": 500
+          }
+        },
+        "joint_base_full_targeted": {
+          "rows": 8800,
+          "path": "data/multitask/seed_1009/joint_base_full_targeted.jsonl",
+          "sha256": "a79a32d60fda32491932ccf8ddc29e1441c430144cdc9c44a087a1d6a4c8af11",
+          "chat_path": "data/multitask/seed_1009/joint_base_full_targeted_chat.jsonl",
+          "chat_sha256": "b17fd31662e3f392984adcf5a7682d2270c94dd7bd94b2e0d97bedc4bd71b166",
+          "source_counts": {
+            "canonical_full": 5000,
+            "adversarial": 500,
+            "suite_train": 1200,
+            "targeted_suite": 2100
+          }
+        },
+        "joint_followup_retention": {
+          "rows": 3500,
+          "path": "data/multitask/seed_1009/joint_followup_retention.jsonl",
+          "sha256": "54f5b10ba2766bcda832ab0c51a97cfe6c901c1873586ca66516249b5a303e79",
+          "chat_path": "data/multitask/seed_1009/joint_followup_retention_chat.jsonl",
+          "chat_sha256": "9b92a1ee398d1a8ed1becb1d3d327499658fcf6293146c531b72192c1f0da708",
+          "source_counts": {
+            "canonical_retention_3000": 3000,
+            "adversarial": 500
+          }
+        },
+        "joint_followup_suite": {
+          "rows": 3600,
+          "path": "data/multitask/seed_1009/joint_followup_suite.jsonl",
+          "sha256": "bee9cc5222111e145dcc89c221c55db78c35463679de3c099369257a2c26670b",
+          "chat_path": "data/multitask/seed_1009/joint_followup_suite_chat.jsonl",
+          "chat_sha256": "d9a6e3bf6e471aca00e5fe222d35f635b2aa4ff20cc50a6511adaef1effbaac4",
+          "source_counts": {
+            "targeted_suite": 2100,
+            "canonical_retention_1500": 1500
+          }
+        }
+      }
+    },
+    {
+      "seed": 2027,
+      "targeted_suite_seed": 20260512,
+      "sources": {
+        "targeted_suite": {
+          "rows": 2100,
+          "path": "data/multitask/seed_2027/targeted_suite.jsonl",
+          "sha256": "3da49b239258328448e9612961d2cf11a58b3b05ac1c9704a7d78d817f975e35",
+          "chat_path": "data/multitask/seed_2027/targeted_suite_chat.jsonl",
+          "chat_sha256": "e296f61782008a3816d518967cc8827977b93a107aeccd94ce117ba3716236a6",
+          "excluded_public_suite_signatures": 1560
+        },
+        "canonical_full": {
+          "rows": 5000,
+          "path": "data/repeated_seeds/seed_2027/train.jsonl",
+          "sha256": "b2d6e8fe655730dd31af33e989dfffb1a95a5b548992205b0dc6a7451b3f926f",
+          "chat_path": "data/repeated_seeds/seed_2027/train_chat.jsonl",
+          "chat_sha256": "d7c9d0e4edcf4dc1bd3b06f9daa78697462cc11df4b1d99373ecd2eb5be41359"
+        },
+        "adversarial": {
+          "rows": 500,
+          "path": "data/adversarial/prompt_adv500_seed161804.jsonl",
+          "sha256": "f97918324f402563746e5e163805a047de77a2f5ce88f55230d408754182cf1a",
+          "chat_path": "data/adversarial/prompt_adv500_seed161804_chat.jsonl",
+          "chat_sha256": "7790e5d1a127b1d43c9f696814f50545089f70e64160c2754989b458cdacdf1e"
+        },
+        "suite_train": {
+          "rows": 1200,
+          "path": "data/suite/train.jsonl",
+          "sha256": "6b59d21ee17ab33eed9f0c14cb266953fbeb7dea65e48a1baae116bd63166067",
+          "chat_path": "data/suite/train_chat.jsonl",
+          "chat_sha256": "5a737d950076bcf4fb935fd040fbab19e69c27825974697733f28df610992f2a"
+        }
+      },
+      "recipes": {
+        "joint_base_canon_adv_suite": {
+          "rows": 6700,
+          "path": "data/multitask/seed_2027/joint_base_canon_adv_suite.jsonl",
+          "sha256": "100bd46cb8637f5a696fbe29dd0ac245bbcb389813a6ed7d7cea162db71b3ffd",
+          "chat_path": "data/multitask/seed_2027/joint_base_canon_adv_suite_chat.jsonl",
+          "chat_sha256": "3d821305fe9b36abd128ef1044da3c6ccc2c5967301f520f6730adb859cd3566",
+          "source_counts": {
+            "canonical_full": 5000,
+            "adversarial": 500,
+            "suite_train": 1200
+          }
+        },
+        "joint_adv_suite_retention": {
+          "rows": 3200,
+          "path": "data/multitask/seed_2027/joint_adv_suite_retention.jsonl",
+          "sha256": "7d968b7ec5c680ebb964ef0969a2c1c66c31d7c18f6be0ba0485516806c8c211",
+          "chat_path": "data/multitask/seed_2027/joint_adv_suite_retention_chat.jsonl",
+          "chat_sha256": "bcba356469b17bc6c9c5168b013847a92c2ce0c303a33d860d25a8101bd14790",
+          "source_counts": {
+            "suite_train": 1200,
+            "canonical_retention_1500": 1500,
+            "adversarial": 500
+          }
+        },
+        "joint_adv_targeted_retention": {
+          "rows": 6300,
+          "path": "data/multitask/seed_2027/joint_adv_targeted_retention.jsonl",
+          "sha256": "522642f1973b79761dd33f34850bd608c02b9fca57e8d93d0cfcb8a92dc1a6f3",
+          "chat_path": "data/multitask/seed_2027/joint_adv_targeted_retention_chat.jsonl",
+          "chat_sha256": "2a91356c9e768b1622d4f1609e46aed587e23738cfd34bceccf9f10a5e61c808",
+          "source_counts": {
+            "suite_train": 1200,
+            "targeted_suite": 2100,
+            "canonical_retention_2500": 2500,
+            "adversarial": 500
+          }
+        },
+        "joint_base_full_targeted": {
+          "rows": 8800,
+          "path": "data/multitask/seed_2027/joint_base_full_targeted.jsonl",
+          "sha256": "eb25b49f9f3f2f8719d187b369fff6170cd9620eb5a626b4246bed825db0d883",
+          "chat_path": "data/multitask/seed_2027/joint_base_full_targeted_chat.jsonl",
+          "chat_sha256": "ee22465e917668efb6a8f3b6c895563878909b0ef3446110ef8bd5d8ad7ebe3a",
+          "source_counts": {
+            "canonical_full": 5000,
+            "adversarial": 500,
+            "suite_train": 1200,
+            "targeted_suite": 2100
+          }
+        },
+        "joint_followup_retention": {
+          "rows": 3500,
+          "path": "data/multitask/seed_2027/joint_followup_retention.jsonl",
+          "sha256": "04e0e4cb86e3a4a8a92788dc0f5eb098ed5eefab5ae8fce01ca27e49b6256e0b",
+          "chat_path": "data/multitask/seed_2027/joint_followup_retention_chat.jsonl",
+          "chat_sha256": "b3847d0625e5c13a45ff7156fbfce5775b598151fb150b2dc0d29191aa6195fb",
+          "source_counts": {
+            "canonical_retention_3000": 3000,
+            "adversarial": 500
+          }
+        },
+        "joint_followup_suite": {
+          "rows": 3600,
+          "path": "data/multitask/seed_2027/joint_followup_suite.jsonl",
+          "sha256": "2a73a5b53a9e4a0e82b42ee588f8b22674ad934dda3ee88bb0a2250b06f89461",
+          "chat_path": "data/multitask/seed_2027/joint_followup_suite_chat.jsonl",
+          "chat_sha256": "8565dfef4baec850437af4a550ab663fcf48fa6cce541e70b1b0013e79d09866",
+          "source_counts": {
+            "targeted_suite": 2100,
+            "canonical_retention_1500": 1500
+          }
+        }
+      }
+    }
+  ]
+}

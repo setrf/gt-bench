@@ -100,7 +100,7 @@ ffc6c26df85c78df702d4eef910b835025a5b2a8344a9ef1d14e1ab7e78405e8  data/robust/ro
 
 ## Broader Suite Data
 
-The headline Qwen3.6-27B fine-tuning result is still the canonical 2x2 pure-equilibrium experiment. The repository also includes a broader suite with exact solvers, task-family scoring, local smoke baselines, completed Tinker model rows for the public split, and a canonical-retention check for the suite-specific checkpoint.
+The headline Qwen3.6-27B fine-tuning result is still the canonical 2x2 pure-equilibrium experiment. The repository also includes a broader suite with exact solvers, task-family scoring, local smoke baselines, completed Tinker model rows for the public split, retention-aware multitask summaries, and external base-model comparisons.
 
 Generate one suite file:
 
@@ -160,6 +160,14 @@ Regenerate local suite smoke baselines and the public summary:
 
 The public suite summary includes the completed model rows for the exact public suite hash above. If raw suite report files are absent, `run_suite_baselines.py` preserves the tracked model rows instead of requiring a Tinker key for local artifact checks.
 
+Generate deterministic multitask training files and the public data manifest:
+
+```bash
+.venv/bin/python make_multitask_training.py
+```
+
+The public manifest records the four candidate recipes, two deterministic follow-up recipes, seed-specific canonical-retention inputs, train-only targeted suite augmentation, source counts, and SHA-256 hashes. The public suite test hash above remains unchanged.
+
 The suite-specific SFT run used the generated suite chat split:
 
 ```bash
@@ -187,9 +195,9 @@ Evaluate suite checkpoints with `run_tinker_predict.py` and score with `score_su
   --out reports/suite_base_qwen36_27b_report.json
 ```
 
-Canonical retention for the suite checkpoint is scored with `score_predictions.py` on `data/test.jsonl`.
+Canonical retention for suite and joint checkpoints is scored with `score_predictions.py` on `data/test.jsonl`. Prompt robustness retention is scored with `score_robustness.py` on `data/robust/robust_seed271828.jsonl`.
 
-The public suite pilot results on `data/suite/test.jsonl` are:
+The public suite and multitask results on `data/suite/test.jsonl` are:
 
 | Run | Accuracy | Correct | Incorrect |
 | --- | ---: | ---: | ---: |
@@ -197,8 +205,24 @@ The public suite pilot results on `data/suite/test.jsonl` are:
 | 2x2 SFT transfer | 48.33% | 145 | 155 |
 | 2x2 + prompt-adversarial SFT transfer | 51.67% | 155 | 145 |
 | suite SFT | 68.00% | 204 | 96 |
+| joint base canonical+adv+suite | 84.67% | 254 | 46 |
+| joint adv-state suite+retention | 89.33% | 268 | 32 |
+| selected joint adv-state targeted+retention | 91.67% | 275 | 25 |
+| joint base full targeted | 93.00% | 279 | 21 |
 
-The suite SFT checkpoint scored 53.60% on the canonical 500-example 2x2 test set, so it should be treated as a suite adaptation run with poor canonical retention.
+The selected checkpoint is `joint_adv_targeted_retention`, chosen by requiring at least 99.0% canonical accuracy and 95.0% prompt-robustness accuracy before maximizing suite accuracy. It scored 99.80% canonical, 100.00% confirmation, 100.00% stress, 99.60% robustness, and 91.67% suite. The three-seed selected-recipe repeat averaged 92.56% suite accuracy and 99.93% canonical accuracy.
+
+Regenerate the public multitask summary and figures with:
+
+```bash
+.venv/bin/python summarize_multitask_results.py
+```
+
+Record model availability and deterministic external comparison choices with:
+
+```bash
+.venv/bin/python select_tinker_models.py
+```
 
 ## Adversarial Prompt Data
 
@@ -266,6 +290,19 @@ Run the adversarial follow-up SFT:
   --train-chat data/adversarial/train_5500_prompt_adv500_chat.jsonl \
   --run-name qwen36_27b_sft_5000_plus_prompt_adv500 \
   --out-manifest runs/qwen36_27b_sft_5000_plus_prompt_adv500.json
+```
+
+Run retention-aware continuation from that adversarial checkpoint with the manifest `state_path`, not the sampler path. Long multitask runs can be chunked deterministically with `--start-step` and `--max-steps`:
+
+```bash
+.venv/bin/python run_tinker_sft.py \
+  --config bench_config.json \
+  --train-chat data/multitask/seed_42/joint_adv_targeted_retention_chat.jsonl \
+  --load-state-path "tinker://.../weights/qwen36_27b_sft_5000_plus_prompt_adv500-state" \
+  --seed 42 \
+  --run-name qwen36_27b_joint_adv_targeted_retention_part1 \
+  --out-manifest runs/qwen36_27b_joint_adv_targeted_retention_part1.json \
+  --max-steps 250
 ```
 
 ## Repeated-Seed Sweep
@@ -372,6 +409,8 @@ Generate the public figures:
   --adversarial reports/adversarial_results.json \
   --seed-sweep reports/seed_sweep_results.json \
   --out-dir reports/figures
+
+.venv/bin/python summarize_multitask_results.py
 ```
 
 Run and summarize the robustness evaluation with:

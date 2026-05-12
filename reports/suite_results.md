@@ -22,12 +22,22 @@ Suite SHA-256: `653aa5e1fd7bbcb2ff57e98c04cfc745a602f274c86dc8284bf875e650d1deee
 | 2x2 SFT transfer | 48.33% | 145 | 155 |
 | 2x2 + prompt-adversarial SFT transfer | 51.67% | 155 | 145 |
 | Suite SFT | 68.00% | 204 | 96 |
+| Joint base canonical+adv+suite | 84.67% | 254 | 46 |
+| Joint adv-state suite+retention | 89.33% | 268 | 32 |
+| Joint adv-state targeted+retention | 91.67% | 275 | 25 |
+| Joint base full targeted | 93.00% | 279 | 21 |
+| Base Qwen/Qwen3-8B | 4.00% | 12 | 288 |
+| Base Qwen/Qwen3-30B-A3B | 6.33% | 19 | 281 |
 
 ## Canonical 2x2 Retention
 
 | Checkpoint | Accuracy | Correct | Incorrect |
 | --- | ---: | ---: | ---: |
 | Suite SFT on canonical 2x2 | 53.60% | 268 | 232 |
+| Joint base canonical+adv+suite on canonical 2x2 | 99.80% | 499 | 1 |
+| Joint adv-state suite+retention on canonical 2x2 | 100.00% | 500 | 0 |
+| Joint adv-state targeted+retention on canonical 2x2 | 99.80% | 499 | 1 |
+| Joint base full targeted on canonical 2x2 | 97.20% | 486 | 14 |
 
 ## Accuracy By Task Family
 
@@ -83,3 +93,9 @@ Suite SHA-256: `653aa5e1fd7bbcb2ff57e98c04cfc745a602f274c86dc8284bf875e650d1deee
 | 2x2 SFT transfer | 0.00% | 32.00% | 72.00% | 66.00% | 54.00% | 66.00% |
 | 2x2 + prompt-adversarial SFT transfer | 0.00% | 32.00% | 70.00% | 80.00% | 60.00% | 68.00% |
 | Suite SFT | 78.00% | 44.00% | 54.00% | 76.00% | 56.00% | 100.00% |
+| Joint base canonical+adv+suite | 80.00% | 56.00% | 82.00% | 92.00% | 98.00% | 100.00% |
+| Joint adv-state suite+retention | 92.00% | 60.00% | 86.00% | 98.00% | 100.00% | 100.00% |
+| Joint adv-state targeted+retention | 96.00% | 68.00% | 86.00% | 100.00% | 100.00% | 100.00% |
+| Joint base full targeted | 98.00% | 78.00% | 84.00% | 98.00% | 100.00% | 100.00% |
+| Base Qwen/Qwen3-8B | 0.00% | 0.00% | 14.00% | 0.00% | 10.00% | 0.00% |
+| Base Qwen/Qwen3-30B-A3B | 0.00% | 0.00% | 8.00% | 0.00% | 28.00% | 2.00% |

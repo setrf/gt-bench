@@ -32,7 +32,7 @@
 \maketitle
 
 \begin{abstract}
-GT-Bench is a compact benchmark for measuring whether targeted fine-tuning improves a narrow, exactly verifiable formal reasoning task. Each canonical example gives a randomly generated 2x2 two-player normal-form payoff matrix and asks a model to identify all pure-strategy Nash equilibria. Because the task has an exact solver, data can be generated at scale and model outputs can be scored without subjective judgment. Using Thinking Machines Lab Tinker, LoRA supervised fine-tuning of \modelname{} on 5000 synthetic examples improved canonical exact-match accuracy from 87.60\% to 99.60\%. A three-seed learning curve found that the 5000-example condition was stable, with 99.60\% mean accuracy and 0.40 percentage-point seed standard deviation, while the 1000-example condition was volatile. A conservative 500-example adversarial prompt supplement further improved prompt-robustness accuracy from 88.40\% to 98.80\% relative to the original 5000-example checkpoint, without reducing canonical accuracy. A separate six-family suite pilot improved broader-suite accuracy from 20.00\% to 68.00\%, but the suite-specific checkpoint retained only 53.60\% canonical accuracy. The result supports a narrow claim: targeted fine-tuning can improve one controlled formal reasoning skill, and targeted adversarial data can improve robustness to equivalent prompt presentations. It does not demonstrate broad game-theory reasoning competence.
+GT-Bench is a compact benchmark for measuring whether targeted fine-tuning improves a narrow, exactly verifiable formal reasoning task. Each canonical example gives a randomly generated 2x2 two-player normal-form payoff matrix and asks a model to identify all pure-strategy Nash equilibria. Because the task has an exact solver, data can be generated at scale and model outputs can be scored without subjective judgment. Using Thinking Machines Lab Tinker, LoRA supervised fine-tuning of \modelname{} on 5000 synthetic examples improved canonical exact-match accuracy from 87.60\% to 99.60\%. A conservative 500-example adversarial prompt supplement further improved prompt-robustness accuracy from 88.40\% to 98.80\% relative to the original 5000-example checkpoint, without reducing canonical accuracy. A retention-aware multitask sweep then selected a joint checkpoint that reached 91.67\% on a six-family broader suite while retaining 99.80\% canonical accuracy and 99.60\% prompt-robustness accuracy. Repeating the selected recipe across three seeds gave 92.56\% mean suite accuracy and 99.93\% mean canonical accuracy. The result supports a bounded claim: targeted fine-tuning can improve one controlled formal reasoning skill, and retention-aware multitask data can broaden exact game-theory coverage without erasing that skill. It does not demonstrate general game-theory competence.
 \end{abstract}
 
 \section{Introduction}
@@ -41,7 +41,7 @@ Large language models often appear capable of formal reasoning, but broad qualit
 
 The experimental question is practical: can targeted supervised fine-tuning measurably improve a model on a precisely specified formal game-theory skill? The project was developed as a public research artifact for a Thinking Machines Lab Tinker research grant. The canonical experiment's design goal is control: one task, one exact solver, deterministic data generation, exact-match scoring, and focused robustness checks.
 
-The main result is positive. On the canonical 500-example held-out test split, \modelname{} improved from 87.60\% exact-match accuracy at baseline to 99.60\% after LoRA supervised fine-tuning on 5000 synthetic examples. The improvement held on an independent confirmation set, became sharper on a balanced stress set, and remained stable in a three-seed training-data sweep. A follow-up adversarial prompt supplement then closed most of the remaining prompt-format robustness gap. The repository also includes a separate exactly scored suite for broader game-theory tasks. The suite pilot is reported separately because its best suite-specific checkpoint improves the broader suite but forgets much of the canonical task.
+The main result is positive. On the canonical 500-example held-out test split, \modelname{} improved from 87.60\% exact-match accuracy at baseline to 99.60\% after LoRA supervised fine-tuning on 5000 synthetic examples. The improvement held on an independent confirmation set, became sharper on a balanced stress set, and remained stable in a three-seed training-data sweep. A follow-up adversarial prompt supplement closed most of the remaining prompt-format robustness gap. The repository also includes an exactly scored broader suite. A suite-only checkpoint improved suite accuracy but forgot the canonical task; the final retention-aware multitask checkpoint preserves the canonical result while raising suite accuracy above 90\%.
 
 \section{Related Work}
 
@@ -55,13 +55,13 @@ There is also a growing body of work on LLMs and strategic reasoning. Surveys fr
 
 Each example is a two-player normal-form game. Player 1 chooses $U$ or $D$, and Player 2 chooses $L$ or $R$. Each cell contains an ordered pair of integer payoffs in the range 0 through 9. A pure-strategy Nash equilibrium is a strategy profile in which both players are best responding to the other player's strategy \cite{nash1950equilibrium,nash1951noncooperative}. Ties are handled exactly, so a game may have zero, one, two, three, or four pure equilibria.
 
-The reported model experiment deliberately excludes mixed strategies, dominance, welfare analysis, sequential games, auctions, public goods games, Nim, and natural-language story problems. This restriction is central to the main result. The goal is to evaluate one rule under controlled conditions, not to claim broad game-theory performance.
+The canonical model experiment deliberately excludes mixed strategies, dominance, welfare analysis, sequential games, auctions, public goods games, Nim, and natural-language story problems. This restriction is central to the original result. The broader suite later adds several of these task families, but still evaluates fixed exact-answer tasks rather than open-ended game-theory competence.
 
 \section{Broader Suite Infrastructure}
 
 The public repository now also contains a broader suite generator and scorer. This suite covers six additional task families: fully mixed equilibria in 2x2 games with no pure equilibrium, iterated elimination of strictly dominated pure strategies, pure equilibria in 2x3 and 3x3 normal-form games, backward induction in perfect-information extensive-form games, natural-language game descriptions, and finite repeated prisoner's-dilemma simulations plus best-response selection among fixed policies. Each family has deterministic generation, exact solver metadata, difficulty buckets, train/validation/test split generation, task-family scoring, local smoke baselines, and an oracle check.
 
-The suite test split contains 300 examples, 50 from each family. Table~\ref{tab:suite-pilot} reports the completed Tinker pilot. The suite-specific SFT checkpoint improves broad-suite accuracy, especially on mixed 2x2 and repeated-interaction tasks, but it does not preserve the canonical pure-equilibrium task. This keeps the main claim separate from the suite pilot.
+The suite test split contains 300 examples, 50 from each family. Table~\ref{tab:suite-pilot} reports representative Tinker rows on this fixed split. The suite-specific SFT checkpoint improved suite accuracy but retained only 53.60\% on the canonical 2x2 task. The selected retention-aware joint checkpoint preserves canonical performance while improving the broader suite.
 
 \begin{table}[t]
 \centering
@@ -74,11 +74,20 @@ Base model & 20.00\% & 0.00\% & 0.00\% & 16.00\% & 36.00\% & 26.00\% & 42.00\% \
 2x2 SFT transfer & 48.33\% & 0.00\% & 32.00\% & 72.00\% & 66.00\% & 54.00\% & 66.00\% \\
 2x2 prompt-adversarial transfer & 51.67\% & 0.00\% & 32.00\% & 70.00\% & 80.00\% & 60.00\% & 68.00\% \\
 Suite SFT & 68.00\% & 78.00\% & 44.00\% & 54.00\% & 76.00\% & 56.00\% & 100.00\% \\
+Selected joint SFT & 91.67\% & 96.00\% & 68.00\% & 86.00\% & 100.00\% & 100.00\% & 100.00\% \\
+Joint base full targeted & 93.00\% & 98.00\% & 78.00\% & 84.00\% & 98.00\% & 100.00\% & 100.00\% \\
 \bottomrule
 \end{tabular}}
-\caption{Broader-suite pilot accuracy by task family. The suite SFT checkpoint was trained on 1200 suite chat examples and scored 53.60\% on the canonical 2x2 pure-equilibrium test, so it is not a replacement for the canonical checkpoint.}
+\caption{Broader-suite accuracy by task family. The selected joint SFT row is the retention-aware checkpoint chosen by the rule in Section~\ref{sec:multitask}; the base-full-targeted row reaches higher suite accuracy but misses the retention gate.}
 \label{tab:suite-pilot}
 \end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/suite_smoke_accuracy.png}
+\caption{Overall broader-suite accuracy for the base model, the suite-only checkpoint, the selected joint checkpoint, and the highest-suite multitask candidate.}
+\label{fig:suite-overall}
+\end{figure}
 
 \section{Data, Leakage Controls, and Scoring}
 
@@ -283,9 +292,82 @@ Prompt variant & Original 5000 SFT & Adversarial SFT & Delta \\
 \label{fig:adversarial}
 \end{figure}
 
+\section{Retention-Aware Multitask Sweep}
+\label{sec:multitask}
+
+The suite-only checkpoint established that the broader suite was learnable, but it also exposed severe canonical forgetting. The final sweep therefore used retention-aware multitask recipes. Two recipes started from the adversarial prompt checkpoint and continued training on suite, canonical-retention, and adversarial examples. Two recipes started from the base model and mixed canonical, adversarial, suite, and targeted suite examples from the beginning. The targeted suite augmentation was train-only and deterministic, using seed 20260512 with extra examples for the weakest suite families.
+
+Selection used a retention gate: first require at least 99.0\% canonical accuracy and at least 95.0\% prompt-robustness accuracy, then maximize broader-suite accuracy. Table~\ref{tab:multitask} shows the four candidate checkpoints. The selected run was \texttt{joint\_adv\_targeted\_retention}: it reached 91.67\% suite accuracy, 99.80\% canonical accuracy, 100.00\% confirmation accuracy, 100.00\% balanced-stress accuracy, and 99.60\% prompt-robustness accuracy. The highest-suite candidate reached 93.00\%, but it missed the retention gate with 97.20\% canonical and 94.40\% robustness accuracy.
+
+\begin{table}[t]
+\centering
+\begin{tabular}{lrrrl}
+\toprule
+Recipe & Canonical & Robustness & Suite & Selection \\
+\midrule
+\texttt{joint\_base\_canon\_adv\_suite} & 99.80\% & 99.60\% & 84.67\% & eligible \\
+\texttt{joint\_adv\_suite\_retention} & 100.00\% & 100.00\% & 89.33\% & eligible \\
+\texttt{joint\_adv\_targeted\_retention} & 99.80\% & 99.60\% & 91.67\% & selected \\
+\texttt{joint\_base\_full\_targeted} & 97.20\% & 94.40\% & 93.00\% & missed gate \\
+\bottomrule
+\end{tabular}
+\caption{Retention-aware multitask sweep. The selected checkpoint maximizes suite accuracy among candidates satisfying the canonical and robustness gates.}
+\label{tab:multitask}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/multitask_pareto.png}
+\caption{Canonical retention versus broader-suite accuracy for the multitask candidates. The selected point satisfies the retention rule; the highest-suite point is not selected because it falls below both retention thresholds.}
+\label{fig:multitask-pareto}
+\end{figure}
+
+The selected recipe was repeated for seeds 42, 1009, and 2027. Seed 42 is the selected checkpoint above. Seeds 1009 and 2027 used seed-specific canonical-retention rows while keeping the fixed public suite split unchanged. Table~\ref{tab:multitask-seeds} reports the result. Suite accuracy averaged 92.56\% with 0.63 percentage-point seed standard deviation; canonical accuracy averaged 99.93\% with 0.09 percentage-point seed standard deviation. The largest per-family seed standard deviations were 3.40 pp for larger normal-form games, 2.49 pp for mixed 2x2 games, and 1.63 pp for dominance.
+
+\begin{table}[t]
+\centering
+\begin{tabular}{lrr}
+\toprule
+Seed & Canonical & Suite \\
+\midrule
+42 & 99.80\% & 91.67\% \\
+1009 & 100.00\% & 93.00\% \\
+2027 & 100.00\% & 93.00\% \\
+\midrule
+Mean & 99.93\% & 92.56\% \\
+Seed SD & 0.09 pp & 0.63 pp \\
+\bottomrule
+\end{tabular}
+\caption{Three-seed repeat of the selected retention-aware recipe.}
+\label{tab:multitask-seeds}
+\end{table}
+
+Two additional base-model comparisons were chosen from the Tinker availability report. The preferred \texttt{Qwen/Qwen3.6-8B} and \texttt{Qwen/Qwen3.6-72B} models were unavailable, so the nearest available Qwen-family models below and above 27B were used. These are base-only comparisons, not fine-tuned models. Under the exact output parsers, both were weak on the canonical and suite tasks.
+
+\begin{table}[t]
+\centering
+\begin{tabular}{lrr}
+\toprule
+Base model & Canonical & Suite \\
+\midrule
+\texttt{Qwen/Qwen3-8B} & 2.60\% & 4.00\% \\
+\texttt{Qwen/Qwen3-30B-A3B} & 3.80\% & 6.33\% \\
+\bottomrule
+\end{tabular}
+\caption{External base-model comparisons selected by model availability.}
+\label{tab:external-models}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.82\linewidth]{figures/external_model_baselines.png}
+\caption{Base-only canonical and suite exact-match accuracy for the availability-selected external model comparisons.}
+\label{fig:external-models}
+\end{figure}
+
 \section{Failure Modes}
 
-Before fine-tuning, the dominant failure mode was false positives on games with no pure equilibrium. The model frequently selected at least one cell even when no cell was a mutual best response. After 5000-example fine-tuning, this failure mode was mostly removed. The remaining canonical and confirmation failures in the best non-adversarial checkpoint are tie-heavy games where the model identifies true equilibria but over-predicts one extra cell.
+Before fine-tuning, the dominant failure mode was false positives on games with no pure equilibrium. The model frequently selected at least one cell even when no cell was a mutual best response. After 5000-example fine-tuning and adversarial prompt fine-tuning, this failure mode was mostly removed. The selected joint checkpoint has one canonical error: a tie-heavy game with three equilibria where the model misses one true equilibrium. On the broader suite, its 25 failures are concentrated in dominance (16), larger normal-form games (7), and mixed 2x2 games (2).
 
 \begin{table}[t]
 \centering
@@ -293,31 +375,31 @@ Before fine-tuning, the dominant failure mode was false positives on games with 
 \toprule
  & $L$ & $R$ \\
 \midrule
-$U$ & $(1,7)$ & $(9,7)$ \\
-$D$ & $(5,1)$ & $(9,3)$ \\
+$U$ & $(7,4)$ & $(4,4)$ \\
+$D$ & $(7,9)$ & $(3,9)$ \\
 \bottomrule
 \end{tabular}
-\caption{Canonical failure example \texttt{example\_005625}. Gold equilibria are $(U,R)$ and $(D,R)$. The original 5000-example checkpoint also predicted $(D,L)$, but at row $D$, Player 2 strictly prefers $R$ to $L$ because $3>1$, so $(D,L)$ is not a mutual best response.}
+\caption{Selected joint-checkpoint canonical failure example \texttt{example\_005555}. Gold equilibria are $(U,L)$, $(U,R)$, and $(D,L)$. The checkpoint predicted only $(U,L)$ and $(U,R)$, missing the tie-induced equilibrium $(D,L)$.}
 \label{tab:failure-example}
 \end{table}
 
-The robustness evaluation exposed a second failure mode: compact or structured payoff presentations can reduce accuracy even when the underlying mathematical task is unchanged. The adversarial prompt supplement substantially reduced this weakness, with the remaining robustness errors concentrated in the JSON-like payoff format.
+The robustness evaluation exposed a second failure mode: compact or structured payoff presentations can reduce accuracy even when the underlying mathematical task is unchanged. The adversarial prompt supplement substantially reduced this weakness, and the selected joint checkpoint retained 99.60\% prompt-robustness accuracy. The broader suite now makes the remaining frontier more specific: dominance and larger normal-form reasoning are the hardest task families for the selected checkpoint.
 
 \section{Code, Data Availability, and Ethics}
 
 The code is available at \repo{} under the MIT License. The repository tracks the canonical generator, solver, scorer, broader suite generator/scorer/baselines, Tinker scripts, public summaries, figures, and this paper source. Generated JSONL data, raw predictions, raw reports, and Tinker run manifests are ignored by default because they are reproducible and can contain private sampler paths. Public summary JSON files, SVG figures, and small sample JSONL files are tracked.
 
-This work uses synthetic payoff matrices and does not involve human subjects or personal data. The main risk is interpretive: the result could be overstated as evidence of broad game-theory ability. The headline model-result claim supports only 2x2 pure-equilibrium identification under the tested Tinker setup. The broader-suite pilot is diagnostic and shows that suite adaptation can come with substantial canonical forgetting. Reproduction also depends on access to the same or comparable Tinker model, renderer, and pricing environment.
+This work uses synthetic payoff matrices and does not involve human subjects or personal data. The main risk is interpretive: the result could be overstated as evidence of broad game-theory ability. The headline model-result claim supports 2x2 pure-equilibrium identification under the tested Tinker setup, plus a bounded broader-suite result for the selected retention-aware checkpoint. Reproduction also depends on access to the same or comparable Tinker model, renderer, and pricing environment.
 
 \section{Limitations}
 
-The reported GT-Bench experiment is not a general game-theory evaluation. It uses synthetic data, only 2x2 games, only integer payoffs, and only pure-strategy equilibria. The repository's broader suite adds exact artifact coverage for mixed strategies, dominance, larger normal-form games, sequential reasoning, natural-language descriptions, and repeated interaction, and the first suite-specific Tinker run improves that suite. However, its weak canonical retention shows that this is not yet a unified game-theory capability result. The result also does not prove that the model acquired a human-like concept of Nash equilibrium.
+The reported GT-Bench experiment is not a general game-theory evaluation. It uses synthetic data and exact answer formats, and the canonical result is still only 2x2 pure-strategy equilibrium identification with integer payoffs. The broader suite adds exact artifact coverage for mixed strategies, dominance, larger normal-form games, sequential reasoning, natural-language descriptions, and repeated interaction, and the selected joint checkpoint performs strongly on that suite. However, the suite still omits many economically important settings, including auctions, bargaining, public goods, mechanism design, signaling games, Bayesian games, stochastic games, and open-ended strategic interaction. The result also does not prove that the model acquired a human-like concept of Nash equilibrium.
 
 The benchmark is useful precisely because it is constrained. The rule is exact, the data is reproducible, and failures can be inspected mechanically. The appropriate claim is narrow: targeted fine-tuning can improve this specific formal reasoning behavior under the tested conditions.
 
 \section{Conclusion}
 
-GT-Bench demonstrates that a compact, reproducible Tinker fine-tuning artifact can produce measurable gains on a fully verifiable formal reasoning task. The strongest non-adversarial checkpoint improved canonical accuracy from 87.60\% to 99.60\%, the three-seed sweep showed that the 5000-example condition was stable, and an adversarial prompt supplement improved robustness from 88.40\% to 98.80\% relative to the original 5000-example checkpoint. The conclusion is deliberately narrow but useful: targeted fine-tuning can improve a specific formal skill, and targeted data can close prompt-format robustness gaps for that same skill. The broader-suite pilot makes the next evaluation layer concrete, while its poor canonical retention shows why broader claims require a multitask or retention-aware follow-up.
+GT-Bench demonstrates that a compact, reproducible Tinker fine-tuning artifact can produce measurable gains on fully verifiable formal reasoning tasks. The strongest non-adversarial checkpoint improved canonical accuracy from 87.60\% to 99.60\%, the three-seed sweep showed that the 5000-example condition was stable, and an adversarial prompt supplement improved robustness from 88.40\% to 98.80\% relative to the original 5000-example checkpoint. The retention-aware multitask sweep then produced a selected checkpoint with 91.67\% broader-suite accuracy while preserving 99.80\% canonical accuracy. The conclusion is deliberately bounded: targeted fine-tuning can improve a specific formal skill, targeted data can close prompt-format gaps, and retention-aware multitask data can broaden coverage without erasing the original skill under this tested setup.
 
 \appendix
 
@@ -345,6 +427,9 @@ python3 -m venv .venv
   --train data/suite/train.jsonl --pred-dir predictions/suite_baselines \
   --out-json reports/suite_results.json --out-md reports/suite_results.md \
   --figure reports/figures/suite_smoke_accuracy.svg
+.venv/bin/python make_multitask_training.py
+.venv/bin/python select_tinker_models.py
+.venv/bin/python summarize_multitask_results.py
 make check
 \end{verbatim}
 
@@ -361,7 +446,7 @@ The canonical test hash is:
 a9af74346a7b67cc13952fc858570dee6d03e4248b04e830c42f8c1bb935d219
 \end{verbatim}
 
-The Tinker environment used package versions \texttt{tinker==0.18.2} and \texttt{tinker-cookbook==0.3.0}. The model was \modelname{}, the renderer was \texttt{qwen3\_disable\_thinking}, and the main LoRA settings were rank 16, 3 epochs, effective batch size 32, learning rate $10^{-4}$, temperature 0, and one sample per example.
+The Tinker environment used package versions \texttt{tinker==0.18.2} and \texttt{tinker-cookbook==0.3.0}. The model was \modelname{}, the renderer was \texttt{qwen3\_disable\_thinking}, and the main LoRA settings were rank 16, 3 epochs, effective batch size 32, learning rate $10^{-4}$, temperature 0, and one sample per example. Retention-aware continuation runs use the manifest \texttt{state\_path} with \texttt{run\_tinker\_sft.py --load-state-path}; long runs can be chunked with \texttt{--start-step} and \texttt{--max-steps} without changing the deterministic training file.
 
 \section{Scoring Details}
 

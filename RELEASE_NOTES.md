@@ -5,10 +5,13 @@
 - Adds a broader exactly scored GT-Bench suite with `mixed_2x2`, `dominance`, `large_normal_form`, `extensive_form`, `natural_language`, and `repeated_interaction` task families.
 - Adds split generation, v1 suite schema metadata, difficulty buckets, `generate_benchmark_suite.py`, `score_suite.py`, `run_suite_baselines.py`, suite solver tests, and small tracked suite samples under `examples/`.
 - Adds local deterministic suite smoke baselines, completed Tinker suite model rows, canonical-retention reporting, and `reports/figures/suite_smoke_accuracy.svg`.
-- Documents that the suite SFT checkpoint improves broader-suite accuracy to 68.00% but has poor canonical 2x2 retention at 53.60%, keeping the headline claim narrow.
-- Expands `paper/gt_bench_paper.tex` into an arXiv-ready draft focused on 2x2 pure-equilibrium reasoning.
+- Adds retention-aware multitask training data builders, Tinker continuation support, model-availability reporting, multitask result aggregation, failure diagnostics, and public summaries under `reports/multitask_results.*`.
+- Selects `joint_adv_targeted_retention` by the retention rule: 91.67% suite, 99.80% canonical, and 99.60% robustness.
+- Adds a three-seed selected-recipe repeat: 92.56% mean suite accuracy with 0.63 pp seed SD, and 99.93% mean canonical accuracy with 0.09 pp seed SD.
+- Adds external base-model comparisons for `Qwen/Qwen3-8B` and `Qwen/Qwen3-30B-A3B` selected from Tinker model availability.
+- Expands `paper/gt_bench_paper.tex` into an arXiv-ready draft covering canonical, adversarial, broader-suite, and retention-aware multitask results.
 - Adds related work, leakage controls, simple baselines, training-time notes, parser details, a concrete failure example, exact adversarial supplement mix, reproducibility appendix, and code/data/ethics notes.
-- Adds arXiv-safe PNG paper figures under `paper/figures/`.
+- Adds arXiv-safe PNG paper figures under `paper/figures/`, including broader-suite, Pareto, and external-base figures.
 - Documents the paper build and source-zip workflow while keeping generated paper outputs ignored under `paper/build/`.
 
 ## v0.3-repeated-seed-learning-curve
