@@ -72,14 +72,37 @@ The key result is that 5000-example SFT is stable across seeds: 99.60%, 99.20%, 
 
 The public repeated-seed summary is `reports/seed_sweep_results.md`.
 
+## Broader Suite And Multitask Result
+
+The broader suite is a separate exactly scored evaluation layer with six task families: mixed 2x2 equilibria, dominance, larger normal-form games, extensive form, natural-language descriptions, and repeated interaction. On the 300-example public suite test split:
+
+| Run | Accuracy | Correct | Incorrect |
+| --- | ---: | ---: | ---: |
+| base `Qwen/Qwen3.6-27B` | 20.00% | 60 | 240 |
+| 2x2 SFT transfer | 48.33% | 145 | 155 |
+| 2x2 + prompt-adversarial SFT transfer | 51.67% | 155 | 145 |
+| suite SFT | 68.00% | 204 | 96 |
+| joint base canonical+adv+suite | 84.67% | 254 | 46 |
+| joint adv-state suite+retention | 89.33% | 268 | 32 |
+| selected joint adv-state targeted+retention | 91.67% | 275 | 25 |
+| joint base full targeted | 93.00% | 279 | 21 |
+
+The suite-specific checkpoint was trained on 1200 suite chat examples. It improved the broader suite substantially, but it did not preserve the canonical task: on the canonical 500-example 2x2 pure-equilibrium test set, it scored 53.60%.
+
+The retention-aware multitask sweep fixed that weak point. The selected checkpoint is `joint_adv_targeted_retention`, chosen by requiring canonical accuracy at least 99.0% and robustness at least 95.0%, then maximizing suite accuracy. It scored 99.80% canonical, 100.00% confirmation, 100.00% stress, 99.60% robustness, and 91.67% suite. A base-start targeted candidate reached 93.00% suite accuracy, but it was not selected because it fell to 97.20% canonical and 94.40% robustness.
+
+Across seeds `42`, `1009`, and `2027`, the selected recipe averaged 92.56% suite accuracy with 0.63 pp seed SD and 99.93% canonical accuracy with 0.09 pp seed SD.
+
+The public suite summary is `reports/suite_results.md`; the selected-checkpoint rationale and seed statistics are in `reports/multitask_results.md`.
+
 ## Interpretation
 
-The strongest improvement is on zero-equilibrium cases. On the canonical split, the baseline solved only 9 of 45 zero-equilibrium games after parser correction, while the 1000-example and 5000-example fine-tunes solved all 45.
+The strongest improvement is on zero-equilibrium cases. On the canonical split, the baseline solved only 9 of 45 zero-equilibrium games under the exact prediction parser, while the 1000-example and 5000-example fine-tunes solved all 45.
 
-The canonical and confirmation failures in the best run are tie-heavy cases where the model over-predicts an extra equilibrium. The balanced stress result suggests that this residual weakness is rare, but still worth tracking because it is exactly the kind of edge case a narrow formal benchmark can expose. The robustness result adds one more useful finding: prompt format matters, so targeted data should include compact and structured payoff presentations. The repeated-seed result adds a second caveat: 1000 examples can be enough, but that regime is seed-sensitive; 5000 examples is the stable setting in this experiment.
+The canonical and confirmation failures in the best canonical-only run are tie-heavy cases where the model over-predicts an extra equilibrium. The selected joint checkpoint has one canonical false-negative in a tie-heavy three-equilibrium game. On the broader suite, its remaining failures are concentrated in dominance, larger normal-form games, and mixed 2x2 games. The robustness result adds one more useful finding: prompt format matters, so targeted data should include compact and structured payoff presentations. The repeated-seed result adds a second caveat: 1000 examples can be enough, but that regime is seed-sensitive; 5000 examples is the stable setting in this experiment.
 
 ## What This Does And Does Not Show
 
-This shows that targeted Tinker SFT can measurably improve a model on a narrow, fully verifiable formal reasoning task.
+This shows that targeted Tinker SFT can measurably improve a model on a narrow, fully verifiable formal reasoning task, and that retention-aware multitask SFT can extend coverage to a broader exact suite without erasing the original skill.
 
-It does not show broad game-theory competence. The benchmark covers only 2x2 normal-form games, pure equilibria, integer payoffs, and synthetic prompts.
+It does not show broad game-theory competence. The headline canonical results cover only 2x2 normal-form games, pure equilibria, integer payoffs, and synthetic prompts. The broader suite covers more families, but it is still synthetic, exact-format, and incomplete relative to full game theory.

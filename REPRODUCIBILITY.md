@@ -98,6 +98,134 @@ ffc6c26df85c78df702d4eef910b835025a5b2a8344a9ef1d14e1ab7e78405e8  data/robust/ro
 69fd257b7cda77dac18de86fce775b401283d4e676c33d35a458e7b991ce6906  data/robust/robust_seed271828_chat.jsonl
 ```
 
+## Broader Suite Data
+
+The headline Qwen3.6-27B fine-tuning result is still the canonical 2x2 pure-equilibrium experiment. The repository also includes a broader suite with exact solvers, task-family scoring, local smoke baselines, completed Tinker model rows for the public split, retention-aware multitask summaries, and external base-model comparisons.
+
+Generate one suite file:
+
+```bash
+.venv/bin/python generate_benchmark_suite.py \
+  --per-family 50 \
+  --seed 20260511 \
+  --out data/suite/gt_bench_suite.jsonl \
+  --chat-out data/suite/gt_bench_suite_chat.jsonl
+```
+
+This creates 300 examples: 50 each for `mixed_2x2`, `dominance`, `large_normal_form`, `extensive_form`, `natural_language`, and `repeated_interaction`.
+
+Generate the public train/validation/test suite splits:
+
+```bash
+.venv/bin/python generate_benchmark_suite.py \
+  --train-per-family 200 \
+  --val-per-family 10 \
+  --test-per-family 50 \
+  --seed 20260511 \
+  --out-dir data/suite
+```
+
+This creates 1200 train examples, 60 validation examples, and 300 test examples.
+
+Suite split hashes:
+
+```text
+6b59d21ee17ab33eed9f0c14cb266953fbeb7dea65e48a1baae116bd63166067  data/suite/train.jsonl
+e87e71a870e90fc6b7f6ec74c38a49d14614a33243e01eb3f621dfc60f6e3628  data/suite/val.jsonl
+653aa5e1fd7bbcb2ff57e98c04cfc745a602f274c86dc8284bf875e650d1deee  data/suite/test.jsonl
+```
+
+Score suite predictions with:
+
+```bash
+.venv/bin/python score_suite.py \
+  --gold data/suite/test.jsonl \
+  --pred predictions/suite_predictions.jsonl \
+  --out reports/suite_report.json
+```
+
+Generated suite JSONL files and raw suite reports are ignored by git. The tracked sample files are `examples/sample_suite.jsonl` and `examples/sample_suite_chat.jsonl`.
+
+Regenerate local suite smoke baselines and the public summary:
+
+```bash
+.venv/bin/python run_suite_baselines.py \
+  --gold data/suite/test.jsonl \
+  --train data/suite/train.jsonl \
+  --pred-dir predictions/suite_baselines \
+  --out-json reports/suite_results.json \
+  --out-md reports/suite_results.md \
+  --figure reports/figures/suite_smoke_accuracy.svg
+```
+
+The public suite summary includes the completed model rows for the exact public suite hash above. If raw suite report files are absent, `run_suite_baselines.py` preserves the tracked model rows instead of requiring a Tinker key for local artifact checks.
+
+Generate deterministic multitask training files and the public data manifest:
+
+```bash
+.venv/bin/python make_multitask_training.py
+```
+
+The public manifest records the four candidate recipes, two deterministic follow-up recipes, seed-specific canonical-retention inputs, train-only targeted suite augmentation, source counts, and SHA-256 hashes. The public suite test hash above remains unchanged.
+
+The suite-specific SFT run used the generated suite chat split:
+
+```bash
+.venv/bin/python run_tinker_sft.py \
+  --config bench_config.json \
+  --train-chat data/suite/train_chat.jsonl \
+  --val-chat data/suite/val_chat.jsonl \
+  --run-name qwen36_27b_suite_sft_1200 \
+  --out-manifest runs/qwen36_27b_suite_sft_1200.json
+```
+
+Evaluate suite checkpoints with `run_tinker_predict.py` and score with `score_suite.py`. For fine-tuned checkpoints, pass the `sampler_path` recorded in the relevant manifest as `--model-path`:
+
+```bash
+.venv/bin/python run_tinker_predict.py \
+  --config bench_config.json \
+  --gold data/suite/test.jsonl \
+  --out predictions/suite_base_qwen36_27b.jsonl \
+  --max-tokens 512 \
+  --concurrency 16
+
+.venv/bin/python score_suite.py \
+  --gold data/suite/test.jsonl \
+  --pred predictions/suite_base_qwen36_27b.jsonl \
+  --out reports/suite_base_qwen36_27b_report.json
+```
+
+Canonical retention for suite and joint checkpoints is scored with `score_predictions.py` on `data/test.jsonl`. Prompt robustness retention is scored with `score_robustness.py` on `data/robust/robust_seed271828.jsonl`.
+
+The public suite and multitask results on `data/suite/test.jsonl` are:
+
+| Run | Accuracy | Correct | Incorrect |
+| --- | ---: | ---: | ---: |
+| base `Qwen/Qwen3.6-27B` | 20.00% | 60 | 240 |
+| 2x2 SFT transfer | 48.33% | 145 | 155 |
+| 2x2 + prompt-adversarial SFT transfer | 51.67% | 155 | 145 |
+| suite SFT | 68.00% | 204 | 96 |
+| joint base canonical+adv+suite | 84.67% | 254 | 46 |
+| joint adv-state suite+retention | 89.33% | 268 | 32 |
+| selected joint adv-state targeted+retention | 91.67% | 275 | 25 |
+| joint base full targeted | 93.00% | 279 | 21 |
+
+The selected checkpoint is `joint_adv_targeted_retention`, chosen by requiring at least 99.0% canonical accuracy and 95.0% prompt-robustness accuracy before maximizing suite accuracy. It scored 99.80% canonical, 100.00% confirmation, 100.00% stress, 99.60% robustness, and 91.67% suite. The three-seed selected-recipe repeat averaged 92.56% suite accuracy and 99.93% canonical accuracy.
+
+Regenerate the public multitask summary and figures with:
+
+```bash
+.venv/bin/python summarize_multitask_results.py
+```
+
+`reports/multitask_results.md` includes the coverage matrix for the predefined experiment surface: candidate recipes x required evaluations, selected seeds x canonical/suite evaluations, external base models x canonical/suite evaluations, and the conditional follow-up status.
+
+Record model availability and deterministic external comparison choices with:
+
+```bash
+.venv/bin/python select_tinker_models.py
+```
+
 ## Adversarial Prompt Data
 
 Generate the adversarial prompt supplement:
@@ -115,6 +243,18 @@ data/adversarial/train_5500_prompt_adv500_chat.jsonl
 ```
 
 The supplement avoids matrices already present in `data/train.jsonl`, emphasizes `compact_pairs` and `json_payoffs`, and balances every prompt variant across 0, 1, 2, 3, and 4 equilibria.
+
+Default supplement mix:
+
+| Prompt variant | Examples | Examples per equilibrium-count bucket |
+| --- | ---: | ---: |
+| `compact_pairs` | 150 | 30 |
+| `json_payoffs` | 150 | 30 |
+| `standard_table` | 100 | 20 |
+| `minimal_matrix` | 50 | 10 |
+| `answer_only` | 50 | 10 |
+
+The paper draft records a matrix-overlap audit across public splits. The canonical train/validation/test files are jointly de-duplicated by construction. The adversarial supplement excludes canonical training matrices; one supplement matrix overlaps the balanced stress set, so the adversarial robustness set is the primary adversarial follow-up evidence.
 
 ## Training
 
@@ -152,6 +292,19 @@ Run the adversarial follow-up SFT:
   --train-chat data/adversarial/train_5500_prompt_adv500_chat.jsonl \
   --run-name qwen36_27b_sft_5000_plus_prompt_adv500 \
   --out-manifest runs/qwen36_27b_sft_5000_plus_prompt_adv500.json
+```
+
+Run retention-aware continuation from that adversarial checkpoint with the manifest `state_path`, not the sampler path. Long multitask runs can be chunked deterministically with `--start-step` and `--max-steps`:
+
+```bash
+.venv/bin/python run_tinker_sft.py \
+  --config bench_config.json \
+  --train-chat data/multitask/seed_42/joint_adv_targeted_retention_chat.jsonl \
+  --load-state-path "tinker://.../weights/qwen36_27b_sft_5000_plus_prompt_adv500-state" \
+  --seed 42 \
+  --run-name qwen36_27b_joint_adv_targeted_retention_part1 \
+  --out-manifest runs/qwen36_27b_joint_adv_targeted_retention_part1.json \
+  --max-steps 250
 ```
 
 ## Repeated-Seed Sweep
@@ -255,8 +408,11 @@ Generate the public figures:
 .venv/bin/python plot_results.py \
   --summary reports/gt_bench_results.json \
   --robustness reports/robustness_results.json \
+  --adversarial reports/adversarial_results.json \
   --seed-sweep reports/seed_sweep_results.json \
   --out-dir reports/figures
+
+.venv/bin/python summarize_multitask_results.py
 ```
 
 Run and summarize the robustness evaluation with:
@@ -305,3 +461,25 @@ After scoring the adversarial checkpoint on the canonical, confirmation, stress,
   --seed-sweep reports/seed_sweep_results.json \
   --out-dir reports/figures
 ```
+
+## Paper Build
+
+The arXiv-ready paper source is `paper/gt_bench_paper.tex`. It uses PNG figures under `paper/figures/` and an inline bibliography, so no BibTeX step is required.
+
+Compile with Tectonic from the repository root:
+
+```bash
+mkdir -p paper/build
+/path/to/tectonic --outdir paper/build paper/gt_bench_paper.tex
+```
+
+Create a minimal source archive from the paper directory:
+
+```bash
+cd paper
+rm -f build/gt_bench_arxiv_source.zip
+zip -j build/gt_bench_arxiv_source.zip gt_bench_paper.tex
+zip -r build/gt_bench_arxiv_source.zip figures
+```
+
+`paper/build/` is ignored by git. Commit the paper source and `paper/figures/*.png`, not generated PDFs or zip files.

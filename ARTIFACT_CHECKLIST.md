@@ -7,6 +7,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 - Run `.venv/bin/python -m pytest -q`.
 - Run `.venv/bin/python check_no_secrets.py`.
 - Run `make public-artifacts` or the individual summary scripts plus `.venv/bin/python plot_results.py`.
+- Compile `paper/gt_bench_paper.tex` and, if preparing arXiv, test the source zip from a clean temporary directory.
 - Run `git diff --check`.
 - Confirm `git status -sb` contains only intended tracked changes.
 
@@ -50,6 +51,33 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 .venv/bin/python make_repeated_seed_splits.py --seed 1009 --seed 2027
 ```
 
+- Regenerate the broader suite and local suite baselines when changing suite generation/scoring:
+
+```bash
+.venv/bin/python generate_benchmark_suite.py \
+  --train-per-family 200 \
+  --val-per-family 10 \
+  --test-per-family 50 \
+  --seed 20260511 \
+  --out-dir data/suite
+
+.venv/bin/python run_suite_baselines.py \
+  --gold data/suite/test.jsonl \
+  --train data/suite/train.jsonl \
+  --pred-dir predictions/suite_baselines \
+  --out-json reports/suite_results.json \
+  --out-md reports/suite_results.md \
+  --figure reports/figures/suite_smoke_accuracy.svg
+```
+
+- Regenerate multitask training manifests and model-availability reports when changing retention-aware recipes or external comparison logic:
+
+```bash
+.venv/bin/python make_multitask_training.py
+.venv/bin/python select_tinker_models.py
+.venv/bin/python summarize_multitask_results.py
+```
+
 - Regenerate the public summary after scoring:
 
 ```bash
@@ -91,9 +119,12 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
   --out-dir reports/figures
 ```
 
+- Regenerate paper PNGs from updated public figures or chart data before compiling `paper/gt_bench_paper.tex`.
+
 ## Public-Release Safety
 
 - Do not commit `.env`, `predictions/`, `runs/`, raw scorer reports, or generated JSONL data.
+- Do not commit `paper/build/`, generated PDFs, or arXiv zip files.
 - Do not commit private Tinker sampler paths in public prose.
 - Confirm no tracked file contains Tinker secret markers:
 
@@ -105,5 +136,8 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 
 - Confirm `README.md` links to `TECHNICAL_REPORT.md`, `RESULTS.md`, `REPRODUCIBILITY.md`, `FAILURE_ANALYSIS.md`, `ROBUSTNESS.md`, and `paper/gt_bench_paper.tex`.
 - Confirm `reports/adversarial_results.md` accurately says whether the adversarial run is pending or complete.
+- Confirm `reports/suite_results.md` accurately reports completed broader-suite model rows and canonical-retention status for the exact public suite hash.
+- Confirm `reports/multitask_results.md` accurately reports selected-checkpoint rationale, experiment coverage matrix, three-seed statistics, external base comparisons, and failure diagnostics.
 - Confirm `reports/figures/*.svg` renders on GitHub.
-- Confirm the headline claim remains narrow: targeted fine-tuning improves one fully verifiable 2x2 pure-equilibrium task.
+- Confirm `paper/figures/*.png` match the current public SVG figures before rebuilding the paper.
+- Confirm the headline claim remains bounded: targeted fine-tuning improves the canonical 2x2 pure-equilibrium task, and the selected retention-aware multitask checkpoint broadens exact suite coverage without claiming general game-theory competence.

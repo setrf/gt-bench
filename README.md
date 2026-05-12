@@ -1,12 +1,15 @@
-# GT-Bench: A Minimal Game-Theory Fine-Tuning Benchmark
+# GT-Bench: Verifiable Game-Theory Reasoning Tasks
 
 ## Project overview
 
-GT-Bench is a minimal Tinker fine-tuning benchmark for strategic reasoning. It generates small, fully verifiable 2x2 normal-form games and asks a model to find all pure-strategy Nash equilibria with a brief explanation.
+GT-Bench is a compact Tinker fine-tuning benchmark for strategic reasoning. The reported experiment uses a narrow, fully verifiable 2x2 normal-form task and asks a model to find all pure-strategy Nash equilibria with a brief explanation.
 
-The repository is intentionally compact: one task, one exact solver, one dataset generator, one scorer, and focused tests.
+The repository now has two layers:
 
-For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`. The repeated-seed learning curve is tracked in `reports/seed_sweep_results.md`. A paper-style writeup is available at `paper/gt_bench_paper.tex`.
+- `generate_dataset.py` and `score_predictions.py`: the canonical 2x2 pure-equilibrium experiment used for the published Qwen3.6-27B result.
+- `generate_benchmark_suite.py` and `score_suite.py`: the broader suite covering mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form games, natural-language game descriptions, and repeated interaction.
+
+For the consolidated research narrative, see `TECHNICAL_REPORT.md`. The adversarial robustness follow-up is tracked in `ROBUSTNESS.md` and `reports/adversarial_results.md`. The repeated-seed learning curve is tracked in `reports/seed_sweep_results.md`. The broader-suite and retention-aware multitask results are tracked in `reports/suite_results.md` and `reports/multitask_results.md`. An arXiv-ready paper draft is available at `paper/gt_bench_paper.tex`.
 
 ## My context
 
@@ -14,7 +17,18 @@ This project is by Mert Gulsun, a UC Berkeley master's student and Thinking Mach
 
 The goal is to demonstrate measurable improvement from targeted fine-tuning on formal game-theory reasoning using a 12-month, $5,000 Tinker research credit allocation.
 
-## Task
+## Paper draft
+
+The paper source is intentionally arXiv-friendly: one LaTeX file, PNG figures under `paper/figures/`, and an inline bibliography. Build it with the bundled Tectonic engine or any LaTeX distribution that supports the packages in the source.
+
+```bash
+mkdir -p paper/build
+/path/to/tectonic --outdir paper/build paper/gt_bench_paper.tex
+```
+
+The local build output and arXiv source zip live under `paper/build/`, which is ignored by git.
+
+## Canonical task
 
 Each example is a 2x2 two-player normal-form payoff matrix.
 
@@ -24,7 +38,18 @@ Each example is a 2x2 two-player normal-form payoff matrix.
 
 The model must find all pure-strategy Nash equilibria. A profile is a pure Nash equilibrium when both players are best responding at that cell. Ties are handled exactly, so a game may have zero, one, two, three, or four pure equilibria.
 
-This benchmark does not include mixed strategies, dominance, welfare analysis, sequential games, auctions, public goods, Nim, or story problems.
+The headline Qwen3.6-27B result is the canonical task. The repo also includes a selected retention-aware joint checkpoint for the broader suite, reported separately from the canonical-only claim.
+
+## Broader suite
+
+The broader suite is deterministic and exactly scored. It has local smoke baselines, an oracle check, a suite-only Tinker checkpoint, a retention-aware multitask sweep, a three-seed repeat of the selected joint recipe, and two base-model availability comparisons. It adds six task families:
+
+- `mixed_2x2`: fully mixed equilibria for 2x2 games with no pure equilibrium.
+- `dominance`: iterated elimination of strictly dominated pure strategies.
+- `large_normal_form`: pure equilibria in 2x3 and 3x3 normal-form games.
+- `extensive_form`: backward induction in perfect-information sequential games.
+- `natural_language`: story descriptions that must be mapped to payoff/action structure.
+- `repeated_interaction`: finite repeated prisoner's-dilemma simulations and best-response selection among fixed policies.
 
 ## Why this is useful
 
@@ -57,6 +82,37 @@ This writes:
 - `data/test_chat.jsonl`
 
 Small sample files are included in `examples/`.
+
+Generate one broader-suite file:
+
+```bash
+.venv/bin/python generate_benchmark_suite.py \
+  --per-family 50 \
+  --seed 20260511 \
+  --out data/suite/gt_bench_suite.jsonl \
+  --chat-out data/suite/gt_bench_suite_chat.jsonl
+```
+
+Small suite samples are included in `examples/sample_suite.jsonl` and `examples/sample_suite_chat.jsonl`.
+
+Generate train/validation/test broader-suite splits:
+
+```bash
+.venv/bin/python generate_benchmark_suite.py \
+  --train-per-family 200 \
+  --val-per-family 10 \
+  --test-per-family 50 \
+  --seed 20260511 \
+  --out-dir data/suite
+```
+
+This writes 1200 train, 60 validation, and 300 test examples under `data/suite/`.
+
+Generate deterministic retention-aware multitask training files and the public manifest:
+
+```bash
+.venv/bin/python make_multitask_training.py
+```
 
 Generate a balanced stress set with equal numbers of 0-, 1-, 2-, 3-, and 4-equilibrium games:
 
@@ -172,6 +228,37 @@ Run the fine-tuned model on the same `data/test.jsonl`, save predictions to `pre
 
 Compare exact-match accuracy between `reports/baseline_report.json` and `reports/finetuned_report.json`.
 
+Score broader-suite predictions with:
+
+```bash
+.venv/bin/python score_suite.py \
+  --gold data/suite/test.jsonl \
+  --pred predictions/suite_predictions.jsonl \
+  --out reports/suite_report.json
+```
+
+The suite scorer reports exact-match accuracy overall and by task family.
+
+Run deterministic local suite baselines and regenerate the public suite summary:
+
+```bash
+.venv/bin/python run_suite_baselines.py \
+  --gold data/suite/test.jsonl \
+  --train data/suite/train.jsonl \
+  --pred-dir predictions/suite_baselines \
+  --out-json reports/suite_results.json \
+  --out-md reports/suite_results.md \
+  --figure reports/figures/suite_smoke_accuracy.svg
+```
+
+The public suite summary includes deterministic baselines plus completed Tinker model rows when the matching raw reports are present. It preserves the published model rows for this exact public suite split so `make check` does not require a Tinker key.
+
+Regenerate the multitask summary after scoring joint checkpoints:
+
+```bash
+.venv/bin/python summarize_multitask_results.py
+```
+
 For the Qwen3.6-27B sweep, score each prediction file:
 
 ```bash
@@ -228,7 +315,7 @@ Generate static SVG figures from the public summary:
 
 ## Expected result
 
-The expected demonstration is an increase in exact-match accuracy on held-out 2x2 Nash equilibrium problems after fine-tuning.
+The demonstrated headline result is the canonical 2x2 pure-equilibrium improvement after fine-tuning. The broader suite is evaluated separately. Base `Qwen/Qwen3.6-27B` scored 20.00%, the suite-only SFT checkpoint reached 68.00% but retained only 53.60% canonical accuracy, and the selected retention-aware joint checkpoint reached 91.67% suite accuracy while retaining 99.80% canonical accuracy and 99.60% prompt-robustness accuracy. Across seeds 42, 1009, and 2027, the selected recipe averaged 92.56% suite accuracy and 99.93% canonical accuracy.
 
 ## Current Qwen3.6-27B result
 
@@ -250,6 +337,8 @@ The full report is in `reports/gt_bench_results.md`. For the research narrative 
 On a 250-example prompt-robustness set, the same checkpoint improved from 64.00% baseline accuracy to 88.40%. See `ROBUSTNESS.md` for the prompt-variant breakdown.
 
 Across a three-seed repeated training-data sweep on the fixed canonical test set, the 5000-example SFT condition was stable: 99.60% mean accuracy with 0.40 percentage-point seed SD. The 1000-example condition was volatile, with one seed dropping to 70.20%, while the 250-example condition consistently underperformed baseline. See `reports/seed_sweep_results.md`.
+
+The broader-suite and multitask results are tracked in `reports/suite_results.md` and `reports/multitask_results.md`. The latter includes the explicit experiment coverage matrix: four candidate recipes across five evaluations, three selected-recipe seeds across canonical and suite evaluations, two external base models across canonical and suite evaluations, and the documented reason conditional follow-up SFT was not required. The selected checkpoint is `joint_adv_targeted_retention`: it is the best suite performer among candidates that meet the canonical and prompt-robustness retention gates. `joint_base_full_targeted` reached 93.00% suite accuracy but was not selected because it fell to 97.20% canonical accuracy and 94.40% robustness.
 
 ## Adversarial robustness follow-up
 
@@ -303,13 +392,19 @@ The public repeated-seed summary is `reports/seed_sweep_results.md`, with machin
 
 ![Adversarial SFT comparison](reports/figures/adversarial_comparison.svg)
 
+![Broader suite accuracy](reports/figures/suite_smoke_accuracy.svg)
+
+![Retention vs suite accuracy](reports/figures/multitask_pareto.svg)
+
+![External base-model baselines](reports/figures/external_model_baselines.svg)
+
 ![Repeated-seed learning curve](reports/figures/seed_sweep_learning_curve.svg)
 
 ## Limitations
 
-GT-Bench is deliberately narrow. It uses synthetic data, covers pure equilibria only, and does not prove broad game-theory reasoning improvement.
+GT-Bench is deliberately bounded. The canonical task uses synthetic 2x2 games and pure equilibria only. The broader suite adds mixed equilibria, dominance, larger normal-form games, extensive form, natural-language descriptions, and repeated interaction, but it still uses exact synthetic tasks and fixed answer formats.
 
-It is best understood as a controlled fine-tuning benchmark for one formal reasoning task, not as a general game-theory benchmark.
+It is best understood as a controlled fine-tuning benchmark with a broader exact diagnostic suite, not as evidence of general game-theory competence.
 
 ## Testing
 
