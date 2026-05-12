@@ -3723,5 +3723,105 @@
         }
       }
     }
+  },
+  "experiment_coverage": {
+    "candidate_sweep": {
+      "expected_runs": [
+        "joint_base_canon_adv_suite",
+        "joint_adv_suite_retention",
+        "joint_adv_targeted_retention",
+        "joint_base_full_targeted"
+      ],
+      "expected_evaluations": [
+        "canonical",
+        "confirmation",
+        "stress",
+        "robustness",
+        "suite"
+      ],
+      "matrix": {
+        "joint_base_canon_adv_suite": {
+          "canonical": true,
+          "confirmation": true,
+          "stress": true,
+          "robustness": true,
+          "suite": true
+        },
+        "joint_adv_suite_retention": {
+          "canonical": true,
+          "confirmation": true,
+          "stress": true,
+          "robustness": true,
+          "suite": true
+        },
+        "joint_adv_targeted_retention": {
+          "canonical": true,
+          "confirmation": true,
+          "stress": true,
+          "robustness": true,
+          "suite": true
+        },
+        "joint_base_full_targeted": {
+          "canonical": true,
+          "confirmation": true,
+          "stress": true,
+          "robustness": true,
+          "suite": true
+        }
+      },
+      "status": "complete"
+    },
+    "selected_recipe_seeds": {
+      "expected_seeds": [
+        42,
+        1009,
+        2027
+      ],
+      "expected_evaluations": [
+        "canonical",
+        "suite"
+      ],
+      "matrix": {
+        "42": {
+          "canonical": true,
+          "suite": true
+        },
+        "1009": {
+          "canonical": true,
+          "suite": true
+        },
+        "2027": {
+          "canonical": true,
+          "suite": true
+        }
+      },
+      "status": "complete"
+    },
+    "external_base_models": {
+      "expected_models": [
+        "Qwen/Qwen3-8B",
+        "Qwen/Qwen3-30B-A3B"
+      ],
+      "expected_evaluations": [
+        "canonical",
+        "suite"
+      ],
+      "matrix": {
+        "Qwen/Qwen3-8B": {
+          "canonical": true,
+          "suite": true
+        },
+        "Qwen/Qwen3-30B-A3B": {
+          "canonical": true,
+          "suite": true
+        }
+      },
+      "status": "complete"
+    },
+    "conditional_followup": {
+      "status": "not_required",
+      "note": "selected checkpoint already clears canonical>=99.0%, robustness>=95.0%, and suite>=68.0%"
+    },
+    "scope_boundary": "complete for the predefined recipe/evaluation matrix; not an exhaustive hyperparameter or all-game-theory benchmark search"
   }
 }

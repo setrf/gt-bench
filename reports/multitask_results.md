@@ -13,6 +13,25 @@ Selected checkpoint: `joint_adv_targeted_retention` (91.67% suite, 99.80% canoni
 | `joint_adv_targeted_retention_seed1009` | 100.00% | n/a | 93.00% |
 | `joint_adv_targeted_retention_seed2027` | 100.00% | n/a | 93.00% |
 
+## Experiment Coverage
+
+| Surface | Expected | Status | Notes |
+| --- | --- | --- | --- |
+| Candidate sweep | 4 recipes x 5 evaluations | complete | canonical, confirmation, stress, robustness, suite |
+| Selected-recipe seeds | 3 seeds x 2 evaluations | complete | canonical and suite for seeds 42, 1009, 2027 |
+| External base models | 2 models x 2 evaluations | complete | canonical and suite, base-only |
+| Conditional second-round SFT | retention/suite-triggered only | not_required | selected checkpoint already clears canonical>=99.0%, robustness>=95.0%, and suite>=68.0% |
+| Scope boundary | predefined matrix | documented | complete for the predefined recipe/evaluation matrix; not an exhaustive hyperparameter or all-game-theory benchmark search |
+
+## Candidate Evaluation Matrix
+
+| Run | Canonical | Confirmation | Stress | Robustness | Suite |
+| --- | --- | --- | --- | --- | --- |
+| `joint_base_canon_adv_suite` | yes | yes | yes | yes | yes |
+| `joint_adv_suite_retention` | yes | yes | yes | yes | yes |
+| `joint_adv_targeted_retention` | yes | yes | yes | yes | yes |
+| `joint_base_full_targeted` | yes | yes | yes | yes | yes |
+
 ## Multi-Seed Summary
 
 | Recipe | Runs | Suite mean | Suite seed SD | Canonical mean | Canonical seed SD |

@@ -6,6 +6,7 @@
 - Adds split generation, v1 suite schema metadata, difficulty buckets, `generate_benchmark_suite.py`, `score_suite.py`, `run_suite_baselines.py`, suite solver tests, and small tracked suite samples under `examples/`.
 - Adds local deterministic suite smoke baselines, completed Tinker suite model rows, canonical-retention reporting, and `reports/figures/suite_smoke_accuracy.svg`.
 - Adds retention-aware multitask training data builders, Tinker continuation support, model-availability reporting, multitask result aggregation, failure diagnostics, and public summaries under `reports/multitask_results.*`.
+- Adds an explicit experiment coverage matrix documenting completed candidate, seed, and external-model combinations plus the reason conditional follow-up SFT was not required.
 - Selects `joint_adv_targeted_retention` by the retention rule: 91.67% suite, 99.80% canonical, and 99.60% robustness.
 - Adds a three-seed selected-recipe repeat: 92.56% mean suite accuracy with 0.63 pp seed SD, and 99.93% mean canonical accuracy with 0.09 pp seed SD.
 - Adds external base-model comparisons for `Qwen/Qwen3-8B` and `Qwen/Qwen3-30B-A3B` selected from Tinker model availability.

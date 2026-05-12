@@ -21,6 +21,9 @@ CANDIDATE_RUNS = [
     ("joint_followup_suite", "Joint follow-up suite"),
 ]
 
+REQUIRED_CANDIDATE_RUNS = CANDIDATE_RUNS[:4]
+SELECTED_RECIPE_SEEDS = (42, 1009, 2027)
+
 EVALUATIONS = {
     "canonical": "score_predictions",
     "confirmation": "score_predictions",
@@ -293,6 +296,88 @@ def summarize_seed_runs(runs: dict[str, Any]) -> dict[str, Any]:
     return output
 
 
+def build_experiment_coverage(summary: dict[str, Any]) -> dict[str, Any]:
+    candidate_matrix = {}
+    for name, _label in REQUIRED_CANDIDATE_RUNS:
+        evaluations = summary.get("runs", {}).get(name, {}).get("evaluations", {})
+        candidate_matrix[name] = {
+            evaluation: evaluation in evaluations
+            for evaluation in EVALUATIONS
+        }
+    candidate_complete = all(
+        all(row.values()) for row in candidate_matrix.values()
+    )
+
+    selection = summary.get("selection", {})
+    selected_run = selection.get("run")
+    seed_summary = summary.get("seed_summary", {}).get(str(selected_run), {})
+    per_seed = seed_summary.get("per_seed", {})
+    seed_matrix = {
+        str(seed): {
+            "canonical": "canonical" in per_seed.get(str(seed), {}),
+            "suite": "suite" in per_seed.get(str(seed), {}),
+        }
+        for seed in SELECTED_RECIPE_SEEDS
+    }
+    seed_complete = all(all(row.values()) for row in seed_matrix.values())
+
+    availability_path = Path("reports/model_availability.json")
+    availability = load_json(availability_path) if availability_path.exists() else {}
+    expected_models = availability.get("selected_models", [])
+    external_matrix = {}
+    for item in expected_models:
+        model = str(item["model"])
+        row = summary.get("external_baselines", {}).get(slug_model(model), {})
+        external_matrix[model] = {
+            "canonical": bool(row.get("canonical")),
+            "suite": bool(row.get("suite")),
+        }
+    external_complete = bool(external_matrix) and all(
+        all(row.values()) for row in external_matrix.values()
+    )
+
+    followup_required = (
+        selection.get("status") != "selected"
+        or float(selection.get("canonical_accuracy", 0.0)) < 0.99
+        or float(selection.get("suite_accuracy", 0.0)) < 0.68
+    )
+    followup_status = "not_required" if not followup_required else "required"
+    followup_note = (
+        "selected checkpoint already clears canonical>=99.0%, robustness>=95.0%, and suite>=68.0%"
+        if not followup_required
+        else "second-round criteria were triggered"
+    )
+
+    return {
+        "candidate_sweep": {
+            "expected_runs": [name for name, _label in REQUIRED_CANDIDATE_RUNS],
+            "expected_evaluations": list(EVALUATIONS),
+            "matrix": candidate_matrix,
+            "status": "complete" if candidate_complete else "incomplete",
+        },
+        "selected_recipe_seeds": {
+            "expected_seeds": list(SELECTED_RECIPE_SEEDS),
+            "expected_evaluations": ["canonical", "suite"],
+            "matrix": seed_matrix,
+            "status": "complete" if seed_complete else "incomplete",
+        },
+        "external_base_models": {
+            "expected_models": [str(item["model"]) for item in expected_models],
+            "expected_evaluations": ["canonical", "suite"],
+            "matrix": external_matrix,
+            "status": "complete" if external_complete else "incomplete",
+        },
+        "conditional_followup": {
+            "status": followup_status,
+            "note": followup_note,
+        },
+        "scope_boundary": (
+            "complete for the predefined recipe/evaluation matrix; not an exhaustive "
+            "hyperparameter or all-game-theory benchmark search"
+        ),
+    }
+
+
 def build_summary(previous: dict[str, Any] | None = None) -> dict[str, Any]:
     runs: dict[str, Any] = {}
     run_names = list(CANDIDATE_RUNS)
@@ -316,7 +401,7 @@ def build_summary(previous: dict[str, Any] | None = None) -> dict[str, Any]:
     selection = select_checkpoint(runs)
     if selection.get("status") != "selected" and previous and previous.get("selection"):
         selection = previous["selection"]
-    return {
+    summary = {
         "status": "complete" if selection.get("status") == "selected" else "incomplete",
         "runs": runs,
         "selection": selection,
@@ -324,6 +409,8 @@ def build_summary(previous: dict[str, Any] | None = None) -> dict[str, Any]:
         "external_baselines": load_external_baselines(previous),
         "selected_diagnostics": maybe_selected_diagnostics(selection, previous),
     }
+    summary["experiment_coverage"] = build_experiment_coverage(summary)
+    return summary
 
 
 def write_markdown(path: Path, summary: dict[str, Any]) -> None:
@@ -347,6 +434,41 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
             f"| `{name}` | {maybe_pct(evaluations, 'canonical')} | "
             f"{maybe_pct(evaluations, 'robustness')} | {maybe_pct(evaluations, 'suite')} |"
         )
+    coverage = summary.get("experiment_coverage", {})
+    if coverage:
+        lines.extend(["", "## Experiment Coverage", ""])
+        lines.append("| Surface | Expected | Status | Notes |")
+        lines.append("| --- | --- | --- | --- |")
+        candidate = coverage.get("candidate_sweep", {})
+        lines.append(
+            "| Candidate sweep | 4 recipes x 5 evaluations | "
+            f"{candidate.get('status', 'unknown')} | canonical, confirmation, stress, robustness, suite |"
+        )
+        seeds = coverage.get("selected_recipe_seeds", {})
+        lines.append(
+            "| Selected-recipe seeds | 3 seeds x 2 evaluations | "
+            f"{seeds.get('status', 'unknown')} | canonical and suite for seeds 42, 1009, 2027 |"
+        )
+        external = coverage.get("external_base_models", {})
+        lines.append(
+            "| External base models | 2 models x 2 evaluations | "
+            f"{external.get('status', 'unknown')} | canonical and suite, base-only |"
+        )
+        followup = coverage.get("conditional_followup", {})
+        lines.append(
+            "| Conditional second-round SFT | retention/suite-triggered only | "
+            f"{followup.get('status', 'unknown')} | {followup.get('note', '')} |"
+        )
+        lines.append(f"| Scope boundary | predefined matrix | documented | {coverage.get('scope_boundary', '')} |")
+        lines.extend(["", "## Candidate Evaluation Matrix", ""])
+        lines.append("| Run | Canonical | Confirmation | Stress | Robustness | Suite |")
+        lines.append("| --- | --- | --- | --- | --- | --- |")
+        for name, row in coverage.get("candidate_sweep", {}).get("matrix", {}).items():
+            lines.append(
+                f"| `{name}` | {yes_no(row.get('canonical'))} | "
+                f"{yes_no(row.get('confirmation'))} | {yes_no(row.get('stress'))} | "
+                f"{yes_no(row.get('robustness'))} | {yes_no(row.get('suite'))} |"
+            )
     if summary.get("seed_summary"):
         lines.extend(["", "## Multi-Seed Summary", ""])
         lines.append("| Recipe | Runs | Suite mean | Suite seed SD | Canonical mean | Canonical seed SD |")
@@ -392,6 +514,10 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
 def maybe_pct(evaluations: dict[str, Any], key: str) -> str:
     row = evaluations.get(key)
     return optional_pct(row and row.get("exact_match_accuracy"))
+
+
+def yes_no(value: object) -> str:
+    return "yes" if value else "no"
 
 
 def optional_pct(value: object) -> str:

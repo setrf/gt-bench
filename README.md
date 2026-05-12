@@ -338,7 +338,7 @@ On a 250-example prompt-robustness set, the same checkpoint improved from 64.00%
 
 Across a three-seed repeated training-data sweep on the fixed canonical test set, the 5000-example SFT condition was stable: 99.60% mean accuracy with 0.40 percentage-point seed SD. The 1000-example condition was volatile, with one seed dropping to 70.20%, while the 250-example condition consistently underperformed baseline. See `reports/seed_sweep_results.md`.
 
-The broader-suite and multitask results are tracked in `reports/suite_results.md` and `reports/multitask_results.md`. The selected checkpoint is `joint_adv_targeted_retention`: it is the best suite performer among candidates that meet the canonical and prompt-robustness retention gates. `joint_base_full_targeted` reached 93.00% suite accuracy but was not selected because it fell to 97.20% canonical accuracy and 94.40% robustness.
+The broader-suite and multitask results are tracked in `reports/suite_results.md` and `reports/multitask_results.md`. The latter includes the explicit experiment coverage matrix: four candidate recipes across five evaluations, three selected-recipe seeds across canonical and suite evaluations, two external base models across canonical and suite evaluations, and the documented reason conditional follow-up SFT was not required. The selected checkpoint is `joint_adv_targeted_retention`: it is the best suite performer among candidates that meet the canonical and prompt-robustness retention gates. `joint_base_full_targeted` reached 93.00% suite accuracy but was not selected because it fell to 97.20% canonical accuracy and 94.40% robustness.
 
 ## Adversarial robustness follow-up
 

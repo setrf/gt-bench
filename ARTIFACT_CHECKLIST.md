@@ -137,7 +137,7 @@ Use this checklist before publishing a GT-Bench release or sharing the repo as a
 - Confirm `README.md` links to `TECHNICAL_REPORT.md`, `RESULTS.md`, `REPRODUCIBILITY.md`, `FAILURE_ANALYSIS.md`, `ROBUSTNESS.md`, and `paper/gt_bench_paper.tex`.
 - Confirm `reports/adversarial_results.md` accurately says whether the adversarial run is pending or complete.
 - Confirm `reports/suite_results.md` accurately reports completed broader-suite model rows and canonical-retention status for the exact public suite hash.
-- Confirm `reports/multitask_results.md` accurately reports selected-checkpoint rationale, three-seed statistics, external base comparisons, and failure diagnostics.
+- Confirm `reports/multitask_results.md` accurately reports selected-checkpoint rationale, experiment coverage matrix, three-seed statistics, external base comparisons, and failure diagnostics.
 - Confirm `reports/figures/*.svg` renders on GitHub.
 - Confirm `paper/figures/*.png` match the current public SVG figures before rebuilding the paper.
 - Confirm the headline claim remains bounded: targeted fine-tuning improves the canonical 2x2 pure-equilibrium task, and the selected retention-aware multitask checkpoint broadens exact suite coverage without claiming general game-theory competence.

@@ -896,7 +896,8 @@ def test_multitask_summary_counts_base_recipe_as_seed42(tmp_path, monkeypatch) -
     ]:
         write_report(reports / f"{run}_canonical_report.json", canonical)
         write_report(reports / f"suite_{run}_report.json", suite, suite=True)
-        write_report(reports / f"{run}_robustness_report.json", 0.99)
+        if run == "joint_adv_targeted_retention":
+            write_report(reports / f"{run}_robustness_report.json", 0.99)
 
     summary = build_multitask_summary()
 
@@ -904,6 +905,7 @@ def test_multitask_summary_counts_base_recipe_as_seed42(tmp_path, monkeypatch) -
     assert seed_summary["num_runs"] == 3
     assert set(seed_summary["per_seed"]) == {"42", "1009", "2027"}
     assert seed_summary["canonical_mean"] == pytest.approx(0.998)
+    assert summary["experiment_coverage"]["selected_recipe_seeds"]["status"] == "complete"
 
 
 def test_failure_diagnostics_summarize_canonical_and_suite_errors(tmp_path) -> None:

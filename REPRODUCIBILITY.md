@@ -218,6 +218,8 @@ Regenerate the public multitask summary and figures with:
 .venv/bin/python summarize_multitask_results.py
 ```
 
+`reports/multitask_results.md` includes the coverage matrix for the predefined experiment surface: candidate recipes x required evaluations, selected seeds x canonical/suite evaluations, external base models x canonical/suite evaluations, and the conditional follow-up status.
+
 Record model availability and deterministic external comparison choices with:
 
 ```bash
