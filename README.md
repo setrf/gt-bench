@@ -9,7 +9,7 @@ The repository now has two layers:
 - `generate_dataset.py` and `score_predictions.py`: the canonical 2x2 pure-equilibrium experiment used for the published Qwen3.6-27B result.
 - `generate_benchmark_suite.py` and `score_suite.py`: the broader suite covering mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form games, natural-language game descriptions, and repeated interaction.
 
-For the consolidated research narrative, see `TECHNICAL_REPORT.md`. Prompt robustness is tracked in `reports/robustness_results.md`, and the adversarial robustness follow-up is tracked in `reports/adversarial_results.md`. The repeated-seed learning curve is tracked in `reports/seed_sweep_results.md`. The broader-suite and retention-aware multitask results are tracked in `reports/suite_results.md` and `reports/multitask_results.md`. An arXiv-ready paper draft is available at `paper/gt_bench_paper.tex`.
+For the consolidated research narrative, see `TECHNICAL_REPORT.md`. Prompt robustness is tracked in `reports/robustness_results.md`, and the adversarial robustness follow-up is tracked in `reports/adversarial_results.md`. The repeated-seed learning curve is tracked in `reports/seed_sweep_results.md`. The broader-suite and retention-aware multitask results are tracked in `reports/suite_results.md` and `reports/multitask_results.md`. An arXiv-ready paper is available at `paper/gt_bench_paper.tex`.
 
 ## My context
 
@@ -17,7 +17,7 @@ This project is by Mert Gulsun, a UC Berkeley master's student and Thinking Mach
 
 The goal is to demonstrate measurable improvement from targeted fine-tuning on formal game-theory reasoning using a 12-month, $5,000 Tinker research credit allocation.
 
-## Paper draft
+## Paper
 
 The paper source is intentionally arXiv-friendly: one LaTeX file, PNG figures under `paper/figures/`, and an inline bibliography. Build it with the bundled Tectonic engine or any LaTeX distribution that supports the packages in the source.
 

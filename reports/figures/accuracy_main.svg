@@ -1,32 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="920" height="520" viewBox="0 0 920 520" role="img" aria-label="GT-Bench Canonical Test Accuracy">
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-label="GT-Bench Canonical Test Accuracy">
 <title>GT-Bench Canonical Test Accuracy</title>
-<rect x="0.0" y="0.0" width="920.0" height="520.0" rx="0.0" fill="#ffffff" />
-<text x="40.0" y="46.0" font-size="24" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#111827" text-anchor="start">GT-Bench Canonical Test Accuracy</text>
-<text x="40.0" y="74.0" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="start">Qwen/Qwen3.6-27B baseline vs LoRA SFT training-size sweep.</text>
-<line x1="82.0" y1="410.0" x2="874.0" y2="410.0" stroke="#dbe3ef" stroke-width="1.0" />
-<text x="70.0" y="415.0" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">0%</text>
-<line x1="82.0" y1="348.8" x2="874.0" y2="348.8" stroke="#dbe3ef" stroke-width="1.0" />
-<text x="70.0" y="353.8" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">20%</text>
-<line x1="82.0" y1="287.6" x2="874.0" y2="287.6" stroke="#dbe3ef" stroke-width="1.0" />
-<text x="70.0" y="292.6" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">40%</text>
-<line x1="82.0" y1="226.4" x2="874.0" y2="226.4" stroke="#dbe3ef" stroke-width="1.0" />
-<text x="70.0" y="231.4" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">60%</text>
-<line x1="82.0" y1="165.2" x2="874.0" y2="165.2" stroke="#dbe3ef" stroke-width="1.0" />
-<text x="70.0" y="170.2" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">80%</text>
-<line x1="82.0" y1="104.0" x2="874.0" y2="104.0" stroke="#dbe3ef" stroke-width="1.0" />
-<text x="70.0" y="109.0" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">100%</text>
-<line x1="82.0" y1="104.0" x2="82.0" y2="410.0" stroke="#111827" stroke-width="1.2" />
-<line x1="82.0" y1="410.0" x2="874.0" y2="410.0" stroke="#111827" stroke-width="1.2" />
-<rect x="138.0" y="141.9" width="86.0" height="268.1" rx="4.0" fill="#64748b" />
-<text x="181.0" y="131.9" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#111827" text-anchor="middle">87.6%</text>
-<text x="181.0" y="438.0" font-size="13" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#111827" text-anchor="middle">baseline</text>
-<rect x="336.0" y="246.6" width="86.0" height="163.4" rx="4.0" fill="#dc2626" />
-<text x="379.0" y="236.6" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#111827" text-anchor="middle">53.4%</text>
-<text x="379.0" y="438.0" font-size="13" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#111827" text-anchor="middle">250 SFT</text>
-<rect x="534.0" y="129.7" width="86.0" height="280.3" rx="4.0" fill="#ea580c" />
-<text x="577.0" y="119.7" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#111827" text-anchor="middle">91.6%</text>
-<text x="577.0" y="438.0" font-size="13" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#111827" text-anchor="middle">1000 SFT</text>
-<rect x="732.0" y="105.2" width="86.0" height="304.8" rx="4.0" fill="#0f766e" />
-<text x="775.0" y="95.2" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#111827" text-anchor="middle">99.6%</text>
-<text x="775.0" y="438.0" font-size="13" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#111827" text-anchor="middle">5000 SFT</text>
+<rect x="0.0" y="0.0" width="920.0" height="420.0" rx="0.0" fill="#ffffff" />
+<line x1="82.0" y1="320.0" x2="874.0" y2="320.0" stroke="#dbe3ef" stroke-width="1.0" />
+<text x="70.0" y="325.0" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">0%</text>
+<line x1="82.0" y1="267.2" x2="874.0" y2="267.2" stroke="#dbe3ef" stroke-width="1.0" />
+<text x="70.0" y="272.2" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">20%</text>
+<line x1="82.0" y1="214.4" x2="874.0" y2="214.4" stroke="#dbe3ef" stroke-width="1.0" />
+<text x="70.0" y="219.4" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">40%</text>
+<line x1="82.0" y1="161.6" x2="874.0" y2="161.6" stroke="#dbe3ef" stroke-width="1.0" />
+<text x="70.0" y="166.6" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">60%</text>
+<line x1="82.0" y1="108.8" x2="874.0" y2="108.8" stroke="#dbe3ef" stroke-width="1.0" />
+<text x="70.0" y="113.8" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">80%</text>
+<line x1="82.0" y1="56.0" x2="874.0" y2="56.0" stroke="#dbe3ef" stroke-width="1.0" />
+<text x="70.0" y="61.0" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#475569" text-anchor="end">100%</text>
+<line x1="82.0" y1="56.0" x2="82.0" y2="320.0" stroke="#111827" stroke-width="1.2" />
+<line x1="82.0" y1="320.0" x2="874.0" y2="320.0" stroke="#111827" stroke-width="1.2" />
+<rect x="138.0" y="88.7" width="86.0" height="231.3" rx="4.0" fill="#64748b" />
+<text x="181.0" y="78.7" font-size="16" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#111827" text-anchor="middle">87.6%</text>
+<text x="181.0" y="348.0" font-size="15" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#111827" text-anchor="middle">baseline</text>
+<rect x="336.0" y="179.0" width="86.0" height="141.0" rx="4.0" fill="#dc2626" />
+<text x="379.0" y="169.0" font-size="16" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#111827" text-anchor="middle">53.4%</text>
+<text x="379.0" y="348.0" font-size="15" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#111827" text-anchor="middle">250 SFT</text>
+<rect x="534.0" y="78.2" width="86.0" height="241.8" rx="4.0" fill="#ea580c" />
+<text x="577.0" y="68.2" font-size="16" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#111827" text-anchor="middle">91.6%</text>
+<text x="577.0" y="348.0" font-size="15" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#111827" text-anchor="middle">1000 SFT</text>
+<rect x="732.0" y="57.1" width="86.0" height="262.9" rx="4.0" fill="#0f766e" />
+<text x="775.0" y="47.1" font-size="16" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#111827" text-anchor="middle">99.6%</text>
+<text x="775.0" y="348.0" font-size="15" font-family="Arial, Helvetica, sans-serif" font-weight="400" fill="#111827" text-anchor="middle">5000 SFT</text>
 </svg>

@@ -254,7 +254,7 @@ Default supplement mix:
 | `minimal_matrix` | 50 | 10 |
 | `answer_only` | 50 | 10 |
 
-The paper draft records a matrix-overlap audit across public splits. The canonical train/validation/test files are jointly de-duplicated by construction. The adversarial supplement excludes canonical training matrices; one supplement matrix overlaps the balanced stress set, so the adversarial robustness set is the primary adversarial follow-up evidence.
+The paper records a matrix-overlap audit across public splits. The canonical train/validation/test files are jointly de-duplicated by construction. The adversarial supplement excludes canonical training matrices; one supplement matrix overlaps the balanced stress set, so the adversarial robustness set is the primary adversarial follow-up evidence.
 
 ## Training
 

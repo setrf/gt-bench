@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import math
 from collections import Counter, defaultdict
@@ -24,6 +25,15 @@ CANDIDATE_RUNS = [
 REQUIRED_CANDIDATE_RUNS = CANDIDATE_RUNS[:4]
 SELECTED_RECIPE_SEEDS = (42, 1009, 2027)
 
+BLUE = "#2563eb"
+TEAL = "#0f766e"
+ORANGE = "#ea580c"
+GRAY = "#64748b"
+INK = "#111827"
+MUTED = "#475569"
+GRID = "#dbe3ef"
+PAPER = "#ffffff"
+
 EVALUATIONS = {
     "canonical": "score_predictions",
     "confirmation": "score_predictions",
@@ -35,6 +45,67 @@ EVALUATIONS = {
 
 def pct(value: float) -> str:
     return f"{100 * value:.2f}%"
+
+
+def esc(value: object) -> str:
+    return html.escape(str(value), quote=True)
+
+
+def svg_text(
+    x: float,
+    y: float,
+    value: object,
+    *,
+    size: int = 13,
+    fill: str = INK,
+    anchor: str = "start",
+    weight: str = "400",
+    rotate: float | None = None,
+) -> str:
+    transform = f' transform="rotate({rotate:.0f} {x:.1f} {y:.1f})"' if rotate is not None else ""
+    return (
+        f'<text x="{x:.1f}" y="{y:.1f}" font-size="{size}" '
+        f'font-family="Arial, Helvetica, sans-serif" font-weight="{weight}" '
+        f'fill="{fill}" text-anchor="{anchor}"{transform}>{esc(value)}</text>'
+    )
+
+
+def svg_line(
+    x1: float,
+    y1: float,
+    x2: float,
+    y2: float,
+    *,
+    color: str = GRID,
+    width: float = 1.0,
+    dash: str | None = None,
+) -> str:
+    dash_attr = f' stroke-dasharray="{dash}"' if dash else ""
+    return (
+        f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
+        f'stroke="{color}" stroke-width="{width:.1f}"{dash_attr} />'
+    )
+
+
+def svg_rect(x: float, y: float, width: float, height: float, fill: str, *, radius: float = 0.0) -> str:
+    return (
+        f'<rect x="{x:.1f}" y="{y:.1f}" width="{width:.1f}" height="{height:.1f}" '
+        f'rx="{radius:.1f}" fill="{fill}" />'
+    )
+
+
+def svg_frame(width: int, height: int, title: str, body: list[str]) -> str:
+    return "\n".join(
+        [
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
+            f'viewBox="0 0 {width} {height}" role="img" aria-label="{esc(title)}">',
+            f"<title>{esc(title)}</title>",
+            svg_rect(0, 0, width, height, PAPER),
+            *body,
+            "</svg>",
+            "",
+        ]
+    )
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -542,8 +613,8 @@ def write_pareto(path: Path, summary: dict[str, Any]) -> None:
         evaluations = row.get("evaluations", {})
         if "canonical" in evaluations and "suite" in evaluations:
             points.append((name, evaluations["canonical"]["exact_match_accuracy"], evaluations["suite"]["exact_match_accuracy"]))
-    width, height = 900, 500
-    left, top, plot_w, plot_h = 90, 58, 740, 330
+    width, height = 980, 440
+    left, top, plot_w, plot_h = 96, 56, 820, 274
     xmin, xmax = 0.95, 1.0
     ymin, ymax = 0.80, 0.95
 
@@ -553,43 +624,48 @@ def write_pareto(path: Path, summary: dict[str, Any]) -> None:
     def y_pos(value: float) -> float:
         return top + plot_h * (ymax - value) / (ymax - ymin)
 
-    lines = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
-        '<rect width="100%" height="100%" fill="white"/>',
-        '<text x="20" y="30" font-family="Arial" font-size="20" font-weight="700">Retention vs Suite Accuracy</text>',
-        '<text x="20" y="50" font-family="Arial" font-size="12" fill="#475569">Candidate multitask checkpoints on the fixed public suite split.</text>',
-    ]
+    lines: list[str] = []
     for tick in (95, 96, 97, 98, 99, 100):
         x = x_pos(tick / 100)
-        lines.append(f'<line x1="{x:.1f}" y1="{top}" x2="{x:.1f}" y2="{top + plot_h}" stroke="#eeeeee"/>')
-        lines.append(f'<text x="{x:.1f}" y="{top + plot_h + 20}" text-anchor="middle" font-family="Arial" font-size="11">{tick}%</text>')
+        lines.append(svg_line(x, top, x, top + plot_h))
+        lines.append(svg_text(x, top + plot_h + 28, f"{tick}%", size=14, fill=MUTED, anchor="middle"))
     for tick in (80, 85, 90, 95):
         y = y_pos(tick / 100)
-        lines.append(f'<line x1="{left}" y1="{y:.1f}" x2="{left + plot_w}" y2="{y:.1f}" stroke="#eeeeee"/>')
-        lines.append(f'<text x="{left - 10}" y="{y + 4:.1f}" text-anchor="end" font-family="Arial" font-size="11">{tick}%</text>')
-    lines.append(f'<line x1="{left}" y1="{top}" x2="{left}" y2="{top + plot_h}" stroke="#111827"/>')
-    lines.append(f'<line x1="{left}" y1="{top + plot_h}" x2="{left + plot_w}" y2="{top + plot_h}" stroke="#111827"/>')
+        lines.append(svg_line(left, y, left + plot_w, y))
+        lines.append(svg_text(left - 12, y + 5, f"{tick}%", size=14, fill=MUTED, anchor="end"))
+    gate_x = x_pos(0.99)
+    lines.append(svg_line(gate_x, top, gate_x, top + plot_h, color=GRAY, width=1.2, dash="5 5"))
+    lines.append(svg_text(gate_x - 8, top + 20, "99% canonical gate", size=14, fill=GRAY, anchor="end"))
+    lines.append(svg_line(left, top, left, top + plot_h, color=INK, width=1.2))
+    lines.append(svg_line(left, top + plot_h, left + plot_w, top + plot_h, color=INK, width=1.2))
+
+    short_labels = {
+        "joint_base_canon_adv_suite": "base multitask",
+        "joint_adv_suite_retention": "adv-state retention",
+        "joint_adv_targeted_retention": "selected",
+        "joint_base_full_targeted": "highest suite",
+    }
     for name, canonical, suite in points:
         x = x_pos(canonical)
         y = y_pos(suite)
         selected = name == summary.get("selection", {}).get("run")
-        color = "#111827" if selected else "#0072b2"
-        label = "selected" if selected else labels.get(name, name).replace("Joint ", "")
+        missed_gate = name == "joint_base_full_targeted"
+        color = TEAL if selected else ORANGE if missed_gate else BLUE
+        label = short_labels.get(name, labels.get(name, name).replace("Joint ", ""))
         label = f"{label} ({pct(suite)})"
         anchor = "end" if canonical > 0.99 else "start"
         text_x = x - 10 if anchor == "end" else x + 10
-        lines.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="6" fill="{color}"/>')
-        lines.append(f'<text x="{text_x:.1f}" y="{y + 4:.1f}" text-anchor="{anchor}" font-family="Arial" font-size="11" fill="{color}">{label}</text>')
-    lines.append('<text x="460" y="460" text-anchor="middle" font-family="Arial" font-size="12">Canonical accuracy</text>')
-    lines.append('<text x="18" y="235" transform="rotate(-90 18 235)" text-anchor="middle" font-family="Arial" font-size="12">Suite accuracy</text>')
-    lines.append("</svg>")
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        lines.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="7.0" fill="{color}" />')
+        lines.append(svg_text(text_x, y + 5, label, size=15, fill=color, anchor=anchor, weight="700" if selected else "400"))
+    lines.append(svg_text(left + plot_w / 2, height - 34, "Canonical exact-match accuracy", size=15, fill=MUTED, anchor="middle"))
+    lines.append(svg_text(22, top + plot_h / 2, "Broader-suite exact-match accuracy", size=15, fill=MUTED, anchor="middle", rotate=-90))
+    path.write_text(svg_frame(width, height, "Retention-Aware Multitask Pareto", lines), encoding="utf-8")
 
 
 def write_external(path: Path, summary: dict[str, Any]) -> None:
     rows = list(summary.get("external_baselines", {}).values())
-    width, height = 760, 360
-    left, top, plot_w, plot_h = 150, 50, 540, 220
+    width, height = 900, 360
+    left, top, plot_w, plot_h = 108, 58, 728, 210
     max_acc = max(
         [
             float(row.get(key, {}).get("exact_match_accuracy", 0.0))
@@ -600,33 +676,34 @@ def write_external(path: Path, summary: dict[str, Any]) -> None:
         or [0.0]
     )
     y_max = max(0.08, math.ceil(max_acc * 100) / 100)
-    lines = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
-        '<rect width="100%" height="100%" fill="white"/>',
-        '<text x="20" y="30" font-family="Arial" font-size="20" font-weight="700">External Base Model Accuracy</text>',
-    ]
+    lines: list[str] = []
     for index in range(5):
         value = y_max * index / 4
         y = top + plot_h * (1 - value / y_max)
-        lines.append(f'<line x1="{left}" y1="{y:.1f}" x2="{left + plot_w}" y2="{y:.1f}" stroke="#eeeeee"/>')
-        lines.append(f'<text x="{left - 10}" y="{y + 4:.1f}" text-anchor="end" font-family="Arial" font-size="11">{pct(value)}</text>')
+        lines.append(svg_line(left, y, left + plot_w, y))
+        lines.append(svg_text(left - 12, y + 5, pct(value), size=15, fill=MUTED, anchor="end"))
+    lines.append(svg_line(left, top, left, top + plot_h, color=INK, width=1.2))
+    lines.append(svg_line(left, top + plot_h, left + plot_w, top + plot_h, color=INK, width=1.2))
     group_w = plot_w / max(len(rows), 1)
-    colors = {"canonical": "#0072b2", "suite": "#d55e00"}
+    colors = {"canonical": BLUE, "suite": ORANGE}
+    bar_w = 42
     for index, row in enumerate(rows):
-        x0 = left + index * group_w + group_w * 0.25
+        center = left + group_w * (index + 0.5)
         for offset, key in enumerate(("canonical", "suite")):
             report = row.get(key)
             acc = float(report.get("exact_match_accuracy", 0.0)) if report else 0.0
             h = plot_h * acc / y_max
-            x = x0 + offset * 28
+            x = center + (offset - 0.5) * (bar_w + 12) - bar_w / 2
             y = top + plot_h - h
-            lines.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="22" height="{h:.1f}" fill="{colors[key]}"/>')
-            lines.append(f'<text x="{x + 11:.1f}" y="{y - 4:.1f}" text-anchor="middle" font-family="Arial" font-size="10">{pct(acc)}</text>')
-        lines.append(f'<text x="{x0 + 18:.1f}" y="{height - 48}" text-anchor="middle" font-family="Arial" font-size="11">{row["model"].split("/")[-1]}</text>')
-    lines.append('<rect x="150" y="320" width="12" height="12" fill="#0072b2"/><text x="168" y="331" font-family="Arial" font-size="12">Canonical</text>')
-    lines.append('<rect x="260" y="320" width="12" height="12" fill="#d55e00"/><text x="278" y="331" font-family="Arial" font-size="12">Suite</text>')
-    lines.append("</svg>")
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+            lines.append(svg_rect(x, y, bar_w, h, colors[key], radius=3))
+            lines.append(svg_text(x + bar_w / 2, y - 8, pct(acc), size=16, anchor="middle", weight="700"))
+        lines.append(svg_text(center, top + plot_h + 38, row["model"].split("/")[-1], size=16, anchor="middle"))
+    legend_y = 24
+    lines.append(svg_rect(610, legend_y, 16, 16, BLUE, radius=2))
+    lines.append(svg_text(634, legend_y + 14, "canonical", size=16, fill=MUTED))
+    lines.append(svg_rect(724, legend_y, 16, 16, ORANGE, radius=2))
+    lines.append(svg_text(748, legend_y + 14, "suite", size=16, fill=MUTED))
+    path.write_text(svg_frame(width, height, "External Base-Model Baselines", lines), encoding="utf-8")
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:

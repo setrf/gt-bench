@@ -10,7 +10,7 @@
 - Selects `joint_adv_targeted_retention` by the retention rule: 91.67% suite, 99.80% canonical, and 99.60% robustness.
 - Adds a three-seed selected-recipe repeat: 92.56% mean suite accuracy with 0.63 pp seed SD, and 99.93% mean canonical accuracy with 0.09 pp seed SD.
 - Adds external base-model comparisons for `Qwen/Qwen3-8B` and `Qwen/Qwen3-30B-A3B` selected from Tinker model availability.
-- Expands `paper/gt_bench_paper.tex` into an arXiv-ready draft covering canonical, adversarial, broader-suite, and retention-aware multitask results.
+- Expands `paper/gt_bench_paper.tex` into an arXiv-ready paper covering canonical, adversarial, broader-suite, and retention-aware multitask results.
 - Adds related work, leakage controls, simple baselines, training-time notes, parser details, a concrete failure example, exact adversarial supplement mix, reproducibility appendix, and code/data/ethics notes.
 - Adds arXiv-safe PNG paper figures under `paper/figures/`, including broader-suite, Pareto, and external-base figures.
 - Documents the paper build and source-zip workflow while keeping generated paper outputs ignored under `paper/build/`.

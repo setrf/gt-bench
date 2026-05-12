@@ -312,75 +312,90 @@ def is_public_suite_split(gold_path: Path) -> bool:
 
 
 def write_suite_figure(path: Path, summary: dict[str, Any]) -> None:
-    baselines = summary["baselines"]
     models = summary.get("model_evaluations", {})
-    families = list(DEFAULT_SUITE_FAMILIES)
-    series: list[tuple[str, str, dict[str, Any]]] = []
-    for name, label in (
-        ("always_none", "Always none"),
-        ("random", "Random"),
-        ("most_common_by_family", "Most common"),
-    ):
-        if name in baselines:
-            series.append((name, label, baselines[name]))
-    for name, _label, _path in DEFAULT_MODEL_REPORTS:
-        if name in models:
-            series.append((name, str(models[name].get("label", name)), models[name]))
-    if "oracle" in baselines:
-        series.append(("oracle", "Oracle", baselines["oracle"]))
-    width = 1280
-    legend_rows = max(1, (len(series) + 3) // 4)
-    height = 440 + legend_rows * 28
-    margin_left = 130
-    margin_bottom = 80 + legend_rows * 28
-    chart_width = width - margin_left - 35
-    chart_height = height - 80 - margin_bottom
-    group_width = chart_width / len(families)
-    bar_width = min(20, group_width / max(len(series), 1) - 3)
+    focus_rows = [
+        ("base_qwen36_27b", "Base model", "#6b7280", ""),
+        ("suite_sft_1200", "Suite SFT", "#2f80ed", ""),
+        ("joint_adv_targeted_retention", "Selected joint SFT", "#009e73", "retention gate passed"),
+        ("joint_base_full_targeted", "Highest-suite candidate", "#d55e00", "not selected"),
+    ]
+    rows = [
+        (name, label, color, note, models[name])
+        for name, label, color, note in focus_rows
+        if name in models
+    ]
+
+    width, height = 980, 350
+    left, top = 235, 48
+    chart_width, chart_height = 650, 202
+    row_gap = 48
+    bar_height = 24
+
+    def x_pos(value: float) -> float:
+        return left + chart_width * value
+
+    def y_pos(index: int) -> float:
+        return top + index * row_gap
+
     colors = {
-        "always_none": "#8c8c8c",
-        "random": "#d55e00",
-        "most_common_by_family": "#0072b2",
-        "base_qwen36_27b": "#cc79a7",
-        "pure_2x2_sft_5000": "#56b4e9",
-        "suite_sft_1200": "#009e73",
-        "pure_2x2_prompt_adv500": "#f0e442",
-        "oracle": "#222222",
+        "grid": "#e5e7eb",
+        "axis": "#111827",
+        "muted": "#64748b",
+        "text": "#111827",
     }
     lines = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<rect width="100%" height="100%" fill="white"/>',
-        '<text x="20" y="32" font-family="Arial" font-size="20" font-weight="700">GT-Bench Suite Accuracy By Task Family</text>',
     ]
-    for tick in range(0, 101, 25):
-        y = 60 + chart_height * (1 - tick / 100)
-        lines.append(f'<line x1="{margin_left}" y1="{y:.1f}" x2="{width - 30}" y2="{y:.1f}" stroke="#e0e0e0"/>')
-        lines.append(f'<text x="{margin_left - 12}" y="{y + 4:.1f}" text-anchor="end" font-family="Arial" font-size="11">{tick}%</text>')
-    for family_index, task_family in enumerate(families):
-        x0 = margin_left + family_index * group_width + group_width * 0.18
-        for name_index, (name, _label, row) in enumerate(series):
-            family_stats = row["accuracy_by_task_family"].get(task_family, {})
-            acc = float(family_stats.get("accuracy", 0.0))
-            bar_height = chart_height * acc
-            x = x0 + name_index * (bar_width + 4)
-            y = 60 + chart_height - bar_height
+
+    for tick in (0, 25, 50, 75, 100):
+        x = x_pos(tick / 100)
+        lines.append(
+            f'<line x1="{x:.1f}" y1="{top - 14}" x2="{x:.1f}" y2="{top + chart_height}" '
+            f'stroke="{colors["grid"]}" stroke-width="1"/>'
+        )
+        lines.append(
+            f'<text x="{x:.1f}" y="{top + chart_height + 28}" text-anchor="middle" '
+            f'font-family="Arial" font-size="15" fill="{colors["muted"]}">{tick}%</text>'
+        )
+
+    lines.append(
+        f'<line x1="{left}" y1="{top + chart_height}" x2="{left + chart_width}" y2="{top + chart_height}" '
+        f'stroke="{colors["axis"]}" stroke-width="1.3"/>'
+    )
+    lines.append(
+        f'<line x1="{left}" y1="{top - 14}" x2="{left}" y2="{top + chart_height}" '
+        f'stroke="{colors["axis"]}" stroke-width="1.3"/>'
+    )
+
+    for index, (_name, label, color, note, row) in enumerate(rows):
+        acc = float(row["exact_match_accuracy"])
+        y = y_pos(index)
+        bar_width = chart_width * acc
+        lines.append(
+            f'<text x="{left - 18}" y="{y + 18}" text-anchor="end" font-family="Arial" '
+            f'font-size="16" font-weight="700" fill="{colors["text"]}">{label}</text>'
+        )
+        if note:
             lines.append(
-                f'<rect x="{x:.1f}" y="{y:.1f}" width="{bar_width:.1f}" height="{bar_height:.1f}" '
-                f'fill="{colors.get(name, "#555")}"/>'
+                f'<text x="{left - 18}" y="{y + 36}" text-anchor="end" font-family="Arial" '
+                f'font-size="14" fill="{colors["muted"]}">{note}</text>'
             )
-        label = task_family.replace("_", " ")
         lines.append(
-            f'<text x="{margin_left + family_index * group_width + group_width / 2:.1f}" y="{height - 92}" '
-            f'text-anchor="middle" font-family="Arial" font-size="11">{label}</text>'
+            f'<rect x="{left}" y="{y}" width="{bar_width:.1f}" height="{bar_height}" '
+            f'rx="3" ry="3" fill="{color}"/>'
         )
-    legend_x = margin_left
-    for index, (name, label, _row) in enumerate(series):
-        x = legend_x + (index % 4) * 280
-        y = height - (28 * legend_rows) + (index // 4) * 22
-        lines.append(f'<rect x="{x}" y="{y}" width="12" height="12" fill="{colors.get(name, "#555")}"/>')
+        value_x = min(left + chart_width - 4, left + bar_width + 12)
+        anchor = "end" if acc > 0.9 else "start"
         lines.append(
-            f'<text x="{x + 18}" y="{y + 10}" font-family="Arial" font-size="12">{label}</text>'
+            f'<text x="{value_x:.1f}" y="{y + 17}" text-anchor="{anchor}" font-family="Arial" '
+            f'font-size="16" font-weight="700" fill="{colors["text"]}">{pct(acc)}</text>'
         )
+
+    lines.append(
+        f'<text x="{left + chart_width / 2:.1f}" y="{height - 36}" text-anchor="middle" '
+        f'font-family="Arial" font-size="15" fill="{colors["muted"]}">Exact-match accuracy on the broader GT-Bench suite</text>'
+    )
     lines.append("</svg>")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

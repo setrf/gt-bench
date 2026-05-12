@@ -97,7 +97,7 @@ def add_axes(body: list[str], left: float, top: float, right: float, bottom: flo
     for tick in range(0, 101, 20):
         y = y_scale(tick / 100, top, bottom)
         body.append(line(left, y, right, y))
-        body.append(text(left - 12, y + 5, f"{tick}%", size=12, fill=MUTED, anchor="end"))
+        body.append(text(left - 12, y + 5, f"{tick}%", size=14, fill=MUTED, anchor="end"))
     body.append(line(left, top, left, bottom, color=INK, width=1.2))
     body.append(line(left, bottom, right, bottom, color=INK, width=1.2))
 
@@ -130,12 +130,9 @@ def draw_bar_chart(
     subtitle: str,
     out_path: Path,
 ) -> None:
-    width, height = 920, 520
-    left, top, right, bottom = 82, 104, 874, 410
-    body: list[str] = [
-        text(40, 46, title, size=24, weight="700"),
-        text(40, 74, subtitle, size=14, fill=MUTED),
-    ]
+    width, height = 920, 420
+    left, top, right, bottom = 82, 56, 874, 320
+    body: list[str] = []
     add_axes(body, left, top, right, bottom)
     slot = (right - left) / len(rows)
     bar_width = min(86, slot * 0.58)
@@ -144,18 +141,15 @@ def draw_bar_chart(
         bar_x = center - bar_width / 2
         bar_y = y_scale(value, top, bottom)
         body.append(rect(bar_x, bar_y, bar_width, bottom - bar_y, color, 4))
-        body.append(text(center, bar_y - 10, pct(value), size=14, fill=INK, anchor="middle", weight="700"))
-        body.append(text(center, bottom + 28, label, size=13, fill=INK, anchor="middle"))
+        body.append(text(center, bar_y - 10, pct(value), size=16, fill=INK, anchor="middle", weight="700"))
+        body.append(text(center, bottom + 28, label, size=15, fill=INK, anchor="middle"))
     out_path.write_text(svg_frame(width, height, title, body), encoding="utf-8")
 
 
 def draw_confirmation_stress(summary: dict[str, Any], out_path: Path) -> None:
-    width, height = 920, 520
-    left, top, right, bottom = 92, 108, 874, 404
-    body: list[str] = [
-        text(40, 46, "Confirmation and Stress Evaluation", size=24, weight="700"),
-        text(40, 74, "Same 5000-example LoRA checkpoint, evaluated without additional training.", size=14, fill=MUTED),
-    ]
+    width, height = 920, 430
+    left, top, right, bottom = 92, 66, 874, 332
+    body: list[str] = []
     add_axes(body, left, top, right, bottom)
 
     groups = []
@@ -176,14 +170,14 @@ def draw_confirmation_stress(summary: dict[str, Any], out_path: Path) -> None:
             bar_x = center + x_offset - bar_width / 2
             bar_y = y_scale(value, top, bottom)
             body.append(rect(bar_x, bar_y, bar_width, bottom - bar_y, color, 4))
-            body.append(text(center + x_offset, bar_y - 10, pct(value), size=14, anchor="middle", weight="700"))
-            body.append(text(center + x_offset, bottom + 28, name, size=12, fill=MUTED, anchor="middle"))
-        body.append(text(center, bottom + 56, label, size=16, fill=INK, anchor="middle", weight="700"))
+            body.append(text(center + x_offset, bar_y - 10, pct(value), size=16, anchor="middle", weight="700"))
+            body.append(text(center + x_offset, bottom + 28, name, size=14, fill=MUTED, anchor="middle"))
+        body.append(text(center, bottom + 56, label, size=17, fill=INK, anchor="middle", weight="700"))
 
-    body.append(rect(650, 42, 16, 16, GRAY, 2))
-    body.append(text(674, 55, "baseline", size=13, fill=MUTED))
-    body.append(rect(750, 42, 16, 16, BLUE, 2))
-    body.append(text(774, 55, "5000 SFT", size=13, fill=MUTED))
+    body.append(rect(650, 24, 16, 16, GRAY, 2))
+    body.append(text(674, 38, "baseline", size=15, fill=MUTED))
+    body.append(rect(750, 24, 16, 16, BLUE, 2))
+    body.append(text(774, 38, "5000 SFT", size=15, fill=MUTED))
     out_path.write_text(svg_frame(width, height, "Confirmation and Stress Evaluation", body), encoding="utf-8")
 
 
@@ -193,12 +187,9 @@ def draw_accuracy_by_equilibria(summary: dict[str, Any], out_path: Path) -> None
     best_buckets = require(require(stress, "best_run", "summary.stress"), "accuracy_by_number_of_equilibria", "summary.stress.best_run")
     counts = [str(count) for count in range(5)]
 
-    width, height = 980, 540
-    left, top, right, bottom = 92, 120, 930, 410
-    body: list[str] = [
-        text(40, 46, "Stress Accuracy by Number of Equilibria", size=24, weight="700"),
-        text(40, 74, "Balanced stress set: 50 examples in each bucket. Zero equilibria is the brittle baseline case.", size=14, fill=MUTED),
-    ]
+    width, height = 980, 440
+    left, top, right, bottom = 92, 66, 930, 326
+    body: list[str] = []
     add_axes(body, left, top, right, bottom)
 
     slot = (right - left) / len(counts)
@@ -215,15 +206,15 @@ def draw_accuracy_by_equilibria(summary: dict[str, Any], out_path: Path) -> None
             bar_x = center + x_offset - bar_width / 2
             bar_y = y_scale(value, top, bottom)
             body.append(rect(bar_x, bar_y, bar_width, bottom - bar_y, color, 3))
-            body.append(text(center + x_offset, bar_y - 8, pct(value), size=12, anchor="middle", weight="700"))
+            body.append(text(center + x_offset, bar_y - 8, pct(value), size=14, anchor="middle", weight="700"))
         x_label = "zero equilibria" if count == "0" else count
-        body.append(text(center, bottom + 30, x_label, size=12, fill=INK, anchor="middle"))
+        body.append(text(center, bottom + 30, x_label, size=14, fill=INK, anchor="middle"))
 
-    body.append(text(left, bottom + 66, "Number of pure-strategy Nash equilibria", size=13, fill=MUTED))
-    body.append(rect(650, 44, 16, 16, GRAY, 2))
-    body.append(text(674, 57, "baseline", size=13, fill=MUTED))
-    body.append(rect(750, 44, 16, 16, BLUE, 2))
-    body.append(text(774, 57, "5000 SFT", size=13, fill=MUTED))
+    body.append(text(left, bottom + 66, "Number of pure-strategy Nash equilibria", size=15, fill=MUTED))
+    body.append(rect(650, 24, 16, 16, GRAY, 2))
+    body.append(text(674, 38, "baseline", size=15, fill=MUTED))
+    body.append(rect(750, 24, 16, 16, BLUE, 2))
+    body.append(text(774, 38, "5000 SFT", size=15, fill=MUTED))
     out_path.write_text(svg_frame(width, height, "Stress Accuracy by Number of Equilibria", body), encoding="utf-8")
 
 
@@ -232,12 +223,9 @@ def draw_robustness_by_variant(robustness: dict[str, Any], out_path: Path) -> No
     finetuned = require(require(robustness, "finetuned", "robustness"), "accuracy_by_prompt_variant", "robustness.finetuned")
     variants = sorted(baseline)
 
-    width, height = 1080, 560
-    left, top, right, bottom = 96, 116, 1030, 410
-    body: list[str] = [
-        text(40, 46, "Robustness Accuracy by Prompt Variant", size=24, weight="700"),
-        text(40, 74, "Same task, different prompt surfaces. Higher is better.", size=14, fill=MUTED),
-    ]
+    width, height = 1080, 450
+    left, top, right, bottom = 96, 66, 1030, 330
+    body: list[str] = []
     add_axes(body, left, top, right, bottom)
 
     slot = (right - left) / len(variants)
@@ -254,13 +242,13 @@ def draw_robustness_by_variant(robustness: dict[str, Any], out_path: Path) -> No
             bar_x = center + x_offset - bar_width / 2
             bar_y = y_scale(value, top, bottom)
             body.append(rect(bar_x, bar_y, bar_width, bottom - bar_y, color, 3))
-            body.append(text(center + x_offset, bar_y - 8, pct(value), size=11, anchor="middle", weight="700"))
-        body.append(text(center, bottom + 30, variant.replace("_", " "), size=11, fill=INK, anchor="middle"))
+            body.append(text(center + x_offset, bar_y - 8, pct(value), size=13, anchor="middle", weight="700"))
+        body.append(text(center, bottom + 30, variant.replace("_", " "), size=13, fill=INK, anchor="middle"))
 
-    body.append(rect(780, 44, 16, 16, GRAY, 2))
-    body.append(text(804, 57, "baseline", size=13, fill=MUTED))
-    body.append(rect(880, 44, 16, 16, BLUE, 2))
-    body.append(text(904, 57, "5000 SFT", size=13, fill=MUTED))
+    body.append(rect(780, 24, 16, 16, GRAY, 2))
+    body.append(text(804, 38, "baseline", size=15, fill=MUTED))
+    body.append(rect(880, 24, 16, 16, BLUE, 2))
+    body.append(text(904, 38, "5000 SFT", size=15, fill=MUTED))
     out_path.write_text(svg_frame(width, height, "Robustness Accuracy by Prompt Variant", body), encoding="utf-8")
 
 
@@ -275,18 +263,9 @@ def draw_adversarial_comparison(adversarial: dict[str, Any], out_path: Path) -> 
     evaluations = require(adversarial, "evaluations", "adversarial")
     names = ["canonical", "confirmation", "stress", "robustness"]
 
-    width, height = 1040, 560
-    left, top, right, bottom = 96, 122, 990, 410
-    body: list[str] = [
-        text(40, 46, "Adversarial SFT Comparison", size=24, weight="700"),
-        text(
-            40,
-            74,
-            "Original 5000-example SFT vs prompt-adversarial SFT. Pending bars mark runs not yet completed.",
-            size=14,
-            fill=MUTED,
-        ),
-    ]
+    width, height = 1040, 450
+    left, top, right, bottom = 96, 66, 990, 330
+    body: list[str] = []
     add_axes(body, left, top, right, bottom)
 
     slot = (right - left) / len(names)
@@ -304,17 +283,17 @@ def draw_adversarial_comparison(adversarial: dict[str, Any], out_path: Path) -> 
             bar_x = center + x_offset - bar_width / 2
             if value is None:
                 body.append(rect(bar_x, bottom - 6, bar_width, 6, color, 3))
-                body.append(text(center + x_offset, bottom - 14, "pending", size=11, anchor="middle", fill=MUTED))
+                body.append(text(center + x_offset, bottom - 14, "pending", size=13, anchor="middle", fill=MUTED))
                 continue
             bar_y = y_scale(value, top, bottom)
             body.append(rect(bar_x, bar_y, bar_width, bottom - bar_y, color, 3))
-            body.append(text(center + x_offset, bar_y - 8, pct(value), size=12, anchor="middle", weight="700"))
-        body.append(text(center, bottom + 30, name, size=12, fill=INK, anchor="middle"))
+            body.append(text(center + x_offset, bar_y - 8, pct(value), size=14, anchor="middle", weight="700"))
+        body.append(text(center, bottom + 30, name, size=14, fill=INK, anchor="middle"))
 
-    body.append(rect(720, 44, 16, 16, BLUE, 2))
-    body.append(text(744, 57, "5000 SFT", size=13, fill=MUTED))
-    body.append(rect(830, 44, 16, 16, TEAL, 2))
-    body.append(text(854, 57, "adversarial SFT", size=13, fill=MUTED))
+    body.append(rect(720, 24, 16, 16, BLUE, 2))
+    body.append(text(744, 38, "5000 SFT", size=15, fill=MUTED))
+    body.append(rect(830, 24, 16, 16, TEAL, 2))
+    body.append(text(854, 38, "adversarial SFT", size=15, fill=MUTED))
     out_path.write_text(svg_frame(width, height, "Adversarial SFT Comparison", body), encoding="utf-8")
 
 
@@ -324,22 +303,13 @@ def draw_seed_sweep(seed_sweep: dict[str, Any], out_path: Path) -> None:
     statistics = require(seed_sweep, "statistics", "seed_sweep")
     baseline = accuracy(require(seed_sweep, "baseline", "seed_sweep"), "seed_sweep.baseline")
 
-    width, height = 1040, 560
-    left, top, right, bottom = 104, 120, 980, 410
-    body: list[str] = [
-        text(40, 46, "Repeated-Seed Learning Curve", size=24, weight="700"),
-        text(
-            40,
-            74,
-            "Mean exact-match accuracy across training-data seeds on the fixed canonical test set.",
-            size=14,
-            fill=MUTED,
-        ),
-    ]
+    width, height = 1040, 450
+    left, top, right, bottom = 104, 66, 980, 330
+    body: list[str] = []
     add_axes(body, left, top, right, bottom)
 
     body.append(line(left, y_scale(baseline, top, bottom), right, y_scale(baseline, top, bottom), color=GRAY, width=1.8))
-    body.append(text(right - 4, y_scale(baseline, top, bottom) - 8, f"baseline {pct(baseline)}", size=12, fill=GRAY, anchor="end"))
+    body.append(text(right - 4, y_scale(baseline, top, bottom) - 8, f"baseline {pct(baseline)}", size=14, fill=GRAY, anchor="end"))
 
     if len(sizes) == 1:
         x_positions = {sizes[0]: (left + right) / 2}
@@ -370,17 +340,17 @@ def draw_seed_sweep(seed_sweep: dict[str, Any], out_path: Path) -> None:
         y = y_scale(mean_acc, top, bottom)
         points.append((x, y))
         body.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="7.0" fill="{BLUE}" />')
-        body.append(text(x, y - 14, pct(mean_acc), size=13, anchor="middle", weight="700"))
-        body.append(text(x, bottom + 30, str(size), size=13, fill=INK, anchor="middle"))
+        body.append(text(x, y - 14, pct(mean_acc), size=15, anchor="middle", weight="700"))
+        body.append(text(x, bottom + 30, str(size), size=14, fill=INK, anchor="middle"))
 
     for (x1, y1), (x2, y2) in zip(points, points[1:]):
         body.append(line(x1, y1, x2, y2, color=BLUE, width=2.5))
 
-    body.append(text((left + right) / 2, bottom + 62, "SFT training examples", size=13, fill=MUTED, anchor="middle"))
-    body.append(f'<circle cx="758.0" cy="52.0" r="4.0" fill="{TEAL}" opacity="0.42" />')
-    body.append(text(774, 57, "seed run", size=13, fill=MUTED))
-    body.append(f'<circle cx="852.0" cy="52.0" r="7.0" fill="{BLUE}" />')
-    body.append(text(868, 57, "mean", size=13, fill=MUTED))
+    body.append(text((left + right) / 2, bottom + 62, "SFT training examples", size=15, fill=MUTED, anchor="middle"))
+    body.append(f'<circle cx="758.0" cy="30.0" r="4.0" fill="{TEAL}" opacity="0.42" />')
+    body.append(text(774, 36, "seed run", size=15, fill=MUTED))
+    body.append(f'<circle cx="852.0" cy="30.0" r="7.0" fill="{BLUE}" />')
+    body.append(text(868, 36, "mean", size=15, fill=MUTED))
     out_path.write_text(svg_frame(width, height, "Repeated-Seed Learning Curve", body), encoding="utf-8")
 
 
