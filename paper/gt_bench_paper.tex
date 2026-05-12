@@ -13,33 +13,33 @@
   linkcolor=black,
   citecolor=black,
   urlcolor=blue,
-  pdftitle={GT-Bench: Targeted Fine-Tuning for 2x2 Pure-Equilibrium Reasoning},
+  pdftitle={GT-Bench: Retention-Aware Fine-Tuning for Verifiable Game-Theory Reasoning},
   pdfauthor={Mert Gulsun}
 }
 
 \newcommand{\modelname}{\texttt{Qwen/\allowbreak Qwen3.6-27B}}
 \newcommand{\repo}{\url{https://github.com/setrf/gt-bench}}
 
-\title{GT-Bench: Targeted Fine-Tuning for 2x2 Pure-Equilibrium Reasoning}
+\title{GT-Bench: Retention-Aware Fine-Tuning for Verifiable Game-Theory Reasoning}
 \author{
   Mert Gulsun\\
   University of California, Berkeley\\
   \texttt{mert\_gulsun@berkeley.edu}
 }
-\date{Draft: May 11, 2026}
+\date{Draft: May 12, 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-GT-Bench is a compact benchmark for measuring whether targeted fine-tuning improves a narrow, exactly verifiable formal reasoning task. Each canonical example gives a randomly generated 2x2 two-player normal-form payoff matrix and asks a model to identify all pure-strategy Nash equilibria. Because the task has an exact solver, data can be generated at scale and model outputs can be scored without subjective judgment. Using Thinking Machines Lab Tinker, LoRA supervised fine-tuning of \modelname{} on 5000 synthetic examples improved canonical exact-match accuracy from 87.60\% to 99.60\%. A conservative 500-example adversarial prompt supplement further improved prompt-robustness accuracy from 88.40\% to 98.80\% relative to the original 5000-example checkpoint, without reducing canonical accuracy. A retention-aware multitask sweep then selected a joint checkpoint that reached 91.67\% on a six-family broader suite while retaining 99.80\% canonical accuracy and 99.60\% prompt-robustness accuracy. Repeating the selected recipe across three seeds gave 92.56\% mean suite accuracy and 99.93\% mean canonical accuracy. The result supports a bounded claim: targeted fine-tuning can improve one controlled formal reasoning skill, and retention-aware multitask data can broaden exact game-theory coverage without erasing that skill. It does not demonstrate general game-theory competence.
+GT-Bench is a compact benchmark for measuring whether targeted fine-tuning improves exactly verifiable game-theory reasoning. It has two layers: a canonical 2x2 pure-equilibrium task and a broader six-family suite covering mixed 2x2 equilibria, dominance, larger normal-form games, extensive-form games, natural-language game descriptions, and repeated-interaction questions. Each canonical example gives a randomly generated 2x2 two-player normal-form payoff matrix and asks a model to identify all pure-strategy Nash equilibria. Because the tasks have exact solvers or exact answer metadata, data can be generated at scale and model outputs can be scored without subjective judgment. Using Thinking Machines Lab Tinker, LoRA supervised fine-tuning of \modelname{} on 5000 synthetic examples improved canonical exact-match accuracy from 87.60\% to 99.60\%. A conservative 500-example adversarial prompt supplement further improved prompt-robustness accuracy from 88.40\% to 98.80\% relative to the original 5000-example checkpoint, without reducing canonical accuracy. A retention-aware multitask sweep then selected a joint checkpoint that reached 91.67\% on the broader suite while retaining 99.80\% canonical accuracy and 99.60\% prompt-robustness accuracy. Repeating the selected recipe across three seeds gave 92.56\% mean suite accuracy and 99.93\% mean canonical accuracy. The result supports a bounded claim: targeted fine-tuning can improve one controlled formal reasoning skill, and retention-aware multitask data can broaden exact game-theory coverage without erasing that skill. It does not demonstrate general game-theory competence.
 \end{abstract}
 
 \section{Introduction}
 
-Large language models often appear capable of formal reasoning, but broad qualitative examples make it difficult to separate rule acquisition from prompt familiarity, memorized patterns, or forgiving evaluation. The reported GT-Bench experiment isolates one small mathematical task: given a 2x2 normal-form game, return exactly the set of pure-strategy Nash equilibria. The benchmark is intentionally narrow, synthetic, and mechanically verifiable. It is a benchmark instance for one equilibrium-finding rule, not evidence of broad game-theory competence.
+Large language models often appear capable of formal reasoning, but broad qualitative examples make it difficult to separate rule acquisition from prompt familiarity, memorized patterns, or forgiving evaluation. GT-Bench is intentionally synthetic, mechanically verifiable, and bounded. The canonical experiment isolates one small mathematical task: given a 2x2 normal-form game, return exactly the set of pure-strategy Nash equilibria. The broader suite then asks whether fine-tuning can expand that exact-answer coverage to mixed equilibria, dominance, larger normal-form games, extensive-form games, natural-language descriptions, and repeated-interaction questions without forgetting the canonical skill. The artifact is a benchmark for controlled game-theory reasoning tasks, not evidence of broad game-theory competence.
 
-The experimental question is practical: can targeted supervised fine-tuning measurably improve a model on a precisely specified formal game-theory skill? The project was developed as a public research artifact for a Thinking Machines Lab Tinker research grant. The canonical experiment's design goal is control: one task, one exact solver, deterministic data generation, exact-match scoring, and focused robustness checks.
+The experimental question is practical: can targeted supervised fine-tuning measurably improve a model on precisely specified formal game-theory skills? The project was developed as a public research artifact for a Thinking Machines Lab Tinker research grant. The design goal is control: exact solvers or exact answer metadata, deterministic data generation, exact-match scoring, and focused robustness checks.
 
 The main result is positive. On the canonical 500-example held-out test split, \modelname{} improved from 87.60\% exact-match accuracy at baseline to 99.60\% after LoRA supervised fine-tuning on 5000 synthetic examples. The improvement held on an independent confirmation set, became sharper on a balanced stress set, and remained stable in a three-seed training-data sweep. A follow-up adversarial prompt supplement closed most of the remaining prompt-format robustness gap. The repository also includes an exactly scored broader suite. A suite-only checkpoint improved suite accuracy but forgot the canonical task; the final retention-aware multitask checkpoint preserves the canonical result while raising suite accuracy above 90\%.
 
@@ -49,9 +49,9 @@ GT-Bench sits at the intersection of formal reasoning evaluation, synthetic veri
 
 The fine-tuning intervention uses LoRA \cite{hu2022lora}, a parameter-efficient adaptation method. The base model is \modelname{}, a 27B open-weight Qwen3.6 model distributed by the Qwen team under Apache 2.0 \cite{qwen36modelcard}; its broader model family is described in the Qwen3 technical report \cite{yang2025qwen3}. Training was run with Tinker, a managed fine-tuning API that exposes LoRA training and sampling while handling distributed infrastructure \cite{tinker2025}.
 
-There is also a growing body of work on LLMs and strategic reasoning. Surveys frame this area as including game-based evaluation, game-theoretic alignment, and LLM-assisted game analysis \cite{sun2025gametheorysurvey}. Existing game-theory-oriented LLM benchmarks such as GTBench evaluate broader strategic behavior in game environments \cite{duan2024gtbench}. The experiment in this paper is deliberately narrower: it does not evaluate play, negotiation, mixed strategies, or strategic interaction. It tests whether a model can learn one explicit equilibrium-identification rule for 2x2 normal-form games.
+There is also a growing body of work on LLMs and strategic reasoning. Surveys frame this area as including game-based evaluation, game-theoretic alignment, and LLM-assisted game analysis \cite{sun2025gametheorysurvey}. Existing game-theory-oriented LLM benchmarks such as GTBench evaluate broader strategic behavior in game environments \cite{duan2024gtbench}. This paper is deliberately more controlled: it does not evaluate open-ended play, negotiation, or strategic behavior in interactive environments. It tests whether a model can learn exact game-theory reasoning tasks, starting with one canonical 2x2 pure-equilibrium rule and then broadening to a fixed six-family exact-answer suite.
 
-\section{Task Definition}
+\section{Canonical Task Definition}
 
 Each example is a two-player normal-form game. Player 1 chooses $U$ or $D$, and Player 2 chooses $L$ or $R$. Each cell contains an ordered pair of integer payoffs in the range 0 through 9. A pure-strategy Nash equilibrium is a strategy profile in which both players are best responding to the other player's strategy \cite{nash1950equilibrium,nash1951noncooperative}. Ties are handled exactly, so a game may have zero, one, two, three, or four pure equilibria.
 
