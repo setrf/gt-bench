@@ -1,6 +1,6 @@
 # Release Notes
 
-## Unreleased
+## v0.4-retention-aware-multitask - 2026-05-12
 
 - Adds a broader exactly scored GT-Bench suite with `mixed_2x2`, `dominance`, `large_normal_form`, `extensive_form`, `natural_language`, and `repeated_interaction` task families.
 - Adds split generation, v1 suite schema metadata, difficulty buckets, `generate_benchmark_suite.py`, `score_suite.py`, `run_suite_baselines.py`, suite solver tests, and small tracked suite samples under `examples/`.
